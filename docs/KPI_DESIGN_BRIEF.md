@@ -385,3 +385,46 @@ The numbers here describe what MRTIS stores today at commit `0c4ed0cce0b2f562fed
 MRTIS rebuilds, re-run `kpi/kpi_baseline.py` — and
 `kpi/kpi_baseline.py --check-brief` will say whether this document went stale
 with it.
+
+---
+
+## Q9 — Does the clock start at the SWP crossing, or at the anchorage?
+
+**Added 2026-08-20**, after William's `SWP Anch` ruling and the measurement
+behind it (`report_concepts/ISSUES.md` I-16).
+
+This brief frames the question as **SWP-to-SWP**. That framing has a hard edge
+which the other eight questions cannot reach around: a clock starting at the SWP
+crossing **structurally cannot see pre-arrival waiting**.
+
+| | Hours | |
+|---|---:|---|
+| `waiting_hours` counted on legs | 2,470,459 | inside the call |
+| Waiting at `SWP Anch` | **294,293** | **before the call — invisible to a SWP-to-SWP clock** |
+| | | **11% of the two combined** |
+
+**William has already ruled this for operations** — *"before they tender NOR and
+commence the port call, so we can ignore"* — and that ruling is right for fees,
+counts and every existing figure. **It does not automatically settle the KPI
+question**, because a KPI about *how long a ship waits for this port* may
+legitimately want to start earlier than a KPI about *how long the agency worked
+the call*. The two can have different clocks and both be correct.
+
+**Options**
+
+1. **Start at the SWP crossing.** Consistent with the operations ruling and with
+   every figure already published. Excludes 294,293 hours by design.
+2. **Start at first contact with `SWP Anch`.** Captures the full wait a
+   principal experiences. Requires a second clock, since these events sit in no
+   call.
+3. **Report both**, as a call clock and a port clock.
+
+**One caveat if 2 or 3 is chosen:** 2019 alone holds **111,645** of those hours
+at a 35.6-hour median, against ~25,000 and 20–27 hours in recent years. Bringing
+pre-arrival waiting inside the boundary would let 2019 dominate any year-on-year
+comparison, so this interacts with the 2019 data-quality caveat already recorded
+in `report_concepts/ISSUES.md` I-9.
+
+**Recommendation:** option 3 — the operations clock stays exactly as ruled, and a
+separate port-experience clock is defined alongside it, so neither question
+distorts the other. **No ruling taken here.**

@@ -1147,11 +1147,59 @@ decision — *does the KPI start at the SWP crossing, or at first contact with t
 anchorage?* — because the answer changes the denominator of every wait metric
 built on it.
 
-**Proposed fix** Nothing in MRTIS. Two documentation actions, both in this repo:
-state the boundary and its size in `docs/BUSINESS_RULES.md` §7, and add the
-start-of-clock question to the KPI brief.
+**RULED — William, 2026-08-20:** *"we can keep the swp anch in the records for
+posterity in event some anlaysis is needed, but otherwise can exclude from any
+and all operations/functions are not relevant, the ships wait there but it's
+before they tender nor and commence the port call, so we can ignore."*
 
-**Status** OPEN — documentation, plus one new question for the KPI conversation.
+**This confirms the existing behaviour rather than changing it.** `SWP Anch`
+events are already retained in `port_call_event` with an `unassigned_reason` and
+already excluded from every call, leg, fee and time calculation. The ruling makes
+that deliberate and gives it the commercial reason it was missing: **the vessel
+has not tendered NOR, so the port call has not commenced.**
+
+**What the ruling does to the completeness picture.** Setting `SWP Anch` aside as
+out of scope rather than counting it as an unplaced event:
+
+| | Events in scope | Placed | Unplaced |
+|---|---:|---:|---:|
+| Counting `SWP Anch` as in-scope | 290,305 | 273,336 (**94.2%**) | 16,969 (5.8%) |
+| **`SWP Anch` out of scope (ruled)** | 275,974 | 273,336 (**99.04%**) | **2,638 (0.96%)** |
+
+**And the residue is largely a cold start, not a defect:**
+
+| Reason | Count | Character |
+|---|---:|---|
+| `before_first_entry` | 1,901 | **975 are 2019** — vessels already in the river when collection began. 2023-2026 contribute 13, 17, 27 and 3. |
+| `no_open_call` | 737 | Spread across the series |
+
+**Checked: the rule does not extend to a second zone.** `Pilottown Anch` was the
+obvious candidate and is **not** a sister to `SWP Anch`:
+
+| Zone | Mile | Events | Unplaced | Rate |
+|---|---:|---:|---:|---:|
+| **`SWP Anch`** | **−19** | 14,476 | 14,331 | **99.0%** |
+| `Pilottown Anch` | **+1** | 1,557 | 408 | 26.2% |
+| Next highest (White Castle) | 191 | 1,472 | 92 | 6.2% |
+
+`SWP Anch` sits at **negative mile** — seaward of the crossing — and is 99%
+pre-call. Pilottown is *inside* the river and **74% of its events legitimately
+belong to calls**; excluding it wholesale would discard 1,149 valid rows to
+recover 408, moving completeness only 0.96% → 0.81%. **`SWP Anch` alone is the
+clean rule.**
+
+**Clean separation from the fee question.** **Zero** of the fee-bearing unplaced
+departure events are at `SWP Anch`, so this ruling leaves
+`OPEN_QUESTIONS.md` §11.2 ($2,835,000 across 360 events) exactly as it was.
+
+**Still to do — documentation only, both in this repo:** state the boundary and
+its 294,293 hours in `docs/BUSINESS_RULES.md` §7, and add the start-of-clock
+question to the KPI brief. The ruling settles *operations*; it does not settle
+whether a **KPI** should start at the crossing or at the anchorage, and 294,293
+hours still ride on that.
+
+**Status** RULED for operations. Documentation outstanding; KPI start-of-clock
+still open.
 
 ## Closed
 

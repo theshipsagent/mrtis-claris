@@ -321,6 +321,40 @@ already alongside working, and counting that as "waiting" would double-count
 cargo time. (`PORT_CALL_SPEC.md` §6 — William: *"waiting can only be waiting
 for the berth, as the anchorage stop happens after it departs."*)
 
+### Waiting before the port call starts is not counted, by ruling
+
+`waiting_hours` counts waiting **inside** the port call. A vessel riding at the
+`SWP Anch` anchorage — seaward of the SWP crossing, at mile −19 — has not yet
+entered, and its anchor and weigh events land in no call at all.
+
+**Ruled by William, 2026-08-20:** *"we can keep the swp anch in the records for
+posterity in event some analysis is needed, but otherwise can exclude from any
+and all operations/functions... the ships wait there but it's before they tender
+NOR and commence the port call, so we can ignore."*
+
+So the rule is **retain but exclude**: those rows stay in `PORT_CALL_EVENT` with
+a blank `port_call_id` and an `unassigned_reason`, available if anyone ever wants
+to analyse pre-arrival behaviour, and they enter no call, leg, fee or time
+figure. **NOR — Notice of Readiness — is the commercial line**: before it is
+tendered, the vessel is not yet the agency's port call.
+
+**Know the size of what this excludes.** Pairing `Anchor` → `Weigh Anchor` at
+that zone across the series: **6,018 stints, 294,293 hours, 12,262 vessel-days**,
+at a median of 18–36 hours per stint depending on the year. Against the
+**2,470,459 hours** of `waiting_hours` counted on legs, that is **11% of the two
+combined**. No figure in this package is wrong — `waiting_hours` measures exactly
+what it says — but a reader asking *how long do ships wait on this river* should
+know that a ninth of the waiting happens before the clock starts.
+
+`SWP Anch` is the only zone this applies to. It is 99.0% pre-call across every
+year; the next highest anchorage, `Pilottown Anch`, sits *inside* the river at
+mile 1 and has 74% of its events legitimately within calls.
+
+**Effect on data completeness.** Treating `SWP Anch` as out of scope rather than
+as unplaced data moves the placement rate from **94.2% to 99.04%** — unplaced
+events fall from 16,969 to **2,638**, of which 1,901 are `before_first_entry`
+(975 of them in 2019, vessels already in the river when collection began).
+
 ### Layberth time is non-commercial time, and is held apart
 
 Ruled by William 2026-08-19 (`OPEN_QUESTIONS.md` §8) and built: a layberth is
