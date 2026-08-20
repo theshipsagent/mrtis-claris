@@ -8,7 +8,7 @@ PORT_CALL,vessel_type,TEXT,"Canonical vessel type (Bulk/Container/Gas/Other/Pass
 PORT_CALL,ship_type,TEXT,"Ships register's raw, fine-grained type (e.g. 'Container Ship (Fully Cellular)'). Drives the R1-R4 fee tiers.",0.6,Yacht
 PORT_CALL,ship_type_group,TEXT,Ships register's size-bucketed group within a type family (e.g. 'Bulk Carrier-Handymax').,0.6,Yacht
 PORT_CALL,dwt,NUMBER,"Deadweight tonnage, from the ships register.",0.6,723.0
-PORT_CALL,tpc,NUMBER,"Tonnes per centimetre immersion, from the ships register. CAUTION: 0 appears on ~10% of calls and is stored as a literal zero, not a blank -- it is a placeholder for 'not available' in the upstream register, not a measured value. Filter tpc > 0 before any draft-survey calculation. (MRTIS OPEN_QUESTIONS.md section 11.3; the fix belongs upstream in Ships_Register and is deferred.)",0.6,0.0
+PORT_CALL,tpc,NUMBER,"Tonnes per centimetre immersion, from the ships register. CAUTION: 0 appears on 15.8% of the calls in this export and is stored as a literal zero, not a blank -- it is a placeholder for 'not available' in the upstream register, not a measured value. Filter tpc > 0 before any draft-survey calculation. (MRTIS OPEN_QUESTIONS.md section 11.3; the fix belongs upstream in Ships_Register and is deferred.)",0.6,0.0
 PORT_CALL,call_start,TIMESTAMP,"Timestamp of the call's first event (the SWP entry, when the call is complete).",0.0,2025-01-27 06:59:00
 PORT_CALL,call_end,TIMESTAMP,"Timestamp of the call's last event (the SWP exit, when complete).",0.0,2025-02-12 18:16:00
 PORT_CALL,call_hours,NUMBER,"call_end minus call_start, in hours.",0.0,395.28

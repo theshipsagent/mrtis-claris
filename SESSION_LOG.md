@@ -127,6 +127,20 @@ sequence, which is the order a reviewer wants anyway.
 - **Unplaced events are excluded and disclosed.** 16,969 events belong to no
   call, so a whole-calls cut structurally cannot carry them; the README says a
   reviewer assessing completeness handling should ask for the full export.
+- **A rate quoted in a field description must derive from the rows shipped.**
+  Found while explaining §11.3 after the push: `PORT_CALL.tpc`'s data-dictionary
+  entry warned that `0` "appears on ~10% of calls" — the full-dataset rate,
+  hand-keyed. In the 2025 sample the real rate is **15.8%** (869 of 5,483), so
+  the sample's own dictionary was describing a different population by about six
+  points. The description is now built by a `DERIVED_DESC` callable that
+  receives the post-cut frame, so the full export reads 10.1% and the sample
+  reads 15.8%, each true of the directory it sits in. Its static `*_DESC` entry
+  is `None` and the loader raises if a `None` has no `DERIVED_DESC` behind it —
+  a description can never be both static and derived, and can never go missing.
+  Only that one description changed in the full export; the reconciliation is
+  byte-identical. Worth noting the same discipline was already in force
+  elsewhere: `BUSINESS_RULES.md`'s §11.3 line (4,045 calls, 10.07%) reads from
+  `figures.py`, so it was correct and needed no change.
 - **The sample goes to the public repo — William's explicit ruling.** Raised
   before pushing, because it is a real step up in disclosure: the repo already
   published agency-level aggregates (Norton Lilly, $41,243,000 and so on), but

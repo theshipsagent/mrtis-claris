@@ -77,7 +77,7 @@ PORT_CALL_DESC = {
     "ship_type": "Ships register's raw, fine-grained type (e.g. 'Container Ship (Fully Cellular)'). Drives the R1-R4 fee tiers.",
     "ship_type_group": "Ships register's size-bucketed group within a type family (e.g. 'Bulk Carrier-Handymax').",
     "dwt": "Deadweight tonnage, from the ships register.",
-    "tpc": "Tonnes per centimetre immersion, from the ships register. CAUTION: 0 appears on ~10% of calls and is stored as a literal zero, not a blank -- it is a placeholder for 'not available' in the upstream register, not a measured value. Filter tpc > 0 before any draft-survey calculation. (MRTIS OPEN_QUESTIONS.md section 11.3; the fix belongs upstream in Ships_Register and is deferred.)",
+    "tpc": None,  # rate-bearing -- built by DERIVED_DESC below from the rows actually shipped
     "call_start": "Timestamp of the call's first event (the SWP entry, when the call is complete).",
     "call_end": "Timestamp of the call's last event (the SWP exit, when complete).",
     "call_hours": "call_end minus call_start, in hours.",
@@ -212,6 +212,26 @@ ORDER_BY = {
 }
 
 
+# A field description that quotes a RATE has to derive it from the rows
+# actually shipped. The `--sample` cut is a different population from the full
+# export -- tpc = 0 runs at 10.1% across all calls but 15.9% in the 2025 sample
+# -- so a hand-keyed figure in the static text would travel into the sample's
+# data dictionary and describe the wrong directory. Keyed by (db_table,
+# column); the callable receives the exported frame, post-cut, and returns the
+# finished sentence. Its *_DESC entry is None, so a description can never be
+# both static and derived.
+DERIVED_DESC = {
+    ("port_call", "tpc"): lambda df: (
+        "Tonnes per centimetre immersion, from the ships register. CAUTION: 0 appears on "
+        f"{100 * (df['tpc'] == 0).mean():.1f}% of the calls in this export and is stored as a "
+        "literal zero, not a blank -- it is a placeholder for 'not available' in the upstream "
+        "register, not a measured value. Filter tpc > 0 before any draft-survey calculation. "
+        "(MRTIS OPEN_QUESTIONS.md section 11.3; the fix belongs upstream in Ships_Register "
+        "and is deferred.)"
+    ),
+}
+
+
 def mrtis_commit() -> str:
     try:
         return subprocess.run(
@@ -237,6 +257,9 @@ def load_table(con: duckdb.DuckDBPyConnection, table: str, desc: dict) -> tuple[
     missing = [c for c, _ in cols if c not in desc]
     if missing:
         raise SystemExit(f"{table}: no description for column(s) {missing} -- update *_DESC in this script.")
+    undelivered = [c for c, _ in cols if desc[c] is None and (table, c) not in DERIVED_DESC]
+    if undelivered:
+        raise SystemExit(f"{table}: column(s) {undelivered} are marked derived but have no DERIVED_DESC entry.")
     spec = []
     for col, dtype in cols:
         fm_type = DUCKDB_TO_FM_TYPE.get(dtype)
@@ -575,6 +598,9 @@ def main() -> int:
     for db_table, out_name, _ in TABLES:
         df, spec = frames[out_name], specs[out_name]
         for name, ftype, desc in spec:
+            derive = DERIVED_DESC.get((db_table, name))
+            if derive is not None:
+                desc = derive(df)  # df is post-cut, so the rate describes THIS export
             s = df[name].dropna()
             example = s.iloc[0] if len(s) else None
             dict_rows.append({
