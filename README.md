@@ -110,6 +110,18 @@ rather than the published figures — read it to know what you are holding, and
 Both modes emit rows in an explicit, total key order, so a rebuild against an
 unchanged MRTIS is byte-identical and the committed sample never churns.
 
+## Design work in progress — not part of the review package
+
+[`docs/KPI_DESIGN_BRIEF.md`](docs/KPI_DESIGN_BRIEF.md) prepares the parked
+SWP-to-SWP KPI conversation with William: what MRTIS already stores that a
+time/KPI layer could be built on, and the eight decisions that have to be made
+before any KPI is defined. It takes no rulings and defines no KPI. Its
+measurements are derived by [`kpi/kpi_baseline.py`](kpi/kpi_baseline.py) into
+[`docs/KPI_BASELINE.md`](docs/KPI_BASELINE.md), deliberately kept apart from
+`figures.py` and `docs/FIGURES.md` so a question still in flight can never
+destabilise a figure the reviewer is already holding. **Nothing here ships to
+the Claris reviewer.**
+
 ## How to work in this project
 
 Read `CLAUDE.md` in full at the start of every session before doing anything else.

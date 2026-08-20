@@ -1,0 +1,169 @@
+{
+  "mrtis_commit": "2738601c9a87ff7be264f9c10cb1e1a618ef3436",
+  "population": {
+    "calls": 40170,
+    "commercial": 40028,
+    "layup": 142,
+    "complete": 39691,
+    "open_end": 479,
+    "commercial_complete": 39549,
+    "split": 1632,
+    "vessels": 10101,
+    "window_start": "2019-01-01 09:57:00",
+    "window_end": "2026-07-31 23:19:00",
+    "legs": 41804
+  },
+  "tiling": {
+    "leg1_at_call_start": 40170,
+    "leg1_count": 40170,
+    "lastleg_at_call_end": 40170,
+    "lastleg_count": 40170
+  },
+  "accounting": {
+    "leg_hours": 7232805.0,
+    "bucketed_hours": 5736739.0,
+    "unattributed_hours": 1496066.0,
+    "unattributed_pct": 20.7,
+    "p50_unattributed": 23.1,
+    "legs_over_attributed": 62
+  },
+  "buckets": {
+    "waiting_hours": 2470459.0,
+    "inter_berth_idle_hours": 308627.0,
+    "outbound_idle_hours": 195837.0,
+    "berth_hours": 2716075.0,
+    "layberth_hours": 45742.0
+  },
+  "by_shape": [
+    {
+      "shape": "worked a berth",
+      "legs": 40247,
+      "leg_hours": 7017743.0,
+      "unattributed_hours": 1361856.0,
+      "unattributed_pct": 19.4
+    },
+    {
+      "shape": "never reached a berth",
+      "legs": 1418,
+      "leg_hours": 191995.0,
+      "unattributed_hours": 130430.0,
+      "unattributed_pct": 67.9
+    },
+    {
+      "shape": "layberth stops only",
+      "legs": 139,
+      "leg_hours": 23068.0,
+      "unattributed_hours": 3780.0,
+      "unattributed_pct": 16.4
+    }
+  ],
+  "stretches": {
+    "legs": 39914,
+    "approach_hours": 3016809.0,
+    "approach_waiting": 2442932.0,
+    "departure_hours": 681742.0,
+    "departure_idle": 134276.0,
+    "approach_unclassified": 573877,
+    "departure_unclassified": 547466
+  },
+  "dwell_sources": [
+    {
+      "event_class": "anchorage",
+      "events": 96630,
+      "dwell_hours": 2980446.0
+    },
+    {
+      "event_class": "berth stop",
+      "events": 96845,
+      "dwell_hours": 2761816.0
+    },
+    {
+      "event_class": "transit / SWP crossing",
+      "events": 79861,
+      "dwell_hours": 0.0
+    }
+  ],
+  "headline": {
+    "calls": 39549,
+    "p50_call_hours": 131.5,
+    "p90_call_hours": 352.8
+  },
+  "approach_depart": {
+    "p50_swp_to_first_berth": 34.9,
+    "p50_last_sailing_to_swp": 10.0
+  },
+  "by_type": [
+    {
+      "vessel_type": "Bulk",
+      "calls": 21166,
+      "p50_hours": 182.8,
+      "p90_hours": 429.2
+    },
+    {
+      "vessel_type": "Tanker",
+      "calls": 13007,
+      "p50_hours": 111.7,
+      "p90_hours": 234.0
+    },
+    {
+      "vessel_type": "Container",
+      "calls": 3117,
+      "p50_hours": 38.0,
+      "p90_hours": 51.3
+    },
+    {
+      "vessel_type": "Passenger",
+      "calls": 1009,
+      "p50_hours": 26.3,
+      "p90_hours": 28.5
+    },
+    {
+      "vessel_type": "Gas",
+      "calls": 935,
+      "p50_hours": 80.1,
+      "p90_hours": 145.6
+    },
+    {
+      "vessel_type": null,
+      "calls": 179,
+      "p50_hours": 54.1,
+      "p90_hours": 336.7
+    }
+  ],
+  "sequence": {
+    "calls_with_predecessor": 30069,
+    "p50_gap_hours": 2526.1,
+    "p90_gap_hours": 18064.2,
+    "overlapping_calls": 0,
+    "single_call_vessels": 2956,
+    "vessels": 10101
+  },
+  "traps": {
+    "nonpositive_leg_hours": 135,
+    "negative_berth_hours": 8,
+    "calls_under_one_hour": 3,
+    "open_end_hours": 220485.0,
+    "calls_in_first_month": 558,
+    "calls_in_last_month": 518,
+    "legs_no_berth_arrival": 1415,
+    "legs_unresolved_activity": 7193,
+    "legs_mixed_layberth": 238
+  },
+  "unplaced": [
+    {
+      "unassigned_reason": "no_open_call",
+      "events": 10521
+    },
+    {
+      "unassigned_reason": "before_first_entry",
+      "events": 6448
+    }
+  ],
+  "denominators": {
+    "commercial_legs": 41662,
+    "legs_with_estimated_tons": 10545,
+    "legs_with_actual_tons": 0,
+    "pct_with_tons": 25.3,
+    "berth_facilities": 114
+  }
+}
