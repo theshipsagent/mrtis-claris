@@ -1,6 +1,6 @@
 # Concept report G1 — Grain volume trended against ship count
 
-MRTIS commit `699a9fc` · window **2023-08-01 → 2026-07-31** (trailing 36 months, anchored on the data's last date `2026-07-31`, not on today) · scope **9 grain elevators + MGMT**
+MRTIS commit `10c7040` · window **2023-08-01 → 2026-07-31** (trailing 36 months, anchored on the data's last date `2026-07-31`, not on today) · scope **9 grain elevators + MGMT**
 
 > **Read the two denominators before the numbers.** Ship count is complete: every one of the **4,254 loadings** (2,467 distinct vessels) is counted. Tonnage is not — tons exist only where an FGIS certificate matched, which is **4,001 of 4,254 loadings (94.1%)**. The tonnage column therefore measures a *subset* of the ships in the same row. Comparing tons across facilities without reading the coverage column will mislead you — see `ISSUES.md` I-2.
 

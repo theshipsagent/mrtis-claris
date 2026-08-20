@@ -1,6 +1,6 @@
 # Issues log — what building the concept reports exposed
 
-Opened 2026-08-20 (session 8). MRTIS commit `2738601c9a87ff7be264f9c10cb1e1a618ef3436` at the time of finding; fixes built at `ac139a2`.
+Opened 2026-08-20 (session 8). MRTIS commit `2738601c9a87ff7be264f9c10cb1e1a618ef3436` at the time of finding; fixes built at `10c7040`.
 
 Every entry is something the reporting exercise **found**, not something it
 fixed. Nothing in this log has been acted on — that is deliberate, and is the
@@ -193,7 +193,7 @@ over-claiming, or (b) introduce a `cargo_subgroup` distinguishing certified grai
 from by-product where evidence allows. Needs William's ruling; both are cheap.
 
 **RULED AND BUILT — William, 2026-08-20:** *"mgmt is grain and by products, add
-cargo_subgroup."* Built at MRTIS `ac139a2` (`OPEN_QUESTIONS.md` §15.6).
+cargo_subgroup."* Built at MRTIS `10c7040` (`OPEN_QUESTIONS.md` §15.6).
 
 **The design point worth keeping.** The obvious implementation — "no FGIS
 certificate at a grain berth means by-product" — would have been wrong, because
@@ -501,7 +501,51 @@ never-berthed legs quadrupled, (b) whether the geofence-artifact drift is real o
 a zone-dictionary drift, (c) §11.3 `tpc = 0`, which is the largest and the only
 monotonic one. (c) is the one worth doing first.
 
-**Status** OPEN.
+---
+
+**(c) `tpc = 0` — INVESTIGATED AND RESOLVED, 2026-08-20.** MRTIS commit
+`10c7040` (`OPEN_QUESTIONS.md` §15.7, which also closes the long-deferred §11.3).
+
+**Ruled by William:** *"if is there we can populate as available, if becomes a
+larger effort to fix, am ok dropping it."*
+
+**Traced to the raw vendor files, and the value is not there.**
+`Ships_Register`'s 150 raw S&P Global exports were harvested for every IMO/TPC
+pair — 64,870 rows across 53,904 distinct IMOs:
+
+| | |
+|---|---:|
+| Raw files carrying a TPC column at all | **58 of 150** |
+| Register vessels showing `tpc = 0` | 20,163 |
+| — with a real TPC anywhere in raw | **1** |
+| **River-calling vessels showing `tpc = 0`** | **1,110** |
+| — **with a real TPC anywhere in raw** | **0 (0.0%)** |
+
+So the earlier hypothesis in this log — *"ships-register coverage lagging newer
+tonnage"* — was **wrong**. It is not a coverage trend at all: S&P simply does not
+supply TPC for these hulls, and 92 of its 150 export files omit the field
+entirely. Neither MRTIS's join nor Ships_Register's build was losing anything.
+
+**And `0` was never a measurement.** TPC is a function of waterplane area, so a
+floating hull always has TPC > 0. It appeared on hulls up to **182,288 dwt**
+(real figure ≈ 120), with **2,417 of 4,045 affected calls (59.8%) on vessels of
+20,000+ dwt** — physically impossible.
+
+**Built** `load_register()` maps `0` → NULL. 4,045 calls moved; 36,010 keep a
+real value. Blank now means *unknown*, which is true.
+
+**Verified** This needed a **full rebuild** (`tpc` lives on `dim_vessel`),
+rehearsed on scratch first. Despite every surrogate key being reassigned,
+**nothing content-addressed moved**: 0 legs added or removed and **0 differences
+across eleven leg columns** including fee, activity, agency, cargo, tonnage and
+hours. Billable total unchanged at $272,660,000.
+
+A useful by-product: this is the first demonstration that a **full MRTIS rebuild
+is content-stable** despite the key reassignment its README warns about — and the
+chain runs offline in 36 seconds, since `fgis_source/` is cached.
+
+**Status** (c) CLOSED. **(a) never-berthed legs 1.4% → 6.3% and (b) geofence
+drift 11.3% → 12.7% remain OPEN**, both still uninvestigated.
 
 
 ---
@@ -628,7 +672,7 @@ was false, through no fault of the code here, and nobody had tested it across an
 actual MRTIS rebuild — only across re-runs of the export against an unchanged
 database, which could never have caught it.
 
-**FIXED — MRTIS commit `ac139a2`, 2026-08-20** (`OPEN_QUESTIONS.md` §15.5).
+**FIXED — MRTIS commit `10c7040`, 2026-08-20** (`OPEN_QUESTIONS.md` §15.5).
 `ORDER BY` added to all three aggregates, with a comment recording that it is
 load-bearing rather than cosmetic — exactly the kind of clause a later tidy-up
 deletes as noise.
@@ -647,12 +691,12 @@ including the gzipped sample data**.
 - **I-1** — **fixed** in MRTIS `56ad9f5` (§15.1). 445 legs corrected; nothing else in the database moved.
 - **I-7** — ruled A by William 2026-08-20; the build was already correct, $3,492,500 does not move (§15.3).
 - **I-10** — **built** in MRTIS `56ad9f5` (§15.2), behaviour-preserving: 0 legs changed fee.
-- **I-11** — **fixed** in MRTIS `ac139a2` (§15.5). Found while verifying I-1; the build was non-deterministic and the package's byte-identical guarantee was false. Now verified end-to-end across a real rebuild.
+- **I-11** — **fixed** in MRTIS `10c7040` (§15.5). Found while verifying I-1; the build was non-deterministic and the package's byte-identical guarantee was false. Now verified end-to-end across a real rebuild.
 
 ### Still open — three investigations and one ruling
 
 | Ref | What it needs |
 |---|---|
 | **I-2** | Investigation. Bunge Destrehan 85.6% / ADM Destrehan 88.0% FGIS coverage vs 99.6-100% at peer elevators. MGMT's 40% is explained; these two are not. |
-| **I-9** | Investigation, three parts. `tpc = 0` 4.3% → 18.9% monotonic over eight years is the priority and probably needs a *new register source* rather than a code change; never-berthed legs 1.4% → 6.3%; geofence drift 11.3% → 12.7%. |
+| **I-9 (a) and (b)** | Investigation. Never-berthed legs 1.4% → 6.3% and geofence artifacts 11.3% → 12.7%. Part (c), `tpc = 0`, is **closed** — see above. |
 | **I-4 / I-5 / I-6 / I-8** | Already disclosed in this package (commit `511c763`); no MRTIS change intended. |

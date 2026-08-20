@@ -10,7 +10,7 @@ Every rule below is cited back to its source in MRTIS
 ruling in `docs/OPEN_QUESTIONS.md`, or the implementation in
 `scripts/build_db.py` / `scripts/build_port_calls.py`. This document doesn't
 invent anything; it translates. Built against MRTIS commit
-`ac139a2241fb037b5e45b62fb6a865907c1cf4f2` — see `SESSION_LOG.md` for how to
+`10c7040241fb037b5e45b62fb6a865907c1cf4f2` — see `SESSION_LOG.md` for how to
 tell if that's moved since.
 
 **Where the numbers come from.** Every count, percentage and dollar figure in
@@ -617,7 +617,7 @@ a figure here, but a reviewer should know they exist:
 | Section | Status |
 |---|---|
 | §11.2 — the two per-departure roll-ups don't reconcile ($2,835,000) | **Ruled: leave as is.** Disclosed in §9.1 above |
-| §11.3 — `tpc = 0` is a placeholder on 4,045 calls (10.07%), not a measured value | **Deferred.** Filter `tpc > 0` before any draft-survey maths |
+| §11.3 — `tpc = 0` was a placeholder, not a measured value | **CLOSED 2026-08-20** (MRTIS §15.7). Now stored as NULL on 4,160 calls. The value proved unrecoverable — of 1,110 affected vessels, **none** has a real TPC in any of the 150 raw vendor files. Read blank as *unknown*, never as zero |
 | §11.4 — 2 legs berthed and did non-layberth work but carry no fee | **Ruled: no**, they do not bill |
 | §11.5 | Documentation corrections, no ruling needed |
 | §7.2–§7.4 | Dredge/vessel-identity edge cases, all ruled and built |
@@ -648,7 +648,7 @@ linked, and that section — not this one — is the authority.
 | **Berth** | One place a vessel can lie alongside. Several berths can belong to one **facility** — §3 treats the facility as the unit, so shifting between two berths of the same elevator is not a second call. |
 | **Capesize / Kamsarmax** | Size classes of dry-bulk carrier (Capesize is too large for the Suez or Panama canals; Kamsarmax is sized for the port of Kamsar). They appear in §9.2 only as examples of real bulkers the Zone Report sometimes fails to type, which the ships register can still identify. |
 | **Draft** | How deep the hull sits below the waterline, in feet here. A vessel that loads gets deeper and one that discharges gets lighter, which is the signal §4 uses as its third-ranked evidence. |
-| **Draft survey** | Working out cargo weight from the change in draft. It needs **TPC**, which is why the `tpc = 0` placeholder matters (MRTIS `OPEN_QUESTIONS.md` §11.3, listed in §10): a survey run against a zero silently produces nonsense. |
+| **Draft survey** | Working out cargo weight from the change in draft. It needs **TPC** — which is why TPC being *blank rather than zero* matters (MRTIS `OPEN_QUESTIONS.md` §15.7): a survey run against a zero silently produces nonsense, whereas a blank forces the question. |
 | **Dry bulk** | Unpackaged bulk cargo — grain, ore, coal — and the vessels built to carry it. The category R5 prices off (§9.3), defined there as MRTIS's canonical `vessel_type = 'Bulk'`. |
 | **DWT (deadweight tonnage)** | The total weight a vessel can carry — cargo, fuel, stores, crew. From the ships register, not the feed. |
 | **Facility** | One commercial operation on the river (a grain elevator, a refinery dock, a container terminal), which may run several berths. The unit a berth stop is counted against (§3). |
@@ -666,5 +666,5 @@ linked, and that section — not this one — is the authority.
 | **Statement of Fact (SOF)** | The signed, chronological record of what happened during a port call, kept by the agent and master. Not a source in this pipeline, but the ground truth §5's *Ultra Leopard* case was confirmed against. |
 | **SWP (Southwest Pass)** | The main deep-draft entrance from the Gulf into the Mississippi. Crossing it inbound opens a port call and crossing it outbound closes one (§2), which is what "SWP-to-SWP" means wherever it appears. |
 | **Topping off** | Finishing a load at a second berth after part-loading at a first. §5's reason two consecutive `Load` stops are one leg and not two. |
-| **TPC** | Tonnes per centimetre immersion — how many tonnes it takes to change a vessel's draft by one centimetre. The conversion factor in a draft survey. Read the caution on `tpc = 0` in §10 before using it. |
+| **TPC** | Tonnes per centimetre immersion — how many tonnes it takes to change a vessel's draft by one centimetre. The conversion factor in a draft survey. Because it is a function of waterplane area, **a floating hull never has TPC 0**; where MRTIS has no value it is blank, never zero (§10). |
 | **Zone Report** | The raw source feed this whole package derives from: a vessel-movement export recording each vessel's crossings into and out of named river zones, with the agent, draft and action of the moment. Everything in §1's "spine" is one row of it. |

@@ -8,7 +8,7 @@ PORT_CALL,vessel_type,TEXT,"Canonical vessel type (Bulk/Container/Gas/Other/Pass
 PORT_CALL,ship_type,TEXT,"Ships register's raw, fine-grained type (e.g. 'Container Ship (Fully Cellular)'). Drives the R1-R4 fee tiers.",0.6,Yacht
 PORT_CALL,ship_type_group,TEXT,Ships register's size-bucketed group within a type family (e.g. 'Bulk Carrier-Handymax').,0.6,Yacht
 PORT_CALL,dwt,NUMBER,"Deadweight tonnage, from the ships register.",0.6,723.0
-PORT_CALL,tpc,NUMBER,"Tonnes per centimetre immersion, from the ships register. CAUTION: 0 appears on 15.8% of the calls in this export and is stored as a literal zero, not a blank -- it is a placeholder for 'not available' in the upstream register, not a measured value. Filter tpc > 0 before any draft-survey calculation. (MRTIS OPEN_QUESTIONS.md section 11.3; the fix belongs upstream in Ships_Register and is deferred.)",0.6,0.0
+PORT_CALL,tpc,NUMBER,"Tonnes per centimetre immersion, from the ships register. BLANK on 16.5% of the calls in this export, meaning NOT SUPPLIED -- read it as unknown, never as zero. It is blank rather than 0 as of MRTIS 2026-08-20 (OPEN_QUESTIONS.md section 15.7, closing 11.3): the upstream S&P register writes a literal 0 where it has no value, which appeared on hulls up to 182,288 dwt where the real figure is about 120. TPC is a function of waterplane area, so a floating hull never has TPC 0 -- every such 0 was a missing value masquerading as a measurement, and would silently produce nonsense in any draft survey dividing by it. The value is not recoverable: of the 1,110 affected vessels, none has a real TPC in any of the 150 raw vendor export files.",16.5,53.2
 PORT_CALL,call_start,TIMESTAMP,"Timestamp of the call's first event (the SWP entry, when the call is complete).",0.0,2025-01-27 06:59:00
 PORT_CALL,call_end,TIMESTAMP,"Timestamp of the call's last event (the SWP exit, when complete).",0.0,2025-02-12 18:16:00
 PORT_CALL,call_hours,NUMBER,"call_end minus call_start, in hours.",0.0,395.28
@@ -83,7 +83,7 @@ PORT_CALL_EVENT,vessel_type,TEXT,"Canonical vessel type, back-filled from the ve
 PORT_CALL_EVENT,ship_type,TEXT,"Ships register's raw, fine-grained type.",0.2,Yacht
 PORT_CALL_EVENT,ship_type_group,TEXT,Ships register's size-bucketed group.,0.2,Yacht
 PORT_CALL_EVENT,dwt,NUMBER,"Deadweight tonnage, from the ships register.",0.2,723.0
-PORT_CALL_EVENT,tpc,NUMBER,"Tonnes per centimetre immersion, from the ships register.",0.2,0.0
+PORT_CALL_EVENT,tpc,NUMBER,"Tonnes per centimetre immersion, from the ships register.",15.3,53.2
 PORT_CALL_EVENT,src_action,TEXT,Action exactly as exported: Arrive / Depart / Enter / Exit.,0.0,Enter
 PORT_CALL_EVENT,action,TEXT,"Canonical action label: Arrived/Sailed at a berth, Anchor/Weigh Anchor at anchorage, Enter/Exit at the pilot station.",0.0,Enter
 PORT_CALL_EVENT,event_time,TIMESTAMP,"Timestamp of the event, unchanged from source (military time).",0.0,2025-01-27 06:59:00

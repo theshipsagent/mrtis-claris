@@ -3,7 +3,7 @@
 ## 2026-08-20 (session 9) — The build-fix: three findings closed, one found in the act of fixing
 
 **MRTIS moved, deliberately, for the first time since this repo existed.**
-`2738601` → **`ac139a2`**. William: *"lets fix the 6 findings."*
+`2738601` → **`10c7040`**. William: *"lets fix the 6 findings."*
 
 `CLAUDE.md` directive 2 forbids this repo from writing to MRTIS, so the
 suspension was **recorded in the manual before anything was touched**, scoped to
@@ -90,7 +90,7 @@ agent on the outbound load at full tariff — which had never been written down.
 ### Added after the fixes: `cargo_subgroup` (I-3)
 
 William ruled the last blocked finding the same day: *"mgmt is grain and by
-products, add cargo_subgroup."* Built at MRTIS `ac139a2` (§15.6).
+products, add cargo_subgroup."* Built at MRTIS `10c7040` (§15.6).
 
 **The design point is the whole finding.** The obvious implementation — "no FGIS
 certificate at a grain berth means by-product" — would have been wrong, because
@@ -118,23 +118,68 @@ unmatched loadings stay **"Not known"** rather than being relabelled. The
 reviewer's `DATA_DICTIONARY.csv` and `docs/BUSINESS_RULES.md` §8 both carry the
 rule and the reason it is shaped that way.
 
+### And the `tpc = 0` question, traced to the vendor (I-9c)
+
+William: *"as far as i know it was ingressed into the ships register data, noting
+its not consistent, some do some dont, so if is there we can populate as
+available, if becomes a larger effort to fix, am ok dropping it."*
+
+**Populating was impossible, and the earlier hypothesis in this log was wrong.**
+Session 8 guessed this was *"ships-register coverage lagging newer tonnage"*.
+It is not a coverage trend at all. Harvesting every IMO/TPC pair from
+`Ships_Register`'s 150 raw S&P Global exports — 64,870 rows, 53,904 IMOs:
+
+| | |
+|---|---:|
+| Raw files carrying a TPC column at all | **58 of 150** |
+| Register vessels showing `tpc = 0` | 20,163 |
+| — with a real TPC anywhere in raw | **1** |
+| **River-calling vessels showing `tpc = 0`** | **1,110** |
+| — **with a real TPC anywhere in raw** | **0 (0.0 per cent)** |
+
+S&P does not supply it for these hulls. Neither MRTIS's join nor
+Ships_Register's build was losing anything.
+
+**And `0` was never a measurement.** TPC is a function of waterplane area, so a
+floating hull always has TPC above zero. It appeared on hulls up to **182,288
+dwt** where the real figure is about 120 — **2,417 of 4,045 affected calls (59.8
+per cent) on vessels over 20,000 dwt**. Now stored as NULL: 4,045 calls moved,
+36,010 keep a real value, and blank means *unknown*, which is true.
+
+**It turned out not to be the "larger effort" you were ready to drop.** `tpc`
+lives on `dim_vessel`, so this needed a full rebuild — `build_db` reassigning
+every surrogate key, dropping the FGIS and port-call layers. Rehearsed on scratch
+first. The chain runs **offline in 36 seconds** (`fgis_source/` is cached, so no
+vendor data can shift underneath it), and despite every key being reassigned,
+**nothing content-addressed moved**: 0 legs added or removed, 0 differences
+across eleven leg columns, billable total unchanged at $272,660,000.
+
+That is worth keeping as a result in itself: **a full MRTIS rebuild is
+content-stable**, which the README's key-reassignment warning had left an open
+question. This package is now verified byte-identical across one.
+
+**Downstream here:** `figures.py` publishes TPC coverage honestly (36,010 usable,
+4,160 not supplied, and a standing assertion that zero placeholders remain), and
+the reviewer's data dictionary explains *why* blank is not zero, with the
+evidence attached.
+
 ### Still open — the honest remainder
 
-"Fix the 6" was never 6 fixes. Four are closed, one was ruled, and two remain:
+"Fix the 6" was never 6 fixes. Six are closed, one was ruled, and two drifts remain:
 
 | Ref | What it needs |
 |---|---|
 | **I-2** | Investigation. Bunge Destrehan 85.6% / ADM Destrehan 88.0% FGIS coverage against 99.6-100% at peer elevators. MGMT's 40% is explained (grain vs by-products); these two are not. |
-| **I-9** | Investigation, three parts. `tpc = 0` at 4.3% → 18.9% monotonic over eight years is the priority, and probably needs a *new ships-register source* rather than a code change. Also never-berthed legs 1.4% → 6.3% and geofence drift 11.3% → 12.7%. |
+| **I-9 (a), (b)** | Investigation. Never-berthed legs 1.4% → 6.3% and geofence artifacts 11.3% → 12.7%. Part (c), `tpc = 0`, is **closed** — traced to the vendor, now NULL. |
 
 `CLAUDE.md`'s read-only suspension **stays in force** until those close, and must
 be restored when they do.
 
 ### Next session
 
-**Both remaining findings are investigations**, of which `tpc = 0` is the largest
-and the only monotonic one — rising every year for eight years without exception,
-and likely needing a new ships-register source rather than a code change.
+**Both remaining items are uninvestigated drifts** — never-berthed legs
+quadrupling (1.4% → 6.3%) and geofence artifacts creeping (11.3% → 12.7%),
+alongside I-2's two unexplained elevator FGIS rates. None blocks the handover.
 Unchanged behind all of it: **nobody has imported the sample into Claris yet.**
 
 ---

@@ -1,6 +1,6 @@
 # Sample review package
 
-Built read-only from MRTIS at commit `699a9fcdf3f1e6a9b94e29603080ee88b1c756dd`. Rebuild with:
+Built read-only from MRTIS at commit `10c704032d3d48b18f3c5a195f7fda72796a6fc1`. Rebuild with:
 
 ```
 python3 export/build_review_package.py --sample

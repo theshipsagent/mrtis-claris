@@ -297,9 +297,20 @@ def derive(con) -> dict:
         "reached_by_a_rule": int(fb[fb["vt"].isin(["Passenger", "Container", "Reefer"])]["legs"].sum()),
     }
 
-    # --- tpc placeholder (A6) -----------------------------------------------
+    # --- tpc coverage (A6; MRTIS OPEN_QUESTIONS 11.3 / 15.7) ------------------
+    # tpc = 0 used to stand for "not supplied" and was indistinguishable from a
+    # measurement. MRTIS now stores NULL for it, so the figure this package
+    # publishes changed shape: the count of zeros should be structurally 0, and
+    # what matters is how many calls have no TPC at all. Both are derived so a
+    # regression upstream would show as a non-zero `zeros`.
     tpc_zero = one("select count(*) from port_call where tpc = 0")[0]
+    tpc_null = one("select count(*) from port_call where tpc is null")[0]
+    tpc_real = one("select count(*) from port_call where tpc > 0")[0]
     f["tpc_zero"] = {"calls": tpc_zero, "pct": round(100 * tpc_zero / calls, 2)}
+    f["tpc_coverage"] = {
+        "not_supplied": tpc_null, "pct_not_supplied": round(100 * tpc_null / calls, 2),
+        "real": tpc_real, "pct_real": round(100 * tpc_real / calls, 2),
+    }
 
     # --- A12: fee-bearing legs with no agency -------------------------------
     no_agency_legs, no_agency_fee = one("""
@@ -445,7 +456,9 @@ def write_markdown(f: dict, path: Path) -> None:
         f"| Geofence artifacts, % of *placed* berth events | {g['pct_of_placed']}% |",
         f"| Layberth hours (now separate from `berth_hours`) | {f['layberth']['hours']:,.2f} |",
         f"| Legs carrying layberth time | {f['layberth']['legs_with_layberth']:,} |",
-        f"| `tpc = 0` placeholder | {f['tpc_zero']['calls']:,} calls ({f['tpc_zero']['pct']}%) |",
+        f"| `tpc` supplied and usable | {f['tpc_coverage']['real']:,} calls ({f['tpc_coverage']['pct_real']}%) |",
+        f"| `tpc` not supplied (NULL — never 0) | {f['tpc_coverage']['not_supplied']:,} calls ({f['tpc_coverage']['pct_not_supplied']}%) |",
+        f"| `tpc = 0` placeholders remaining | {f['tpc_zero']['calls']:,} — MRTIS §15.7 replaced them with NULL |",
         f"| Chargeable legs with no agency (omitted from the by-agent report) | {f['legs_without_agency']['legs']:,} ({_money(f['legs_without_agency']['fee'])}) |",
         f"| Base-tier precedence counterexamples (A4) | {f['base_tier_counterexamples']['legs']} legs ({_money(f['base_tier_counterexamples']['fee'])}) |",
         f"| Chargeable legs with no register row | {f['canonical_fallback']['legs_without_register_row']} ({_money(f['canonical_fallback']['fee'])}) |",

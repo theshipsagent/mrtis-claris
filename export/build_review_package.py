@@ -216,20 +216,24 @@ ORDER_BY = {
 
 # A field description that quotes a RATE has to derive it from the rows
 # actually shipped. The `--sample` cut is a different population from the full
-# export -- tpc = 0 runs at 10.1% across all calls but 15.9% in the 2025 sample
-# -- so a hand-keyed figure in the static text would travel into the sample's
+# export -- tpc coverage differs between the full export and the 2025 sample,
+# so a hand-keyed figure in the static text would travel into the sample's
 # data dictionary and describe the wrong directory. Keyed by (db_table,
 # column); the callable receives the exported frame, post-cut, and returns the
 # finished sentence. Its *_DESC entry is None, so a description can never be
 # both static and derived.
 DERIVED_DESC = {
     ("port_call", "tpc"): lambda df: (
-        "Tonnes per centimetre immersion, from the ships register. CAUTION: 0 appears on "
-        f"{100 * (df['tpc'] == 0).mean():.1f}% of the calls in this export and is stored as a "
-        "literal zero, not a blank -- it is a placeholder for 'not available' in the upstream "
-        "register, not a measured value. Filter tpc > 0 before any draft-survey calculation. "
-        "(MRTIS OPEN_QUESTIONS.md section 11.3; the fix belongs upstream in Ships_Register "
-        "and is deferred.)"
+        "Tonnes per centimetre immersion, from the ships register. BLANK on "
+        f"{100 * df['tpc'].isna().mean():.1f}% of the calls in this export, meaning NOT SUPPLIED -- "
+        "read it as unknown, never as zero. It is blank rather than 0 as of MRTIS 2026-08-20 "
+        "(OPEN_QUESTIONS.md section 15.7, closing 11.3): the upstream S&P register writes a "
+        "literal 0 where it has no value, which appeared on hulls up to 182,288 dwt where the "
+        "real figure is about 120. TPC is a function of waterplane area, so a floating hull "
+        "never has TPC 0 -- every such 0 was a missing value masquerading as a measurement, and "
+        "would silently produce nonsense in any draft survey dividing by it. The value is not "
+        "recoverable: of the 1,110 affected vessels, none has a real TPC in any of the 150 raw "
+        "vendor export files."
     ),
 }
 

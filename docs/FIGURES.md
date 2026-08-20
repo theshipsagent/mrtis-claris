@@ -5,7 +5,7 @@ Every number this package publishes, re-derived live from MRTIS's database.
 `charts/` and `reports/` all read from this same derivation, so a figure
 cannot go stale in one place and stay current in another.
 
-MRTIS commit: `699a9fcdf3f1e6a9b94e29603080ee88b1c756dd`
+MRTIS commit: `10c704032d3d48b18f3c5a195f7fda72796a6fc1`
 
 ---
 
@@ -78,7 +78,9 @@ Resolved by real evidence: **82.79%** of 41,804 legs.
 | Geofence artifacts, % of *placed* berth events | 5.27% |
 | Layberth hours (now separate from `berth_hours`) | 45,741.57 |
 | Legs carrying layberth time | 377 |
-| `tpc = 0` placeholder | 4,045 calls (10.07%) |
+| `tpc` supplied and usable | 36,010 calls (89.64%) |
+| `tpc` not supplied (NULL — never 0) | 4,160 calls (10.36%) |
+| `tpc = 0` placeholders remaining | 0 — MRTIS §15.7 replaced them with NULL |
 | Chargeable legs with no agency (omitted from the by-agent report) | 409 ($1,784,500) |
 | Base-tier precedence counterexamples (A4) | 3 legs ($10,500) |
 | Chargeable legs with no register row | 12 ($63,000) |

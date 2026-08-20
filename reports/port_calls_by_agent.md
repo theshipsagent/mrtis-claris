@@ -1,6 +1,6 @@
 # Sample report: Port calls and fee revenue by agent
 
-MRTIS commit `699a9fc` · leg-level agency (`port_call_leg.agency`) -- the agency that brought the vessel in owns the leg (docs/BUSINESS_RULES.md §6). 37 distinct agencies with billable legs; top 20 shown here, full list in the CSV.
+MRTIS commit `10c7040` · leg-level agency (`port_call_leg.agency`) -- the agency that brought the vessel in owns the leg (docs/BUSINESS_RULES.md §6). 37 distinct agencies with billable legs; top 20 shown here, full list in the CSV.
 
 **Total shown: $270,875,500**
 
