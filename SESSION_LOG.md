@@ -1,5 +1,100 @@
 # mrtis-claris session log
 
+## 2026-08-20 (session 10) — William reads the raw rows; fourteen findings
+
+**MRTIS unchanged at `0c4ed0c`** throughout — `CLAUDE.md`'s read-only directive
+was restored at the end of session 9 and stayed in force. Everything this session
+is classification work in this repo, plus rulings and build items recorded for a
+later MRTIS session.
+
+The method was William's, and it worked far better than the aggregate reports
+had: **export every event row for 2025, sort by vessel and date, and read them.**
+He read cases off one at a time; each was quantified and logged.
+
+### What he found by reading
+
+| Vessel | What it exposed | Finding |
+|---|---|---|
+| `Venture Bayou` and others | LNG loading with no berth — the Plaquemines geofence gap | I-12 |
+| `Balsa 92`, `Orfeas`, `Pelagiani` | A dropped `Enter` orphans an entire working voyage | **I-21** |
+| `Betty` | Duplicate `Enter` 10 min apart creates a phantom call | I-22 |
+| `Stinnes Passat` | A false `Exit` 14 min after `Enter` closes a call before the voyage starts | I-22 |
+| `Bow Sky`, `Champion Pomer`, `Schwyz` | Tanker lightering at anchor, correctly no berth | **I-15** |
+| `Scarlet Cardinal` | A case that does *not* fit the Davant rule — documented as excluded | I-23 |
+| — | `SWP Anch` events never land in a call | **I-16** |
+
+### The rulings taken
+
+- **A berth stop constitutes a call** (I-21). Where events appear inside the
+  river with no open call, a call opens at the first one. **Recovers 311 calls
+  and $2,835,000** — which matches `OPEN_QUESTIONS.md` §11.2 exactly, closing a
+  question that had been ruled "leave as is" as an accounting artefact. It is not
+  an artefact; it is voyages discarded by missing crossings. SWP-to-SWP time for
+  those calls is accepted as broken.
+- **Tanker lightering** (I-15, I-25). A tanker with no berth that anchored and
+  moved draft is lightering, and correctly has no berth. Implemented in both
+  exports. Zone test added on Kenner Bend / AMA / Grandview, which recovers 39
+  further calls whose AIS draft was flat or missing.
+- **`SWP Anch` is out of scope** (I-16). Retained for posterity, excluded from
+  all operations — the vessel has not tendered NOR. Moves data completeness from
+  **94.2% to 99.04%**.
+- **The register governs vessel type** (I-18). The feed mistypes **36% of gas
+  carriers as tankers**; the by-type report now reads `ship_type`. Gas +530 calls
+  and +$1,631,000, total unchanged.
+- **Whole calls, not calendar years** (I-19). William caught that a voyage
+  crossing 1 January was being cut: 105 calls dropped, **828 event rows
+  truncated mid-sequence**. Both exports now select whole calls that overlap the
+  period, asserted on every build.
+- **Inactive and decommissioned berths are deliberate** (I-14). LIT Violet
+  decommissioned, Marlex holding naval reserve vessels, the avenue-named Port
+  NOLA docks. Recorded so no future session "tidies" them away.
+
+### Two corrections I had to make to my own work
+
+- **The feed-gap figure moved from $707,000 to $931,000.** The first count was
+  scoped on `vessel_type = 'Gas'` and missed 64 LNG hulls the feed types as
+  `Tanker`.
+- **The anchor-work population was 727 calls, not 298.** I had measured tankers
+  only; bulk carriers dominate it at 408 calls.
+
+And one of William's own claims did not survive the data: the lightering calls
+are **not** unique to Grandview and Capes (Capes is 3 of 119; the agents are
+spread across Norton Lilly, HOST, Tricon and others). His worked example was
+sound; the generalisation was not. Similarly, the Burnside attribution to the
+buoys is **contradicted by the agent test** and points at Zen-Noh instead — left
+open for him rather than built on an assumption.
+
+### Closing ruling
+
+> *"button it up and the rest we can ignore, its too low of percentage and not
+> ships in focus group anyway, this is tight enough."*
+
+**The residual unexplained population is accepted and closed.** Nothing is
+discarded — every call keeps its `review_flag` and `review_note` so any category
+can be revisited — but no further investigation is warranted.
+
+### Where it leaves the package
+
+**25 findings logged.** Nine are build items waiting on an MRTIS session (four
+already ruled, five needing a threshold or a facility decision). Four are open
+questions rather than defects, the largest being whether a lightering call should
+attract a fee and where a KPI clock should start.
+
+**Nothing the Claris reviewer holds moved this session** except two deliberate
+improvements: the by-vessel-type report now uses the register, and the exports
+select whole calls.
+
+### Next session
+
+The natural next step is **one batched MRTIS build** covering I-21, I-25, I-24.1
+and whichever of I-22 / I-20 / I-23 / I-17 William settles. They pull in opposite
+directions on the call count — I-21 adds 311, I-22 removes 135 — so running them
+together gives one clean before/after rather than several confusing ones. It
+needs a fresh, explicitly recorded suspension of directive 2, scratch-copy first,
+and a full diff before the real database is touched.
+
+---
+
 ## 2026-08-20 (session 9) — The build-fix: three findings closed, one found in the act of fixing
 
 **MRTIS moved, deliberately, for the first time since this repo existed.**

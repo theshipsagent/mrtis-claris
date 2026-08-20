@@ -2033,10 +2033,54 @@ implement in the exports alongside the I-15 draft rule.
 - **I-10** — **built** in MRTIS `56ad9f5` (§15.2), behaviour-preserving: 0 legs changed fee.
 - **I-11** — **fixed** in MRTIS `0c4ed0c` (§15.5). Found while verifying I-1; the build was non-deterministic and the package's byte-identical guarantee was false. Now verified end-to-end across a real rebuild.
 
-### Still open — three investigations and one ruling
+### Closing ruling — William, 2026-08-20
 
-| Ref | What it needs |
+> *"button it up and the rest we can ignore, its too low of percentage and not
+> ships in focus group anyway, this is tight enough."*
+
+**The residual unexplained population is accepted and closed.** Two reasons,
+both William's: the percentage is immaterial, and the vessels involved are
+outside the focus group the package is built to serve.
+
+**Where that leaves the numbers.** Starting from 1,557 no-berth calls in 40,170
+(3.88%), each ruling this session removed a slice:
+
+| Removed by | Calls |
+|---|---:|
+| I-12 — Venture Global blind window (feed gap, ruled) | 266 |
+| I-15 / I-25 — tanker lightering (ruled correct, no berth by design) | 284 |
+| I-24 / `NOT_AN_OCEAN_VESSEL` — tugs and workboats, never billed | 97 |
+| I-22 — phantom calls from duplicate or impossible crossings | up to 135 |
+| I-20 / I-23 — Burnside and Davant zone overlaps (rules stated) | ~62 |
+| **Accepted and closed here** | **the remainder** |
+
+**Nothing is discarded, only accepted.** Every one of these calls remains in the
+data with its `review_flag` and `review_note`, so a later session can revisit any
+category without re-deriving it. The classification work stands; what William has
+ruled is that **no further investigation is warranted**.
+
+### Still open by ruling — build items only
+
+These are not investigations. Each has a ruling or a stated rule and needs an
+MRTIS session to build:
+
+| Ref | Ruled | Effect when built |
+|---|---|---|
+| **I-21** | ✅ ruled — a berth stop constitutes a call | +311 calls, **+$2,835,000**, closes `OPEN_QUESTIONS.md` §11.2 |
+| **I-25** | ✅ ruled — Kenner Bend / AMA / Grandview | +39 lightering calls beyond the draft rule |
+| **I-15** | ✅ ruled — tanker lightering classification | already implemented in the exports |
+| **I-24.1** | ✅ ruled — add `Randy Anderson` (6665000) | 11 events filtered at ingest, no figure moves |
+| **I-22** | needs a **window** | −135 phantom calls; two shapes to handle |
+| **I-20** | needs the **facility** resolved (buoys vs Zen-Noh) | ~48 calls |
+| **I-23** | needs **Pt Celeste** in or out | 14 or 28 calls |
+| **I-17** | needs **per-facility** layberth rulings | reclassifies 5 Port NOLA wharves |
+| **I-18b** | needs a ruling — **moves money** | 4,194 `Bulk`/`General Cargo` calls, ~$44M at the tier difference |
+
+### Open questions, not build items
+
+| Ref | Needs |
 |---|---|
-| **I-2** | Investigation. Bunge Destrehan 85.6% / ADM Destrehan 88.0% FGIS coverage vs 99.6-100% at peer elevators. MGMT's 40% is explained; these two are not. |
-| **I-9 (a) and (b)** | Investigation. Never-berthed legs 1.4% → 6.3% and geofence artifacts 11.3% → 12.7%. Part (c), `tpc = 0`, is **closed** — see above. |
-| **I-4 / I-5 / I-6 / I-8** | Already disclosed in this package (commit `511c763`); no MRTIS change intended. |
+| **I-12** | A decision: ask the feed provider to backfill the Venture Global geofence (recovers **$931,000** on a rebuild) or annotate the window as known-low |
+| **I-15** | Commercial: should a lightering call attract a fee? 284 calls, $0 today |
+| **I-16** | KPI clock start — at the SWP crossing, or at the anchorage? **294,293 hours** ride on it |
+| **I-2** | A trade question, not a data one: what happened to certified Gulf grain export in 2023 |
