@@ -36,14 +36,26 @@ stops at "here is proof this works, packaged for review."
   of Blue Water Shipping's live FileMaker Agency Platform. This package's
   plain-language business-rules spec may also be useful evidence there.
 
-## Deliverables (not yet built — see `CLAUDE.md` for the first session's job)
+## Deliverables
 
-1. A FileMaker-importable export of the validated port-call/fee data
-   (following the pattern already proven in `Ships_Register/src/build_filemaker_package.py`).
-2. `docs/BUSINESS_RULES.md` — the port-call assembly and fee-tier rules,
-   written for a FileMaker developer, not a Python one.
-3. Sample charts/dashboard demonstrating the data.
-4. A small set of sample canned reports, demonstrating reporting capability.
+Built in session 1 (2026-08-19) — see `SESSION_LOG.md` for the full write-up
+and the MRTIS commit this was built against.
+
+1. ✅ A FileMaker-importable export of the validated port-call/fee data —
+   [`export/build_review_package.py`](export/build_review_package.py)
+   (following the pattern proven in
+   `Ships_Register/src/build_filemaker_package.py`), producing CSV +
+   FMPXMLRESULT XML + `DATA_DICTIONARY.csv` for `port_call`,
+   `port_call_leg`, `port_call_event` in `package/` (not committed — see
+   `SESSION_LOG.md`'s "Open" section).
+2. ✅ [`docs/BUSINESS_RULES.md`](docs/BUSINESS_RULES.md) — the port-call
+   assembly and fee-tier rules, written for a FileMaker developer, not a
+   Python one, every rule cited to its MRTIS source.
+3. ✅ Sample charts demonstrating the data — [`charts/`](charts/) (fee by
+   vessel type, split-call rate, calls by vessel type, §12 fee-tier impact).
+4. ✅ Sample canned reports demonstrating reporting capability —
+   [`reports/`](reports/) (agency fee by vessel type, port calls by agent,
+   R5 general-cargo-bulk drill-down).
 
 ## How to work in this project
 
