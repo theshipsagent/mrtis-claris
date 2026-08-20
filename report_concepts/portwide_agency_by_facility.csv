@@ -1,0 +1,990 @@
+agency,facility,legs,chargeable_legs,revenue
+"(no agency)","ADM Destrehan",8,8,77000
+"(no agency)","IMTT Gretna",19,19,66500
+"(no agency)","IMC Faustina",16,16,56000
+"(no agency)","Exxon Baton Rouge",13,13,45500
+"(no agency)","ADM AMA",4,4,35000
+"(no agency)","CHS Myrtle Grove",3,3,31500
+"(no agency)","KM IMT Myrtle Grove",3,3,31500
+"(no agency)","Americas Styrenics",6,6,21000
+"(no agency)","Cargill Reserve",2,2,21000
+"(no agency)","Nashville Ave",18,18,17750
+"(no agency)","IMTT St Rose",5,5,17500
+"(no agency)","MPLX Mt Airy",5,5,17500
+"(no agency)","ADM Reserve",1,1,10500
+"(no agency)","ARTCO Destrehan Buoys",1,1,10500
+"(no agency)","Zen-Noh",1,1,10500
+"(no agency)","AST Chalmette Slip",2,2,10000
+"(no agency)","Julia St",2,2,7000
+"(no agency)","MPLX Garyville",2,2,7000
+"(no agency)","Shell Norco",2,2,7000
+"(no agency)","Valero St Charles",2,2,7000
+"(no agency)","Avondale Global Gateway",1,1,5000
+"(no agency)","Henry Clay Ave",1,1,5000
+"(no agency)","Baton Rouge General Cargo",1,1,3500
+"(no agency)","CFI Donaldsonville",1,1,3500
+"(no agency)","Cooper Darrow",1,1,3500
+"(no agency)","Cornerstone",1,1,3500
+"(no agency)","Dow Taft",1,1,3500
+"(no agency)","Genesis Baton Rouge",1,1,3500
+"(no agency)","Harmony St",1,1,3500
+"(no agency)","Mile 110 Buoys",1,1,3500
+"(no agency)","PBF Chalmette",1,1,3500
+"(no agency)","Placid Oil",1,1,3500
+"(no agency)","Plains St James",1,1,3500
+"(no agency)","Shintech",1,1,3500
+"(no agency)","Total Carville",1,1,3500
+"(no agency)","Valero Meraux",1,1,3500
+"(no agency)","Napoleon Ave",1,1,750
+"(no agency)","(never berthed)",63,0,0
+"(no agency)","Buck Kreihs",2,0,0
+"Bertel","IMTT St Rose",245,245,857500
+"Bertel","KMI Harvey",73,73,255500
+"Bertel","PCS Nitrogen",54,54,189000
+"Bertel","Cargill Molasses",49,49,171500
+"Bertel","Stolthaven",42,42,147000
+"Bertel","Dow Taft",41,41,143500
+"Bertel","Blackwater Westwego",38,38,133000
+"Bertel","Americas Styrenics",23,23,80500
+"Bertel","Blackwater Harvey",21,21,73500
+"Bertel","Shintech",20,20,70000
+"Bertel","IMTT Avondale",19,19,66500
+"Bertel","IMTT Geismar",19,19,66500
+"Bertel","Total Carville",19,19,66500
+"Bertel","Valero St Charles",18,18,63000
+"Bertel","LBC Sunshine",14,14,49000
+"Bertel","Apex Mt Airy",11,11,38500
+"Bertel","Dow Missouri",11,11,38500
+"Bertel","KMI Seven Oaks",10,10,35000
+"Bertel","Willow Glen",10,10,35000
+"Bertel","IMTT Gretna",9,9,31500
+"Bertel","Shell Geismar",8,8,28000
+"Bertel","Exxon Baton Rouge",7,7,24500
+"Bertel","CFI Donaldsonville",6,6,21000
+"Bertel","Occidental Taft",6,6,21000
+"Bertel","PBF Chalmette",5,5,17500
+"Bertel","Shell Norco",4,4,14000
+"Bertel","Axiall Plaquemine",3,3,10500
+"Bertel","Baker Hughes",3,3,10500
+"Bertel","Magellan Marrero",3,3,10500
+"Bertel","AMSTAR",2,2,7000
+"Bertel","Cornerstone",2,2,7000
+"Bertel","KMI St Gabriel",2,2,7000
+"Bertel","Baton Rouge General Cargo",1,1,3500
+"Bertel","Cargill Reserve",1,1,3500
+"Bertel","DRAX",1,1,3500
+"Bertel","Genesis Baton Rouge",1,1,3500
+"Bertel","Vulcan St Rose Mooring",1,1,3500
+"Bertel","(never berthed)",20,0,0
+"Biehl","KM IMT Myrtle Grove",19,19,199500
+"Biehl","UBT Davant",19,19,199500
+"Biehl","Avondale Global Gateway",39,39,195000
+"Biehl","Nashville Ave",142,142,127750
+"Biehl","KMI Harvey",33,33,115500
+"Biehl","Crosstex Energy",12,12,42000
+"Biehl","AST Meraux Buoys",3,3,31500
+"Biehl","Shell Norco",8,8,28000
+"Biehl","Harmony St",5,5,25000
+"Biehl","Blackwater Westwego",7,7,24500
+"Biehl","Reserve Buoys",2,2,21000
+"Biehl","Placid Oil",5,5,17500
+"Biehl","7th Street",3,3,15000
+"Biehl","IMTT Avondale",4,4,14000
+"Biehl","ABT Burnside",1,1,10500
+"Biehl","ADM AMA",1,1,10500
+"Biehl","LDC Port Allen",1,1,10500
+"Biehl","Mile 110 Buoys",1,1,10500
+"Biehl","AST Chalmette Slip",2,2,10000
+"Biehl","MPLX Mt Airy",2,2,7000
+"Biehl","Napoleon Ave",8,8,6000
+"Biehl","Americas Styrenics",1,1,3500
+"Biehl","Axiall Plaquemine",1,1,3500
+"Biehl","Blackwater Harvey",1,1,3500
+"Biehl","CFI Donaldsonville",1,1,3500
+"Biehl","Dow Missouri",1,1,3500
+"Biehl","(never berthed)",22,0,0
+"Blue Water","Zen-Noh",332,332,3486000
+"Blue Water","CHS Myrtle Grove",124,124,1302000
+"Blue Water","Cargill Westwego",60,60,630000
+"Blue Water","Cargill Reserve",58,58,609000
+"Blue Water","Nucor Steel",56,56,588000
+"Blue Water","ADM AMA",52,52,546000
+"Blue Water","LDC Port Allen",45,45,472500
+"Blue Water","Bunge Destrehan",42,42,441000
+"Blue Water","Cooper Darrow",40,40,420000
+"Blue Water","ADM Reserve",29,29,304500
+"Blue Water","ADM Destrehan",25,25,262500
+"Blue Water","ARTCO Destrehan Buoys",25,25,262500
+"Blue Water","Cooper Dockside",25,25,262500
+"Blue Water","Mile 110 Buoys",24,24,252000
+"Blue Water","AST Meraux Buoys",23,23,241500
+"Blue Water","Reserve Buoys",16,16,168000
+"Blue Water","AST Chalmette Buoys",12,12,126000
+"Blue Water","AST St James",9,9,94500
+"Blue Water","MGMT",8,8,84000
+"Blue Water","ARTCO Buoys",6,6,63000
+"Blue Water","KM IMT Myrtle Grove",6,6,63000
+"Blue Water","Convent Marine Terminal",5,5,52500
+"Blue Water","UBT Davant",4,4,42000
+"Blue Water","ABT Burnside",3,3,31500
+"Blue Water","AST Arabi Dolphins",3,3,31500
+"Blue Water","DRAX",1,1,10500
+"Blue Water","Vulcan St Rose Mooring",1,1,10500
+"Blue Water","AST Chalmette Slip",2,2,10000
+"Blue Water","Blackwater Westwego",1,1,3500
+"Blue Water","Cargill Molasses",1,1,3500
+"Blue Water","MPLX Mt Airy",1,1,3500
+"Blue Water","(never berthed)",21,0,0
+"Capes","Cooper Darrow",17,17,178500
+"Capes","Reserve Buoys",12,12,126000
+"Capes","ABT Burnside",9,9,94500
+"Capes","Mile 110 Buoys",6,6,63000
+"Capes","IMTT St Rose",17,17,59500
+"Capes","MPLX Garyville",16,16,56000
+"Capes","ARTCO Destrehan Buoys",4,4,42000
+"Capes","AST St James",3,3,31500
+"Capes","PBF Chalmette",9,9,31500
+"Capes","UBT Davant",3,3,31500
+"Capes","ADM AMA",2,2,21000
+"Capes","AST Meraux Buoys",2,2,21000
+"Capes","Baton Rouge General Cargo",6,6,21000
+"Capes","CHS Myrtle Grove",2,2,21000
+"Capes","Cargill Reserve",2,2,21000
+"Capes","Convent Marine Terminal",2,2,21000
+"Capes","Cooper Dockside",2,2,21000
+"Capes","DRAX",6,6,21000
+"Capes","Valero St Charles",6,6,21000
+"Capes","CII Rain Gramercy",1,1,10500
+"Capes","LDC Port Allen",1,1,10500
+"Capes","MGMT",1,1,10500
+"Capes","Mile 112 Buoys",1,1,10500
+"Capes","Shell Norco",3,3,10500
+"Capes","Cargill Molasses",2,2,7000
+"Capes","Exxon Baton Rouge",2,2,7000
+"Capes","MPLX Mt Airy",2,2,7000
+"Capes","NuStar St James",2,2,7000
+"Capes","Blackwater Westwego",1,1,3500
+"Capes","CFI Donaldsonville",1,1,3500
+"Capes","Genesis Baton Rouge",1,1,3500
+"Capes","IMTT Gretna",1,1,3500
+"Capes","Stolthaven",1,1,3500
+"Capes","(never berthed)",4,0,0
+"Celtic","Crosstex Energy",112,112,392000
+"Celtic","Reserve Buoys",30,30,315000
+"Celtic","AST Meraux Buoys",25,25,262500
+"Celtic","AST St James",13,13,136500
+"Celtic","AST Arabi Dolphins",12,12,126000
+"Celtic","Cooper Dockside",7,7,73500
+"Celtic","AST Chalmette Slip",9,9,45000
+"Celtic","Zen-Noh",4,4,42000
+"Celtic","CHS Myrtle Grove",3,3,31500
+"Celtic","Convent Marine Terminal",3,3,31500
+"Celtic","AST Chalmette Buoys",2,2,21000
+"Celtic","Bunge Destrehan",2,2,21000
+"Celtic","Cargill Reserve",2,2,21000
+"Celtic","Nashville Ave",4,4,20000
+"Celtic","P66 Alliance",5,5,17500
+"Celtic","Avondale Global Gateway",3,3,15000
+"Celtic","ABT Burnside",1,1,10500
+"Celtic","ADM AMA",1,1,10500
+"Celtic","ADM Reserve",1,1,10500
+"Celtic","Cargill Westwego",1,1,10500
+"Celtic","Mile 110 Buoys",1,1,10500
+"Celtic","UBT Davant",1,1,10500
+"Celtic","Vulcan St Rose Mooring",1,1,10500
+"Celtic","1st Street",2,2,10000
+"Celtic","AST Globalplex",2,2,10000
+"Celtic","7th Street",1,1,5000
+"Celtic","Louisiana Ave",1,1,5000
+"Celtic","MPLX Garyville",1,1,3500
+"Celtic","(never berthed)",1,0,0
+"Fillette Green","AST St James",6,6,63000
+"Fillette Green","Shell Norco",9,9,31500
+"Fillette Green","CFI Donaldsonville",7,7,24500
+"Fillette Green","AST Chalmette Buoys",2,2,21000
+"Fillette Green","AST Meraux Buoys",2,2,21000
+"Fillette Green","Convent Marine Terminal",2,2,21000
+"Fillette Green","AST Chalmette Slip",3,3,15000
+"Fillette Green","CHS Myrtle Grove",1,1,10500
+"Fillette Green","Cooper Dockside",1,1,10500
+"Fillette Green","Mile 112 Buoys",1,1,10500
+"Fillette Green","Reserve Buoys",1,1,10500
+"Fillette Green","Zen-Noh",1,1,10500
+"Fillette Green","MPLX Garyville",2,2,7000
+"Fillette Green","Harmony St",1,1,5000
+"Fillette Green","Louisiana Ave",1,1,5000
+"Fillette Green","Cargill Molasses",1,1,3500
+"Fillette Green","Exxon Baton Rouge",1,1,3500
+"Fillette Green","Placid Oil",1,1,3500
+"GAC","IMTT Geismar",161,161,563500
+"GAC","Valero St Charles",140,140,490000
+"GAC","Venture Global",64,64,224000
+"GAC","PBF Chalmette",37,37,129500
+"GAC","Crosstex Energy",35,35,122500
+"GAC","Baker Hughes",20,20,70000
+"GAC","IMTT St Rose",16,16,56000
+"GAC","MPLX Garyville",13,13,45500
+"GAC","Ergon St James",11,11,38500
+"GAC","Exxon Baton Rouge",10,10,35000
+"GAC","Americas Styrenics",9,9,31500
+"GAC","Chevron Empire",6,6,21000
+"GAC","Mile 110 Buoys",2,2,21000
+"GAC","Valero Meraux",6,6,21000
+"GAC","Plains St James",5,5,17500
+"GAC","AST Meraux Buoys",2,2,14000
+"GAC","Blackwater Westwego",4,4,14000
+"GAC","ARTCO Buoys",1,1,10500
+"GAC","Cooper Darrow",1,1,10500
+"GAC","Shell Norco",3,3,10500
+"GAC","Willow Glen",3,3,10500
+"GAC","MPLX Mt Airy",2,2,7000
+"GAC","CFI Donaldsonville",1,1,3500
+"GAC","Dow Missouri",1,1,3500
+"GAC","Genesis Baton Rouge",1,1,3500
+"GAC","IMTT Gretna",1,1,3500
+"GAC","KMI Harvey",1,1,3500
+"GAC","LBC Sunshine",1,1,3500
+"GAC","PCS Nitrogen",1,1,3500
+"GAC","Shintech",1,1,3500
+"GAC","Stolthaven",1,1,3500
+"GAC","Total Carville",1,1,3500
+"GAC","(never berthed)",148,0,0
+"General Maritime","PCS Nitrogen",40,40,413000
+"General Maritime","LDC Port Allen",38,38,399000
+"General Maritime","AST St James",32,32,336000
+"General Maritime","Stolthaven",88,88,308000
+"General Maritime","CHS Myrtle Grove",29,29,304500
+"General Maritime","ADM Destrehan",19,19,199500
+"General Maritime","ADM AMA",17,17,178500
+"General Maritime","Cargill Reserve",16,16,168000
+"General Maritime","Cargill Westwego",13,13,136500
+"General Maritime","Zen-Noh",10,10,105000
+"General Maritime","AST Chalmette Buoys",8,8,84000
+"General Maritime","ADM Reserve",7,7,73500
+"General Maritime","Shell Geismar",19,19,66500
+"General Maritime","Cooper Darrow",6,6,63000
+"General Maritime","Occidental Taft",17,17,59500
+"General Maritime","Shintech",16,16,56000
+"General Maritime","Bunge Destrehan",5,5,52500
+"General Maritime","Cooper Dockside",5,5,52500
+"General Maritime","IMTT St Rose",15,15,52500
+"General Maritime","Reserve Buoys",5,5,52500
+"General Maritime","IMTT Gretna",10,10,35000
+"General Maritime","ABT Burnside",3,3,31500
+"General Maritime","AST Arabi Dolphins",3,3,31500
+"General Maritime","Dow Missouri",8,8,28000
+"General Maritime","KMI Harvey",7,7,24500
+"General Maritime","Americas Styrenics",6,6,21000
+"General Maritime","MGMT",2,2,21000
+"General Maritime","Exxon Baton Rouge",5,5,17500
+"General Maritime","ARTCO Buoys",1,1,10500
+"General Maritime","AST Meraux Buoys",1,1,10500
+"General Maritime","Blackwater Westwego",3,3,10500
+"General Maritime","IMC Faustina",1,1,10500
+"General Maritime","Total Carville",3,3,10500
+"General Maritime","Axiall Plaquemine",2,2,7000
+"General Maritime","Dow Taft",2,2,7000
+"General Maritime","KMI St Gabriel",2,2,7000
+"General Maritime","Valero St Charles",2,2,7000
+"General Maritime","AST Chalmette Slip",1,1,5000
+"General Maritime","AMSTAR",1,1,3500
+"General Maritime","Cornerstone",1,1,3500
+"General Maritime","Genesis Baton Rouge",1,1,3500
+"General Maritime","IMTT Geismar",1,1,3500
+"General Maritime","LBC Sunshine",1,1,3500
+"General Maritime","MPLX Garyville",1,1,3500
+"General Maritime","Occidental Convent",1,1,3500
+"General Maritime","Shell Norco",1,1,3500
+"General Maritime","Valero Meraux",1,1,3500
+"General Maritime","(never berthed)",9,0,0
+"General Steamship","Nashville Ave",120,120,600000
+"General Steamship","ARTCO Destrehan Buoys",49,49,514500
+"General Steamship","KM IMT Myrtle Grove",47,47,493500
+"General Steamship","Mile 110 Buoys",36,36,378000
+"General Steamship","CHS Myrtle Grove",30,30,315000
+"General Steamship","UBT Davant",29,29,304500
+"General Steamship","LDC Port Allen",25,25,262500
+"General Steamship","Zen-Noh",25,25,262500
+"General Steamship","Reserve Buoys",23,23,241500
+"General Steamship","Cooper Darrow",15,15,157500
+"General Steamship","ARTCO Buoys",14,14,147000
+"General Steamship","Cargill Reserve",14,14,147000
+"General Steamship","Mile 112 Buoys",13,13,136500
+"General Steamship","Cargill Westwego",12,12,126000
+"General Steamship","Stolthaven",34,34,119000
+"General Steamship","AST Meraux Buoys",11,11,115500
+"General Steamship","Convent Marine Terminal",11,11,115500
+"General Steamship","ABT Burnside",8,8,84000
+"General Steamship","ADM AMA",8,8,84000
+"General Steamship","AST Chalmette Buoys",7,7,73500
+"General Steamship","AST St James",7,7,73500
+"General Steamship","ADM Destrehan",6,6,63000
+"General Steamship","Vulcan St Rose Mooring",6,6,63000
+"General Steamship","MPLX Garyville",17,17,59500
+"General Steamship","Occidental Taft",14,14,49000
+"General Steamship","Bunge Destrehan",4,4,42000
+"General Steamship","MPLX Mt Airy",12,12,42000
+"General Steamship","ADM Reserve",3,3,31500
+"General Steamship","Cooper Dockside",3,3,31500
+"General Steamship","KMI Harvey",9,9,31500
+"General Steamship","Plains St James",9,9,31500
+"General Steamship","IMTT St Rose",8,8,28000
+"General Steamship","IMTT Geismar",6,6,21000
+"General Steamship","Shintech",4,4,14000
+"General Steamship","CII Rain Gramercy",1,1,10500
+"General Steamship","MGMT",1,1,10500
+"General Steamship","Mile 111 Buoys",1,1,10500
+"General Steamship","NuStar St James",3,3,10500
+"General Steamship","Valero St Charles",3,3,10500
+"General Steamship","Yara Fertilizer",1,1,10500
+"General Steamship","AST Chalmette Slip",2,2,10000
+"General Steamship","Americas Styrenics",2,2,7000
+"General Steamship","Blackwater Westwego",2,2,7000
+"General Steamship","Dow Taft",2,2,7000
+"General Steamship","Exxon Baton Rouge",2,2,7000
+"General Steamship","IMTT Gretna",2,2,7000
+"General Steamship","LBC Sunshine",2,2,7000
+"General Steamship","Harmony St",1,1,5000
+"General Steamship","AMSTAR",1,1,3500
+"General Steamship","Dow Missouri",1,1,3500
+"General Steamship","KMI St Gabriel",1,1,3500
+"General Steamship","Willow Glen",1,1,3500
+"General Steamship","(never berthed)",51,0,0
+"Gulf Harbor","MPLX Garyville",43,43,150500
+"Gulf Harbor","Exxon Baton Rouge",23,23,80500
+"Gulf Harbor","Valero St Charles",23,23,80500
+"Gulf Harbor","Shell Norco",22,22,77000
+"Gulf Harbor","Cooper Darrow",7,7,73500
+"Gulf Harbor","Reserve Buoys",5,5,52500
+"Gulf Harbor","IMTT St Rose",14,14,49000
+"Gulf Harbor","PBF Chalmette",14,14,49000
+"Gulf Harbor","Cooper Dockside",3,3,31500
+"Gulf Harbor","CFI Donaldsonville",7,7,24500
+"Gulf Harbor","ABT Burnside",2,2,21000
+"Gulf Harbor","Blackwater Harvey",6,6,21000
+"Gulf Harbor","Chevron Empire",6,6,21000
+"Gulf Harbor","Valero Meraux",6,6,21000
+"Gulf Harbor","ARTCO Destrehan Buoys",2,2,14000
+"Gulf Harbor","DRAX",4,4,14000
+"Gulf Harbor","ADM Destrehan",1,1,10500
+"Gulf Harbor","AST St James",1,1,10500
+"Gulf Harbor","Apex Mt Airy",3,3,10500
+"Gulf Harbor","Plains St James",3,3,10500
+"Gulf Harbor","Zen-Noh",1,1,10500
+"Gulf Harbor","Baton Rouge General Cargo",2,2,7000
+"Gulf Harbor","Cornerstone",2,2,7000
+"Gulf Harbor","Dow Missouri",2,2,7000
+"Gulf Harbor","Genesis Baton Rouge",2,2,7000
+"Gulf Harbor","MPLX Mt Airy",2,2,7000
+"Gulf Harbor","Vulcan St Rose Mooring",1,1,3500
+"Gulf Harbor","(never berthed)",4,0,0
+"Gulf Inland","Noranda Alumina",126,126,1323000
+"Gulf Inland","AST St James",47,47,493500
+"Gulf Inland","Valero St Charles",136,136,476000
+"Gulf Inland","CII Rain Gramercy",44,44,462000
+"Gulf Inland","AST Meraux Buoys",35,35,367500
+"Gulf Inland","Reserve Buoys",33,33,346500
+"Gulf Inland","Mile 110 Buoys",25,25,262500
+"Gulf Inland","Cargill Reserve",21,21,220500
+"Gulf Inland","Valero Meraux",51,51,178500
+"Gulf Inland","Cooper Dockside",14,14,147000
+"Gulf Inland","CHS Myrtle Grove",13,13,136500
+"Gulf Inland","ARTCO Destrehan Buoys",11,11,115500
+"Gulf Inland","AST Arabi Dolphins",11,11,115500
+"Gulf Inland","Cooper Darrow",10,10,105000
+"Gulf Inland","AST Chalmette Buoys",8,8,84000
+"Gulf Inland","IMTT St Rose",21,21,73500
+"Gulf Inland","Zen-Noh",7,7,73500
+"Gulf Inland","ADM AMA",6,6,63000
+"Gulf Inland","ADM Destrehan",5,5,52500
+"Gulf Inland","Bunge Destrehan",5,5,52500
+"Gulf Inland","CII Rain Chalmette",4,4,42000
+"Gulf Inland","Convent Marine Terminal",4,4,42000
+"Gulf Inland","AST Chalmette Slip",8,8,40000
+"Gulf Inland","ARTCO Buoys",3,3,31500
+"Gulf Inland","UBT Davant",3,3,31500
+"Gulf Inland","AST Globalplex",5,5,25000
+"Gulf Inland","MPLX Garyville",7,7,24500
+"Gulf Inland","ABT Burnside",2,2,21000
+"Gulf Inland","ADM Reserve",2,2,21000
+"Gulf Inland","Cargill Westwego",2,2,21000
+"Gulf Inland","MGMT",2,2,21000
+"Gulf Inland","Mile 112 Buoys",2,2,21000
+"Gulf Inland","Vulcan St Rose Mooring",2,2,21000
+"Gulf Inland","Blackwater Westwego",3,3,10500
+"Gulf Inland","DRAX",1,1,10500
+"Gulf Inland","Exxon Baton Rouge",3,3,10500
+"Gulf Inland","Genesis Baton Rouge",3,3,10500
+"Gulf Inland","IMTT Gretna",3,3,10500
+"Gulf Inland","LDC Port Allen",1,1,10500
+"Gulf Inland","Shell Norco",3,3,10500
+"Gulf Inland","7th Street",1,1,5000
+"Gulf Inland","Harmony St",1,1,5000
+"Gulf Inland","Nashville Ave",1,1,5000
+"Gulf Inland","Baton Rouge General Cargo",1,1,3500
+"Gulf Inland","Cornerstone",1,1,3500
+"Gulf Inland","Dow Missouri",1,1,3500
+"Gulf Inland","KMI Harvey",1,1,3500
+"Gulf Inland","MPLX Mt Airy",1,1,3500
+"Gulf Inland","Magellan Marrero",1,1,3500
+"Gulf Inland","PBF Chalmette",1,1,3500
+"Gulf Inland","Plains St James",1,1,3500
+"Gulf Inland","Willow Glen",1,1,3500
+"Gulf Inland","(never berthed)",13,0,0
+"HOST","Convent Marine Terminal",256,256,2688000
+"HOST","UBT Davant",223,223,2341500
+"HOST","ABT Burnside",86,86,903000
+"HOST","AST St James",80,80,840000
+"HOST","DRAX",66,66,693000
+"HOST","MGMT",58,58,609000
+"HOST","Cooper Darrow",57,57,598500
+"HOST","AST Meraux Buoys",48,48,504000
+"HOST","AST Chalmette Slip",96,96,480000
+"HOST","Reserve Buoys",43,43,451500
+"HOST","MPLX Garyville",125,125,437500
+"HOST","Cooper Dockside",39,39,409500
+"HOST","ARTCO Destrehan Buoys",31,31,325500
+"HOST","AST Chalmette Buoys",29,29,304500
+"HOST","Zen-Noh",29,29,304500
+"HOST","Avondale Global Gateway",59,59,295000
+"HOST","AST Arabi Dolphins",22,22,221500
+"HOST","ABT Buoys",20,20,210000
+"HOST","KM IMT Myrtle Grove",20,20,210000
+"HOST","MPLX Mt Airy",56,56,196000
+"HOST","ADM AMA",16,16,168000
+"HOST","Mile 110 Buoys",16,16,168000
+"HOST","Valero St Charles",47,47,164500
+"HOST","CHS Myrtle Grove",13,13,136500
+"HOST","Cargill Reserve",12,12,126000
+"HOST","Cargill Westwego",12,12,126000
+"HOST","Baton Rouge General Cargo",24,24,120000
+"HOST","Bunge Destrehan",11,11,115500
+"HOST","7th Street",21,21,105000
+"HOST","ADM Reserve",10,10,105000
+"HOST","AST Globalplex",19,19,86000
+"HOST","LDC Port Allen",8,8,84000
+"HOST","Valero Meraux",24,24,84000
+"HOST","ADM Destrehan",7,7,73500
+"HOST","ARTCO Buoys",6,6,63000
+"HOST","Harmony St",12,12,60000
+"HOST","Vulcan St Rose Mooring",6,6,56000
+"HOST","Exxon Baton Rouge",14,14,49000
+"HOST","Shintech",12,12,42000
+"HOST","Vulcan Westwego",4,4,42000
+"HOST","Dow Missouri",11,11,38500
+"HOST","AMSTAR",3,3,31500
+"HOST","CII Rain Gramercy",3,3,31500
+"HOST","IMC Faustina",3,3,31500
+"HOST","PBF Chalmette",9,9,31500
+"HOST","Willow Glen",9,9,31500
+"HOST","Genesis Baton Rouge",3,3,24500
+"HOST","Louisiana Ave",3,3,15000
+"HOST","Shell Norco",4,4,14000
+"HOST","Venture Global",4,4,14000
+"HOST","Mile 111 Buoys",1,1,10500
+"HOST","1st Street",2,2,10000
+"HOST","Cargill Molasses",2,2,7000
+"HOST","IMTT St Rose",2,2,7000
+"HOST","Plains St James",2,2,7000
+"HOST","Nashville Ave",1,1,5000
+"HOST","Cornerstone",1,1,3500
+"HOST","(never berthed)",79,0,0
+"HOST","Poland St",1,0,0
+"Inchcape","Exxon Baton Rouge",240,240,840000
+"Inchcape","Stolthaven",83,83,290500
+"Inchcape","KMI Harvey",49,49,171500
+"Inchcape","Blackwater Westwego",28,28,98000
+"Inchcape","IMTT Gretna",28,28,98000
+"Inchcape","Chevron Oak Point",23,23,80500
+"Inchcape","Total Carville",21,21,73500
+"Inchcape","IMTT St Rose",18,18,63000
+"Inchcape","AST Chalmette Slip",11,11,55000
+"Inchcape","Genesis Baton Rouge",14,14,49000
+"Inchcape","Nashville Ave",38,38,45500
+"Inchcape","Avondale Global Gateway",7,7,35000
+"Inchcape","Dow Missouri",10,10,35000
+"Inchcape","Valero St Charles",10,10,35000
+"Inchcape","AST Chalmette Buoys",3,3,31500
+"Inchcape","Venture Global",9,9,31500
+"Inchcape","Zen-Noh",3,3,31500
+"Inchcape","IMTT Geismar",7,7,24500
+"Inchcape","KMI Seven Oaks",7,7,24500
+"Inchcape","PBF Chalmette",7,7,24500
+"Inchcape","Shintech",6,6,21000
+"Inchcape","LBC Sunshine",5,5,17500
+"Inchcape","Shell Geismar",5,5,17500
+"Inchcape","Axiall Plaquemine",4,4,14000
+"Inchcape","Baker Hughes",4,4,14000
+"Inchcape","Blackwater Harvey",4,4,14000
+"Inchcape","Dow Taft",4,4,14000
+"Inchcape","Ergon St James",4,4,14000
+"Inchcape","MPLX Garyville",4,4,14000
+"Inchcape","Occidental Taft",4,4,14000
+"Inchcape","Shell Norco",4,4,14000
+"Inchcape","Sugarland St James",4,4,14000
+"Inchcape","AST Arabi Dolphins",1,1,10500
+"Inchcape","Americas Styrenics",3,3,10500
+"Inchcape","Cornerstone",3,3,10500
+"Inchcape","PCS Nitrogen",3,3,10500
+"Inchcape","Plains St James",3,3,10500
+"Inchcape","Cargill Molasses",2,2,7000
+"Inchcape","DRAX",2,2,7000
+"Inchcape","Valero Meraux",2,2,7000
+"Inchcape","Louisiana Ave",1,1,5000
+"Inchcape","Baton Rouge General Cargo",1,1,3500
+"Inchcape","CFI Donaldsonville",1,1,3500
+"Inchcape","Dow Plaquemine",1,1,3500
+"Inchcape","IMTT Avondale",1,1,3500
+"Inchcape","MPLX Mt Airy",1,1,3500
+"Inchcape","Vulcan St Rose Mooring",1,1,3500
+"Inchcape","Willow Glen",1,1,3500
+"Inchcape","(never berthed)",19,0,0
+"Intercruises","Julia St",39,39,97500
+"Intercruises","Erato St",2,2,5000
+"Intercruises","Poland St",1,0,0
+"K3 Maritime","Valero St Charles",51,51,178500
+"K3 Maritime","MPLX Garyville",31,31,108500
+"K3 Maritime","IMTT St Rose",18,18,63000
+"K3 Maritime","Valero Meraux",16,16,63000
+"K3 Maritime","Exxon Baton Rouge",12,12,42000
+"K3 Maritime","Apex Mt Airy",11,11,38500
+"K3 Maritime","PBF Chalmette",9,9,31500
+"K3 Maritime","MPLX Mt Airy",6,6,21000
+"K3 Maritime","Blackwater Harvey",5,5,17500
+"K3 Maritime","Shell Norco",5,5,17500
+"K3 Maritime","Genesis Baton Rouge",3,3,10500
+"K3 Maritime","Plains St James",3,3,10500
+"K3 Maritime","Magellan Marrero",2,2,7000
+"K3 Maritime","Crosstex Energy",1,1,3500
+"K3 Maritime","DRAX",1,1,3500
+"K3 Maritime","IMTT Gretna",1,1,3500
+"K3 Maritime","NuStar St James",1,1,3500
+"K3 Maritime","Shintech",1,1,3500
+"K3 Maritime","Willow Glen",1,1,3500
+"K3 Maritime","(never berthed)",2,0,0
+"Lighthouse","Valero St Charles",24,24,84000
+"Lighthouse","MPLX Garyville",11,11,38500
+"Lighthouse","PBF Chalmette",8,8,28000
+"Lighthouse","Exxon Baton Rouge",5,5,17500
+"Lighthouse","Shell Norco",5,5,17500
+"Lighthouse","IMTT St Rose",3,3,10500
+"Lighthouse","MPLX Mt Airy",3,3,10500
+"Lighthouse","Valero Meraux",3,3,10500
+"Lighthouse","Americas Styrenics",1,1,3500
+"Lighthouse","Cornerstone",1,1,3500
+"Lighthouse","Genesis Baton Rouge",1,1,3500
+"Lighthouse","Magellan Marrero",1,1,3500
+"Lighthouse","Willow Glen",1,1,3500
+"Lott","IMTT St Rose",47,47,164500
+"Lott","Blackwater Harvey",38,38,133000
+"Lott","MPLX Garyville",19,19,66500
+"Lott","Genesis Baton Rouge",4,4,14000
+"Lott","Baton Rouge General Cargo",1,1,3500
+"Lott","(never berthed)",2,0,0
+"Maritime Endeavors","Valero St Charles",18,18,63000
+"Maritime Endeavors","Plains St James",10,10,35000
+"Maritime Endeavors","CHS Myrtle Grove",3,3,31500
+"Maritime Endeavors","Cargill Westwego",3,3,31500
+"Maritime Endeavors","Zen-Noh",3,3,31500
+"Maritime Endeavors","Ergon St James",7,7,24500
+"Maritime Endeavors","Valero Meraux",7,7,24500
+"Maritime Endeavors","LDC Port Allen",2,2,21000
+"Maritime Endeavors","MPLX Garyville",6,6,21000
+"Maritime Endeavors","PBF Chalmette",5,5,17500
+"Maritime Endeavors","Exxon Baton Rouge",4,4,14000
+"Maritime Endeavors","Cargill Reserve",1,1,10500
+"Maritime Endeavors","Convent Marine Terminal",1,1,10500
+"Maritime Endeavors","Cooper Darrow",1,1,10500
+"Maritime Endeavors","IMTT St Rose",3,3,10500
+"Maritime Endeavors","Henry Clay Ave",2,2,10000
+"Maritime Endeavors","Chevron Empire",2,2,7000
+"Maritime Endeavors","MPLX Mt Airy",2,2,7000
+"Maritime Endeavors","Shell Norco",2,2,7000
+"Maritime Endeavors","Nashville Ave",1,1,5000
+"Maritime Endeavors","LBC Sunshine",1,1,3500
+"Maritime Endeavors","Stolthaven",1,1,3500
+"Maritime Endeavors","(never berthed)",3,0,0
+"Mentz","KM IMT Myrtle Grove",25,25,262500
+"Mentz","Reserve Buoys",2,2,21000
+"Mentz","UBT Davant",2,2,21000
+"Mentz","Convent Marine Terminal",1,1,10500
+"Moran Shipping","AST St James",28,28,294000
+"Moran Shipping","Shell Norco",60,60,210000
+"Moran Shipping","IMTT St Rose",59,59,206500
+"Moran Shipping","Valero St Charles",49,49,171500
+"Moran Shipping","Plains St James",48,48,168000
+"Moran Shipping","MPLX Garyville",26,26,91000
+"Moran Shipping","Avondale Global Gateway",13,13,65000
+"Moran Shipping","NuStar St James",16,16,56000
+"Moran Shipping","PBF Chalmette",15,15,52500
+"Moran Shipping","Exxon Baton Rouge",14,14,49000
+"Moran Shipping","Valero Meraux",13,13,45500
+"Moran Shipping","Genesis Baton Rouge",12,12,42000
+"Moran Shipping","ADM Destrehan",3,3,31500
+"Moran Shipping","MPLX Mt Airy",8,8,28000
+"Moran Shipping","Venture Global",8,8,28000
+"Moran Shipping","Cooper Darrow",2,2,21000
+"Moran Shipping","Blackwater Harvey",4,4,14000
+"Moran Shipping","Stolthaven",4,4,14000
+"Moran Shipping","ADM AMA",1,1,10500
+"Moran Shipping","ARTCO Buoys",1,1,10500
+"Moran Shipping","AST Arabi Dolphins",1,1,10500
+"Moran Shipping","Baton Rouge General Cargo",3,3,10500
+"Moran Shipping","Bunge Destrehan",1,1,10500
+"Moran Shipping","CHS Myrtle Grove",1,1,10500
+"Moran Shipping","Cargill Molasses",3,3,10500
+"Moran Shipping","DRAX",1,1,10500
+"Moran Shipping","IMC Faustina",1,1,10500
+"Moran Shipping","IMTT Gretna",3,3,10500
+"Moran Shipping","UBT Davant",1,1,10500
+"Moran Shipping","Vulcan St Rose Mooring",3,3,10500
+"Moran Shipping","Aramco Convent",2,2,7000
+"Moran Shipping","Chevron Empire",2,2,7000
+"Moran Shipping","Shintech",2,2,7000
+"Moran Shipping","AST Chalmette Slip",1,1,5000
+"Moran Shipping","Americas Styrenics",1,1,3500
+"Moran Shipping","LBC Sunshine",1,1,3500
+"Moran Shipping","P66 Alliance",1,1,3500
+"Moran Shipping","Total Carville",1,1,3500
+"Moran Shipping","Willow Glen",1,1,3500
+"Moran Shipping","(never berthed)",7,0,0
+"Navigo","UBT Davant",31,31,325500
+"Navigo","ABT Burnside",15,15,157500
+"Navigo","KM IMT Myrtle Grove",3,3,31500
+"Navigo","ARTCO Destrehan Buoys",2,2,21000
+"Navigo","AST Meraux Buoys",1,1,10500
+"Navigo","Convent Marine Terminal",1,1,10500
+"Navigo","Cooper Darrow",1,1,10500
+"Navigo","Cooper Dockside",1,1,10500
+"Navigo","Mile 112 Buoys",1,1,10500
+"Navigo","Reserve Buoys",1,1,10500
+"Newship","Zen-Noh",77,77,808500
+"Newship","ADM AMA",65,65,682500
+"Newship","Nashville Ave",72,72,360000
+"Newship","ADM Destrehan",34,34,357000
+"Newship","LDC Port Allen",27,27,283500
+"Newship","ADM Reserve",18,18,189000
+"Newship","CHS Myrtle Grove",17,17,178500
+"Newship","Cargill Reserve",17,17,178500
+"Newship","Cargill Westwego",14,14,147000
+"Newship","Cooper Darrow",8,8,84000
+"Newship","Mile 110 Buoys",5,5,52500
+"Newship","MGMT",3,3,31500
+"Newship","ABT Burnside",1,1,10500
+"Newship","Bunge Destrehan",1,1,10500
+"Newship","Convent Marine Terminal",1,1,10500
+"Newship","Louisiana Ave",1,1,5000
+"Newship","KMI Harvey",1,1,3500
+"Newship","(never berthed)",6,0,0
+"NolaPort","Erato St",369,369,922500
+"NolaPort","Julia St",81,81,202500
+"NolaPort","(never berthed)",1,0,0
+"NordSud","AST Chalmette Slip",129,129,645000
+"NordSud","Nucor Steel",52,52,546000
+"NordSud","Avondale Global Gateway",28,28,140000
+"NordSud","Cargill Westwego",8,8,84000
+"NordSud","Convent Marine Terminal",6,6,63000
+"NordSud","7th Street",12,12,60000
+"NordSud","Cargill Reserve",5,5,52500
+"NordSud","Nashville Ave",9,9,45000
+"NordSud","ADM Reserve",4,4,42000
+"NordSud","Louisiana Ave",7,7,35000
+"NordSud","ADM AMA",3,3,31500
+"NordSud","ADM Destrehan",3,3,31500
+"NordSud","MGMT",3,3,31500
+"NordSud","Mile 110 Buoys",3,3,31500
+"NordSud","MPLX Garyville",7,7,24500
+"NordSud","AST Meraux Buoys",2,2,21000
+"NordSud","Cooper Dockside",2,2,21000
+"NordSud","Zen-Noh",2,2,21000
+"NordSud","PBF Chalmette",5,5,17500
+"NordSud","Plains St James",5,5,17500
+"NordSud","Valero St Charles",5,5,17500
+"NordSud","1st Street",3,3,15000
+"NordSud","DRAX",1,1,10500
+"NordSud","UBT Davant",1,1,10500
+"NordSud","IMC Faustina",2,2,7000
+"NordSud","Harmony St",1,1,3500
+"NordSud","KMI Harvey",1,1,3500
+"NordSud","MPLX Mt Airy",1,1,3500
+"NordSud","Valero Meraux",1,1,3500
+"NordSud","(never berthed)",2,0,0
+"NordSud","Buck Kreihs",1,0,0
+"Norton Lilly","ADM Destrehan",363,363,3811500
+"Norton Lilly","ADM AMA",336,336,3528000
+"Norton Lilly","ADM Reserve",225,225,2362500
+"Norton Lilly","Mile 110 Buoys",113,113,1186500
+"Norton Lilly","AST St James",108,108,1134000
+"Norton Lilly","Nashville Ave",920,920,949250
+"Norton Lilly","ARTCO Destrehan Buoys",32,32,336000
+"Norton Lilly","Avondale Global Gateway",67,67,335000
+"Norton Lilly","Venture Global",92,92,322000
+"Norton Lilly","Zen-Noh",30,30,315000
+"Norton Lilly","ARTCO Buoys",24,24,252000
+"Norton Lilly","Cargill Reserve",22,22,231000
+"Norton Lilly","Cargill Westwego",21,21,220500
+"Norton Lilly","7th Street",40,40,200000
+"Norton Lilly","CHS Myrtle Grove",15,15,157500
+"Norton Lilly","IMC Faustina",15,15,157500
+"Norton Lilly","Cooper Darrow",14,14,147000
+"Norton Lilly","AST Chalmette Slip",29,29,145000
+"Norton Lilly","Louisiana Ave",29,29,145000
+"Norton Lilly","Stolthaven",37,37,129500
+"Norton Lilly","Valero St Charles",24,24,84000
+"Norton Lilly","IMTT Gretna",23,23,80500
+"Norton Lilly","Cooper Dockside",7,7,73500
+"Norton Lilly","MPLX Garyville",20,20,70000
+"Norton Lilly","AST Arabi Dolphins",6,6,63000
+"Norton Lilly","Convent Marine Terminal",6,6,63000
+"Norton Lilly","Napoleon Ave",81,81,60750
+"Norton Lilly","AST Meraux Buoys",5,5,52500
+"Norton Lilly","Bunge Destrehan",5,5,52500
+"Norton Lilly","KMI Harvey",15,15,52500
+"Norton Lilly","Shell Geismar",13,13,45500
+"Norton Lilly","Shell Norco",13,13,45500
+"Norton Lilly","Blackwater Westwego",11,11,38500
+"Norton Lilly","PBF Chalmette",10,10,35000
+"Norton Lilly","AST Chalmette Buoys",3,3,31500
+"Norton Lilly","Vulcan St Rose Mooring",3,3,31500
+"Norton Lilly","Harmony St",6,6,30000
+"Norton Lilly","IMTT St Rose",8,8,28000
+"Norton Lilly","Valero Meraux",7,7,24500
+"Norton Lilly","CFI Donaldsonville",6,6,21000
+"Norton Lilly","Dow Missouri",6,6,21000
+"Norton Lilly","Chevron Empire",5,5,17500
+"Norton Lilly","DRAX",3,3,17500
+"Norton Lilly","Occidental Taft",5,5,17500
+"Norton Lilly","1st Street",3,3,15000
+"Norton Lilly","Americas Styrenics",4,4,14000
+"Norton Lilly","ABT Burnside",1,1,10500
+"Norton Lilly","IMTT Geismar",3,3,10500
+"Norton Lilly","LDC Port Allen",1,1,10500
+"Norton Lilly","Nucor Steel",1,1,10500
+"Norton Lilly","Total Carville",3,3,10500
+"Norton Lilly","Axiall Plaquemine",2,2,7000
+"Norton Lilly","Blackwater Harvey",2,2,7000
+"Norton Lilly","Exxon Baton Rouge",2,2,7000
+"Norton Lilly","MPLX Mt Airy",2,2,7000
+"Norton Lilly","Shintech",2,2,7000
+"Norton Lilly","Erato St",2,2,5000
+"Norton Lilly","AST Globalplex",1,1,3500
+"Norton Lilly","Genesis Baton Rouge",1,1,3500
+"Norton Lilly","Julia St",1,1,3500
+"Norton Lilly","KM IMT Myrtle Grove",1,1,3500
+"Norton Lilly","(never berthed)",161,0,0
+"Norton Lilly","Alabo St",1,0,0
+"Norton Lilly","Perry Street",1,0,0
+"Nova","Cargill Reserve",216,216,2268000
+"Nova","Cargill Westwego",137,137,1438500
+"Nova","Cooper Darrow",13,13,136500
+"Nova","ARTCO Destrehan Buoys",12,12,126000
+"Nova","ARTCO Buoys",9,9,94500
+"Nova","CHS Myrtle Grove",9,9,94500
+"Nova","Zen-Noh",7,7,73500
+"Nova","Bunge Destrehan",5,5,52500
+"Nova","Reserve Buoys",5,5,52500
+"Nova","ADM Destrehan",4,4,42000
+"Nova","LDC Port Allen",4,4,42000
+"Nova","Mile 110 Buoys",4,4,42000
+"Nova","ADM Reserve",3,3,31500
+"Nova","Mile 112 Buoys",3,3,31500
+"Nova","AST St James",2,2,21000
+"Nova","MGMT",2,2,21000
+"Nova","Mile 111 Buoys",2,2,21000
+"Nova","ADM AMA",1,1,10500
+"Nova","Cargill Molasses",1,1,10500
+"Nova","Convent Marine Terminal",1,1,10500
+"Nova","IMTT Avondale",1,1,3500
+"Nova","(never berthed)",9,0,0
+"Riley-Sherman","PBF Chalmette",17,17,59500
+"Riley-Sherman","Genesis Baton Rouge",16,16,56000
+"Riley-Sherman","Valero St Charles",11,11,38500
+"Riley-Sherman","DRAX",2,2,7000
+"Riley-Sherman","IMTT St Rose",2,2,7000
+"Riley-Sherman","MPLX Garyville",2,2,7000
+"Riley-Sherman","Americas Styrenics",1,1,3500
+"Riley-Sherman","Baton Rouge General Cargo",1,1,3500
+"Riley-Sherman","Ergon St James",1,1,3500
+"Riley-Sherman","Exxon Baton Rouge",1,1,3500
+"Riley-Sherman","IMTT Gretna",1,1,3500
+"Riley-Sherman","Magellan Marrero",1,1,3500
+"Riley-Sherman","Plains St James",1,1,3500
+"Riley-Sherman","Shell Norco",1,1,3500
+"Riley-Sherman","Sugarland St James",1,1,3500
+"Riley-Sherman","Vulcan St Rose Mooring",1,1,3500
+"Riley-Sherman","(never berthed)",2,0,0
+"Riverbend","MPLX Garyville",23,23,80500
+"Riverbend","Blackwater Harvey",13,13,45500
+"Riverbend","Shell Norco",11,11,38500
+"Riverbend","Exxon Baton Rouge",6,6,21000
+"Riverbend","IMTT St Rose",6,6,21000
+"Riverbend","PBF Chalmette",6,6,21000
+"Riverbend","Valero St Charles",6,6,21000
+"Riverbend","Valero Meraux",4,4,14000
+"Riverbend","Cargill Molasses",1,1,3500
+"Riverbend","(never berthed)",1,0,0
+"Riverside","ABT Burnside",36,36,378000
+"Riverside","Nashville Ave",18,18,90000
+"Riverside","AST St James",7,7,73500
+"Riverside","Convent Marine Terminal",4,4,42000
+"Riverside","UBT Davant",3,3,31500
+"Riverside","ADM Reserve",2,2,21000
+"Riverside","Cooper Dockside",2,2,21000
+"Riverside","LDC Port Allen",2,2,21000
+"Riverside","Zen-Noh",2,2,21000
+"Riverside","AST Chalmette Buoys",1,1,10500
+"Riverside","AST Meraux Buoys",1,1,10500
+"Riverside","Cargill Reserve",1,1,10500
+"Riverside","Reserve Buoys",1,1,10500
+"Riverside","AST Globalplex",2,2,10000
+"Seaport Hub","Exxon Baton Rouge",28,28,98000
+"Seaport Hub","Chevron Empire",12,12,42000
+"Seaport Hub","Shell Norco",9,9,31500
+"Seaport Hub","MPLX Garyville",5,5,17500
+"Seaport Hub","Valero St Charles",3,3,10500
+"Seaport Hub","IMTT St Rose",2,2,7000
+"Seaport Hub","MPLX Mt Airy",2,2,7000
+"Seaport Hub","PBF Chalmette",2,2,7000
+"Seaport Hub","Valero Meraux",2,2,7000
+"Seaport Hub","(never berthed)",4,0,0
+"Southport","Zen-Noh",293,293,3076500
+"Southport","Cooper Darrow",280,280,2940000
+"Southport","Bunge Destrehan",222,222,2331000
+"Southport","Cargill Westwego",100,100,1050000
+"Southport","CHS Myrtle Grove",90,90,945000
+"Southport","Cargill Reserve",90,90,945000
+"Southport","AST Meraux Buoys",88,88,924000
+"Southport","LDC Port Allen",70,70,735000
+"Southport","ADM AMA",68,68,714000
+"Southport","MGMT",63,63,661500
+"Southport","ADM Destrehan",41,41,430500
+"Southport","ADM Reserve",34,34,357000
+"Southport","Reserve Buoys",20,20,210000
+"Southport","IMTT St Rose",28,28,98000
+"Southport","Mile 110 Buoys",8,8,84000
+"Southport","Stolthaven",24,24,84000
+"Southport","AST St James",7,7,73500
+"Southport","KMI Harvey",17,17,59500
+"Southport","IMTT Geismar",11,11,38500
+"Southport","Dow Missouri",9,9,31500
+"Southport","IMC Faustina",3,3,31500
+"Southport","MPLX Garyville",7,7,31500
+"Southport","AST Chalmette Slip",6,6,30000
+"Southport","IMTT Gretna",7,7,24500
+"Southport","AST Chalmette Buoys",2,2,21000
+"Southport","Axiall Plaquemine",6,6,21000
+"Southport","CFI Donaldsonville",6,6,21000
+"Southport","Convent Marine Terminal",2,2,21000
+"Southport","Cooper Dockside",2,2,21000
+"Southport","Shintech",6,6,21000
+"Southport","Valero St Charles",5,5,17500
+"Southport","LBC Sunshine",4,4,14000
+"Southport","ARTCO Buoys",1,1,10500
+"Southport","ARTCO Destrehan Buoys",1,1,10500
+"Southport","AST Arabi Dolphins",1,1,10500
+"Southport","Blackwater Harvey",3,3,10500
+"Southport","Blackwater Westwego",3,3,10500
+"Southport","Mile 112 Buoys",1,1,10500
+"Southport","Shell Geismar",3,3,10500
+"Southport","Total Carville",3,3,10500
+"Southport","UBT Davant",1,1,10500
+"Southport","AST Globalplex",2,2,10000
+"Southport","Avondale Global Gateway",2,2,10000
+"Southport","Americas Styrenics",2,2,7000
+"Southport","Shell Norco",2,2,7000
+"Southport","Valero Meraux",2,2,7000
+"Southport","Willow Glen",2,2,7000
+"Southport","Baker Hughes",1,1,3500
+"Southport","Cargill Molasses",1,1,3500
+"Southport","Dow Plaquemine",1,1,3500
+"Southport","Exxon Baton Rouge",1,1,3500
+"Southport","IMTT Avondale",1,1,3500
+"Southport","KMI Seven Oaks",1,1,3500
+"Southport","KMI St Gabriel",1,1,3500
+"Southport","MPLX Mt Airy",1,1,3500
+"Southport","PCS Nitrogen",1,1,3500
+"Southport","(never berthed)",26,0,0
+"Tricon","ARTCO Destrehan Buoys",61,61,640500
+"Tricon","AST Chalmette Buoys",48,48,504000
+"Tricon","Mile 110 Buoys",44,44,462000
+"Tricon","CFI Donaldsonville",127,127,444500
+"Tricon","AST Meraux Buoys",36,36,378000
+"Tricon","AST Arabi Dolphins",26,26,273000
+"Tricon","ARTCO Buoys",22,22,231000
+"Tricon","1st Street",44,44,220000
+"Tricon","AST Chalmette Slip",35,35,175000
+"Tricon","Cooper Darrow",12,12,126000
+"Tricon","AST Globalplex",25,25,125000
+"Tricon","7th Street",24,24,120000
+"Tricon","Vulcan St Rose Mooring",11,11,115500
+"Tricon","Yara Fertilizer",9,9,94500
+"Tricon","PCS Nitrogen",24,24,91000
+"Tricon","Harmony St",17,17,85000
+"Tricon","CHS Myrtle Grove",7,7,73500
+"Tricon","Cargill Reserve",7,7,73500
+"Tricon","ADM AMA",6,6,63000
+"Tricon","Reserve Buoys",6,6,63000
+"Tricon","Zen-Noh",6,6,63000
+"Tricon","IMTT Avondale",16,16,56000
+"Tricon","Blackwater Harvey",11,11,38500
+"Tricon","ABT Burnside",3,3,31500
+"Tricon","AST St James",3,3,31500
+"Tricon","Bunge Destrehan",3,3,31500
+"Tricon","DRAX",3,3,31500
+"Tricon","Mile 112 Buoys",3,3,31500
+"Tricon","UBT Davant",3,3,31500
+"Tricon","Occidental Taft",8,8,28000
+"Tricon","ADM Destrehan",2,2,21000
+"Tricon","Convent Marine Terminal",2,2,21000
+"Tricon","LDC Port Allen",2,2,21000
+"Tricon","Avondale Global Gateway",4,4,20000
+"Tricon","Cornerstone",5,5,17500
+"Tricon","IMC Faustina",5,5,17500
+"Tricon","ADM Reserve",1,1,10500
+"Tricon","Cooper Dockside",1,1,10500
+"Tricon","MGMT",1,1,10500
+"Tricon","Nashville Ave",2,2,10000
+"Tricon","KMI Harvey",2,2,7000
+"Tricon","IMTT Gretna",1,1,3500
+"Tricon","(never berthed)",6,0,0
+"Valhalla","IMTT St Rose",35,35,122500
+"Valhalla","AST Chalmette Buoys",7,7,73500
+"Valhalla","7th Street",12,12,60000
+"Valhalla","AST Chalmette Slip",11,11,55000
+"Valhalla","Louisiana Ave",10,10,50000
+"Valhalla","Nashville Ave",10,10,50000
+"Valhalla","ARTCO Destrehan Buoys",3,3,31500
+"Valhalla","Willow Glen",9,9,31500
+"Valhalla","Mile 110 Buoys",2,2,21000
+"Valhalla","Vulcan St Rose Mooring",2,2,14000
+"Valhalla","ADM Destrehan",1,1,10500
+"Valhalla","AST Arabi Dolphins",1,1,10500
+"Valhalla","CHS Myrtle Grove",1,1,10500
+"Valhalla","Avondale Global Gateway",2,2,10000
+"Valhalla","Harmony St",1,1,5000
+"Valhalla","(never berthed)",1,0,0
+"Valhalla","Alabo St",1,0,0
+"VertomCory","Crosstex Energy",123,123,430500
+"VertomCory","P66 Alliance",31,31,108500
+"VertomCory","Shell Norco",8,8,28000
+"VertomCory","CFI Donaldsonville",5,5,17500
+"VertomCory","Avondale Global Gateway",1,1,5000
+"VertomCory","(never berthed)",10,0,0
+"Wilhelmsen","AST Meraux Buoys",5,5,52500
+"Wilhelmsen","AST Chalmette Buoys",4,4,42000
+"Wilhelmsen","Cooper Dockside",3,3,31500
+"Wilhelmsen","7th Street",6,6,30000
+"Wilhelmsen","Avondale Global Gateway",6,6,30000
+"Wilhelmsen","ADM Reserve",2,2,21000
+"Wilhelmsen","Harmony St",3,3,15000
+"Wilhelmsen","ADM AMA",1,1,10500
+"Wilhelmsen","ADM Destrehan",1,1,10500
+"Wilhelmsen","CHS Myrtle Grove",1,1,10500
+"Wilhelmsen","Dow Missouri",3,3,10500
+"Wilhelmsen","Valero Meraux",3,3,10500
+"Wilhelmsen","Zen-Noh",1,1,10500
+"Wilhelmsen","AST Chalmette Slip",2,2,10000
+"Wilhelmsen","Shell Norco",2,2,7000
+"Wilhelmsen","CFI Donaldsonville",1,1,3500
+"Wilhelmsen","Exxon Baton Rouge",1,1,3500
+"Wilhelmsen","(never berthed)",2,0,0

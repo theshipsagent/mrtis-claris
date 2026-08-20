@@ -1,0 +1,104 @@
+facility,facility_type,port_calls,legs,distinct_vessels,chargeable_legs,revenue,avg_revenue_per_chargeable_leg
+"Zen-Noh","Elevator",834,834,699,834,8757000,10500
+"ADM AMA","Elevator",588,588,490,588,6167000,10488
+"ADM Destrehan","Elevator",523,523,427,523,5484500,10487
+"Cargill Reserve","Elevator",487,487,420,487,5106500,10486
+"Cooper Darrow","Mid-Stream",484,485,399,485,5085500,10486
+"Cargill Westwego","Elevator",383,383,353,383,4021500,10500
+"CHS Myrtle Grove","Elevator",362,362,324,362,3801000,10500
+"AST St James","Mid-Stream",352,353,329,353,3706500,10500
+"ADM Reserve","Elevator",342,342,319,342,3591000,10500
+"UBT Davant","Bulk Cargo",324,324,296,324,3402000,10500
+"Convent Marine Terminal","Bulk Cargo",308,308,281,308,3234000,10500
+"Bunge Destrehan","Elevator",306,306,278,306,3213000,10500
+"Mile 110 Buoys","Mid-Stream",291,291,273,291,3048500,10476
+"AST Meraux Buoys","Mid-Stream",289,290,273,290,3038000,10476
+"ARTCO Destrehan Buoys","Mid-Stream",234,234,226,234,2450000,10470
+"LDC Port Allen","Elevator",227,227,202,227,2383500,10500
+"Nashville Ave","General Cargo",1356,1356,411,1356,2330250,1718
+"Reserve Buoys","Mid-Stream",205,205,195,205,2152500,10500
+"Valero St Charles","Refinery",583,583,431,583,2040500,3500
+"IMTT St Rose","Tank Storage",572,572,384,572,2002000,3500
+"ABT Burnside","Bulk Cargo",171,171,161,171,1795500,10500
+"AST Chalmette Slip","General Cargo",346,349,242,349,1745000,5000
+"MGMT","Mid-Stream",144,144,130,144,1512000,10500
+"AST Chalmette Buoys","Mid-Stream",136,136,114,136,1428000,10500
+"Exxon Baton Rouge","Refinery",394,394,255,394,1379000,3500
+"MPLX Garyville","Refinery",388,388,297,388,1365000,3518
+"Noranda Alumina","Bulk Cargo",126,126,11,126,1323000,10500
+"KM IMT Myrtle Grove","Bulk Cargo",124,124,120,124,1295000,10444
+"Cooper Dockside","Mid-Stream",117,117,115,117,1228500,10500
+"Avondale Global Gateway","General Cargo",232,232,205,232,1160000,5000
+"Nucor Steel","Bulk Cargo",109,109,82,109,1144500,10500
+"Stolthaven","Tank Storage",315,315,189,315,1102500,3500
+"Crosstex Energy","Tank Storage",283,283,16,283,990500,3500
+"Erato St","Cruise",373,373,8,373,932500,2500
+"ARTCO Buoys","Mid-Stream",88,88,87,88,924000,10500
+"AST Arabi Dolphins","Mid-Stream",87,87,74,87,904000,10391
+"DRAX","Bulk Cargo",92,92,89,92,840000,9130
+"KMI Harvey","Tank Storage",209,209,169,209,731500,3500
+"IMTT Geismar","Tank Storage",208,208,126,208,728000,3500
+"PCS Nitrogen","Chemical Plant",123,123,60,123,710500,5776
+"Shell Norco","Refinery",181,181,133,181,633500,3500
+"Venture Global","LNG",177,177,100,177,619500,3500
+"7th Street","General Cargo",120,120,103,120,600000,5000
+"CFI Donaldsonville","Chemical Plant",170,170,107,170,595000,3500
+"PBF Chalmette","Refinery",160,160,126,160,560000,3500
+"Valero Meraux","Refinery",149,149,129,149,528500,3547
+"CII Rain Gramercy","Bulk Cargo",49,49,43,49,514500,10500
+"IMTT Gretna","Tank Storage",109,109,66,109,381500,3500
+"MPLX Mt Airy","Tank Storage",109,109,90,109,381500,3500
+"Blackwater Harvey","Tank Storage",108,108,43,108,378000,3500
+"Blackwater Westwego","Tank Storage",101,101,87,101,353500,3500
+"Vulcan St Rose Mooring","Mid-Stream",39,39,38,39,346500,8885
+"IMC Faustina","Chemical Plant",46,46,31,46,322000,7000
+"Plains St James","Tank Storage",91,91,70,91,318500,3500
+"Julia St","Cruise",123,123,19,123,310500,2524
+"1st Street","General Cargo",54,54,44,54,270000,5000
+"AST Globalplex","General Cargo",56,56,54,56,269500,4812
+"Louisiana Ave","General Cargo",53,53,46,53,265000,5000
+"Mile 112 Buoys","Mid-Stream",25,25,25,25,262500,10500
+"Shintech","Chemical Plant",71,71,60,71,248500,3500
+"Harmony St","General Cargo",49,49,42,49,242000,4939
+"Genesis Baton Rouge","Tank Storage",64,64,52,64,238000,3719
+"Cargill Molasses","Tank Storage",63,63,54,63,227500,3611
+"Dow Missouri","Chemical Plant",64,64,57,64,224000,3500
+"ABT Buoys","Mid-Stream",20,20,19,20,210000,10500
+"Americas Styrenics","Chemical Plant",59,59,54,59,206500,3500
+"Occidental Taft","Chemical Plant",54,54,36,54,189000,3500
+"Total Carville","Chemical Plant",52,52,45,52,182000,3500
+"Baton Rouge General Cargo","General Cargo",41,41,38,41,179500,4378
+"Dow Taft","Chemical Plant",50,50,31,50,175000,3500
+"Shell Geismar","Chemical Plant",48,48,41,48,168000,3500
+"IMTT Avondale","Tank Storage",42,42,29,42,147000,3500
+"Willow Glen","Tank Storage",39,39,37,39,136500,3500
+"P66 Alliance","Tank Storage",37,37,8,37,129500,3500
+"Chevron Empire","Tank Storage",33,33,26,33,115500,3500
+"Yara Fertilizer","Bulk Cargo",10,10,10,10,105000,10500
+"LBC Sunshine","Tank Storage",29,29,26,29,101500,3500
+"Baker Hughes","Chemical Plant",28,28,27,28,98000,3500
+"Apex Mt Airy","Tank Storage",25,25,14,25,87500,3500
+"Chevron Oak Point","Tank Storage",23,23,16,23,80500,3500
+"Ergon St James","Tank Storage",23,23,21,23,80500,3500
+"NuStar St James","Tank Storage",22,22,19,22,77000,3500
+"Napoleon Ave","General Cargo",90,90,49,90,67500,750
+"Axiall Plaquemine","Chemical Plant",18,18,17,18,63000,3500
+"KMI Seven Oaks","Tank Storage",18,18,17,18,63000,3500
+"Cornerstone","Chemical Plant",17,17,16,17,59500,3500
+"AMSTAR","Bulk Cargo",7,7,7,7,45500,6500
+"CII Rain Chalmette","Bulk Cargo",4,4,4,4,42000,10500
+"Mile 111 Buoys","Mid-Stream",4,4,4,4,42000,10500
+"Vulcan Westwego","Bulk Cargo",4,4,3,4,42000,10500
+"Magellan Marrero","Tank Storage",8,8,8,8,28000,3500
+"Placid Oil","Tank Storage",7,7,7,7,24500,3500
+"KMI St Gabriel","Tank Storage",6,6,6,6,21000,3500
+"Sugarland St James","Tank Storage",5,5,5,5,17500,3500
+"Henry Clay Ave","General Cargo",3,3,3,3,15000,5000
+"Aramco Convent","Refinery",2,2,2,2,7000,3500
+"Dow Plaquemine","Chemical Plant",2,2,2,2,7000,3500
+"Occidental Convent","Chemical Plant",1,1,1,1,3500,3500
+"(never berthed)","--",699,699,443,0,0,0
+"Buck Kreihs","General Cargo",3,3,3,0,0,0
+"Alabo St","General Cargo",2,2,2,0,0,0
+"Poland St","General Cargo",2,2,2,0,0,0
+"Perry Street","General Cargo",1,1,1,0,0,0

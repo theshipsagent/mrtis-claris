@@ -1,0 +1,160 @@
+agency,facility,loadings,agency_fee
+"(no agency)","ADM AMA",4,35000
+"(no agency)","ADM Destrehan",8,77000
+"(no agency)","ADM Reserve",1,10500
+"(no agency)","CHS Myrtle Grove",3,31500
+"(no agency)","Cargill Reserve",2,21000
+"(no agency)","Zen-Noh",1,10500
+"Bertel","Cargill Reserve",1,3500
+"Biehl","ADM AMA",1,10500
+"Biehl","LDC Port Allen",1,10500
+"Blue Water","ADM AMA",52,546000
+"Blue Water","ADM Destrehan",25,262500
+"Blue Water","ADM Reserve",29,304500
+"Blue Water","ARTCO Destrehan Buoys",8,84000
+"Blue Water","Bunge Destrehan",42,441000
+"Blue Water","CHS Myrtle Grove",124,1302000
+"Blue Water","Cargill Reserve",58,609000
+"Blue Water","Cargill Westwego",60,630000
+"Blue Water","LDC Port Allen",45,472500
+"Blue Water","MGMT",8,84000
+"Blue Water","Zen-Noh",332,3486000
+"Capes","ADM AMA",2,21000
+"Capes","CHS Myrtle Grove",2,21000
+"Capes","Cargill Reserve",2,21000
+"Capes","LDC Port Allen",1,10500
+"Capes","MGMT",1,10500
+"Celtic","ADM AMA",1,10500
+"Celtic","ADM Reserve",1,10500
+"Celtic","Bunge Destrehan",2,21000
+"Celtic","CHS Myrtle Grove",3,31500
+"Celtic","Cargill Reserve",2,21000
+"Celtic","Cargill Westwego",1,10500
+"Celtic","Zen-Noh",4,42000
+"Fillette Green","CHS Myrtle Grove",1,10500
+"Fillette Green","Zen-Noh",1,10500
+"General Maritime","ADM AMA",17,178500
+"General Maritime","ADM Destrehan",19,199500
+"General Maritime","ADM Reserve",7,73500
+"General Maritime","Bunge Destrehan",5,52500
+"General Maritime","CHS Myrtle Grove",29,304500
+"General Maritime","Cargill Reserve",16,168000
+"General Maritime","Cargill Westwego",13,136500
+"General Maritime","LDC Port Allen",38,399000
+"General Maritime","MGMT",2,21000
+"General Maritime","Zen-Noh",10,105000
+"General Steamship","ADM AMA",8,84000
+"General Steamship","ADM Destrehan",6,63000
+"General Steamship","ADM Reserve",3,31500
+"General Steamship","ARTCO Destrehan Buoys",7,73500
+"General Steamship","Bunge Destrehan",4,42000
+"General Steamship","CHS Myrtle Grove",30,315000
+"General Steamship","Cargill Reserve",14,147000
+"General Steamship","Cargill Westwego",12,126000
+"General Steamship","LDC Port Allen",25,262500
+"General Steamship","MGMT",1,10500
+"General Steamship","Zen-Noh",25,262500
+"Gulf Harbor","ADM Destrehan",1,10500
+"Gulf Harbor","Zen-Noh",1,10500
+"Gulf Inland","ADM AMA",6,63000
+"Gulf Inland","ADM Destrehan",5,52500
+"Gulf Inland","ADM Reserve",2,21000
+"Gulf Inland","ARTCO Destrehan Buoys",4,42000
+"Gulf Inland","Bunge Destrehan",5,52500
+"Gulf Inland","CHS Myrtle Grove",13,136500
+"Gulf Inland","Cargill Reserve",21,220500
+"Gulf Inland","Cargill Westwego",2,21000
+"Gulf Inland","LDC Port Allen",1,10500
+"Gulf Inland","MGMT",2,21000
+"Gulf Inland","Zen-Noh",7,73500
+"HOST","ADM AMA",16,168000
+"HOST","ADM Destrehan",7,73500
+"HOST","ADM Reserve",10,105000
+"HOST","ARTCO Destrehan Buoys",1,10500
+"HOST","Bunge Destrehan",11,115500
+"HOST","CHS Myrtle Grove",13,136500
+"HOST","Cargill Reserve",12,126000
+"HOST","Cargill Westwego",12,126000
+"HOST","LDC Port Allen",8,84000
+"HOST","MGMT",58,609000
+"HOST","Zen-Noh",29,304500
+"Inchcape","Zen-Noh",3,31500
+"Maritime Endeavors","CHS Myrtle Grove",3,31500
+"Maritime Endeavors","Cargill Reserve",1,10500
+"Maritime Endeavors","Cargill Westwego",3,31500
+"Maritime Endeavors","LDC Port Allen",2,21000
+"Maritime Endeavors","Zen-Noh",3,31500
+"Moran Shipping","ADM AMA",1,10500
+"Moran Shipping","ADM Destrehan",3,31500
+"Moran Shipping","Bunge Destrehan",1,10500
+"Moran Shipping","CHS Myrtle Grove",1,10500
+"Newship","ADM AMA",65,682500
+"Newship","ADM Destrehan",34,357000
+"Newship","ADM Reserve",18,189000
+"Newship","Bunge Destrehan",1,10500
+"Newship","CHS Myrtle Grove",17,178500
+"Newship","Cargill Reserve",17,178500
+"Newship","Cargill Westwego",14,147000
+"Newship","LDC Port Allen",27,283500
+"Newship","MGMT",3,31500
+"Newship","Zen-Noh",77,808500
+"NordSud","ADM AMA",3,31500
+"NordSud","ADM Destrehan",3,31500
+"NordSud","ADM Reserve",4,42000
+"NordSud","Cargill Reserve",5,52500
+"NordSud","Cargill Westwego",8,84000
+"NordSud","MGMT",3,31500
+"NordSud","Zen-Noh",2,21000
+"Norton Lilly","ADM AMA",336,3528000
+"Norton Lilly","ADM Destrehan",363,3811500
+"Norton Lilly","ADM Reserve",225,2362500
+"Norton Lilly","ARTCO Destrehan Buoys",14,147000
+"Norton Lilly","Bunge Destrehan",5,52500
+"Norton Lilly","CHS Myrtle Grove",15,157500
+"Norton Lilly","Cargill Reserve",22,231000
+"Norton Lilly","Cargill Westwego",21,220500
+"Norton Lilly","LDC Port Allen",1,10500
+"Norton Lilly","Zen-Noh",30,315000
+"Nova","ADM AMA",1,10500
+"Nova","ADM Destrehan",4,42000
+"Nova","ADM Reserve",3,31500
+"Nova","ARTCO Destrehan Buoys",4,42000
+"Nova","Bunge Destrehan",5,52500
+"Nova","CHS Myrtle Grove",9,94500
+"Nova","Cargill Reserve",216,2268000
+"Nova","Cargill Westwego",137,1438500
+"Nova","LDC Port Allen",4,42000
+"Nova","MGMT",2,21000
+"Nova","Zen-Noh",7,73500
+"Riverside","ADM Reserve",2,21000
+"Riverside","Cargill Reserve",1,10500
+"Riverside","LDC Port Allen",2,21000
+"Riverside","Zen-Noh",2,21000
+"Southport","ADM AMA",68,714000
+"Southport","ADM Destrehan",41,430500
+"Southport","ADM Reserve",34,357000
+"Southport","Bunge Destrehan",222,2331000
+"Southport","CHS Myrtle Grove",90,945000
+"Southport","Cargill Reserve",90,945000
+"Southport","Cargill Westwego",100,1050000
+"Southport","LDC Port Allen",70,735000
+"Southport","MGMT",63,661500
+"Southport","Zen-Noh",293,3076500
+"Tricon","ADM AMA",6,63000
+"Tricon","ADM Destrehan",2,21000
+"Tricon","ADM Reserve",1,10500
+"Tricon","ARTCO Destrehan Buoys",19,199500
+"Tricon","Bunge Destrehan",3,31500
+"Tricon","CHS Myrtle Grove",7,73500
+"Tricon","Cargill Reserve",7,73500
+"Tricon","LDC Port Allen",2,21000
+"Tricon","MGMT",1,10500
+"Tricon","Zen-Noh",6,63000
+"Valhalla","ADM Destrehan",1,10500
+"Valhalla","ARTCO Destrehan Buoys",1,10500
+"Valhalla","CHS Myrtle Grove",1,10500
+"Wilhelmsen","ADM AMA",1,10500
+"Wilhelmsen","ADM Destrehan",1,10500
+"Wilhelmsen","ADM Reserve",2,21000
+"Wilhelmsen","CHS Myrtle Grove",1,10500
+"Wilhelmsen","Zen-Noh",1,10500

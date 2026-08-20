@@ -1,5 +1,173 @@
 # mrtis-claris session log
 
+## 2026-08-20 (session 8) — The reporting exercise: ten findings, one closed
+
+**MRTIS commit unchanged at `2738601c9a87ff7be264f9c10cb1e1a618ef3436`** — the
+same commit sessions 3-7 built against, verified at open and again at close.
+Read-only throughout; every connection opened `read_only=True`. MRTIS ends the
+session as it started: same commit, same five untracked `sample_port_calls*.csv`
+files, `mrtis.duckdb` mtime still 2026-08-19 22:59 — earlier than this session's
+first command.
+
+Session 7 scoped this session as building reports on the proof-of-concept
+footing, opening with a Q&A. That is what happened, but the Q&A did not stay a
+scoping exercise: **William's answers turned into rulings, and the reports turned
+into a defect-finding instrument.** Ten issues logged, one ruled and closed, none
+acted on.
+
+### What William ruled, and what it cost or saved
+
+| | Ruling | Effect |
+|---|---|---|
+| Scope | Three years is enough for this exercise | Window 2023-08-01 → 2026-07-31 |
+| Folder | Concept reports get a dedicated folder, apart from the deliverable | `report_concepts/` |
+| I-1 | `ARTCO Destrehan Buoys` is **multi-purpose, not grain-only** — the dictionary rule is wrong | 445 legs mis-tagged; reports route around it on FGIS evidence |
+| I-2 | MGMT's 40% FGIS coverage is a **grain/by-product split**, not a matching bug | No fix available; two elevators still unexplained |
+| I-7 | **Vessel type rules first, then the gen-cargo modifier** — the discount is a berth rule, not a direction rule | **$3,492,500 does not move.** Build was already correct |
+| I-10 | Split the schedule: stable non-bulk branch, active bulk branch | Recommended and checked clean; reorganise, do not reprice |
+
+### What shipped
+
+**[`report_concepts/`](report_concepts/)** — deliberately *not* part of the
+Claris review package, and its [`README.md`](report_concepts/README.md) says so.
+Three report families, all reproducing byte-identically:
+
+| Report | Figures |
+|---|---|
+| [G1 — grain volume vs ship count](report_concepts/grain_volume_by_month.md) | 4,254 loadings · 2,443 vessels · **175,369,154 tonnes** certified · monthly, per-facility, per-facility x year |
+| [G2 — grain revenue by agent](report_concepts/grain_agent_revenue.md) | **$44,646,000** over the same loadings · by agent and agent x facility |
+| [P1 — port-wide by facility and agency](report_concepts/portwide_by_facility.md) | **16,260 calls · 103 facilities · 36 agencies · $110,360,250** |
+| [Addendum — ARTCO held-out legs](report_concepts/addendum_artco_destrehan.md) | 176 legs · $1,841,000, excluded on the I-1 ruling |
+
+**[`report_concepts/ISSUES.md`](report_concepts/ISSUES.md)** — the actual point of
+the exercise. Ten entries, each with severity, reproducible evidence, effect on
+reports, and a proposed fix that is **explicitly not applied**. It is the input to
+a later build-fix session, which is how William scoped it at the outset.
+
+### The architecture question, answered from the pipeline
+
+William raised the sharpest question of the session mid-way: had the port-call
+and KPI work over-complicated what is fundamentally a pivot — measures (count,
+tons, revenue) against dimensions (facility, cargo, agent, destination)? He
+proposed a seven-phase flow he had proven by hand, and asked whether MRTIS
+follows it.
+
+**It does, phase for phase**, and the answer was read out of the database rather
+than asserted:
+
+| His phase | MRTIS | Materialised as |
+|---|---|---|
+| 1 Raw ingest | `build_db.py`, 47 `Zone Report*.csv` | — |
+| 2 Staging: 4 sources → one table | Cross In/Out, Anchor, Terminal are `source_category` in the zone dictionary, already unified | **`fact_zone_event`, 290,305 rows** |
+| 3 Transformations, canonical rolls | vessel type, zone→facility, agency normalisation | `dim_zone`, `dim_agent` |
+| 4 Ships register matching | IMO/name with alias table | `dim_vessel` |
+| 5 FGIS matching (extensible) | `build_fgis.py` → `build_fgis_match.py` | **`fgis_record`, 14,528** |
+| 6 Unique voyage record ID | `build_port_calls.py` | `port_call`, `port_call_leg` |
+| 7 Agency revenue | `agency_fee_for()` | `port_call_leg.agency_fee` |
+
+**All 12 objects in the database are `BASE TABLE`. Zero views.** Nothing is
+re-matched at report time; every report this session was a single `GROUP BY`. The
+one honest deviation from "one output table" is that MRTIS materialises *three*
+grains — event, leg, call — because the fee rule lives at leg grain while time
+analysis needs event grain. All three are materialised, so it costs nothing.
+
+The counter-proposal — a flat departures table — is the thing MRTIS already
+disproved: per-departure billing totals **$349,527,500 against the ruled
+$272,660,000, over-billing by 28.2%**, with 18.8% of fee-bearing calls charged
+2-10 times for one job.
+
+### Two of William's trade claims, tested
+
+**Turnover — confirmed precisely, and it validates the pipeline.** William:
+*"24-35% bulk ships turn over in the river from discharge to load."* Measured on
+the discharge denominator: **1,628 of 5,197 bulk discharge calls = 31.3%**,
+mid-range of a expectation formed independently of this data. Strong evidence
+split-call detection neither under- nor over-fires. Zero bulk calls carry a
+Discharge leg alongside an unresolved leg, so nothing is hidden. Logged as **I-8**
+because the same phenomenon yields 7.5%, 31.3% or 48.6% depending on denominator
+— a 4.2x spread that could be published without anyone noticing a choice was made.
+
+**Quality trend — half confirmed.** 2019 *is* the worst year (2.8% incomplete,
+4-5x every later year; 15.9% unresolved, series high), and the correction was
+immediate and durable. But improvement was **not** consistent after 2020: never-
+berthed legs 1.4% → 6.3%, geofence artifacts 11.3% → 12.7%, and **`tpc = 0` 4.3%
+→ 18.9%, rising every year without exception**. The monotonicity makes that
+structural — ships-register coverage lagging newer tonnage — and it is already
+deferred upstream as §11.3. Logged as **I-9**.
+
+### Verified
+
+- **MRTIS untouched** — commit, working tree and database mtime identical at
+  close to open.
+- **Everything reproduces byte-identically** — both new scripts, plus
+  `figures.py`, `charts/build_charts.py` and `reports/build_reports.py`. A full
+  re-run at close produced no diff at all.
+- **The review package did not move.** No file under `sample/`, `charts/`,
+  `reports/`, `export/` or `docs/FIGURES.md` changed.
+- **Reports reconcile to each other.** G2's grain revenue and P1's port-wide
+  revenue share a basis: grain berths are **$44,646,000 of $110,360,250 = 40.5%**
+  of the river's agency market over 36 months.
+- **Two clean bills of health.** Agency names have **zero** near-duplicates at an
+  0.80 similarity threshold; the only near-duplicate facility names are Mile
+  110/111/112 Buoys, which are genuinely distinct mile markers.
+- **Fee rules observed firing correctly at a single berth** — Nashville Ave bills
+  1,047 legs at $750 (R3 container) and 309 at $5,000 (R5 bulk at gen cargo),
+  side by side. A better demonstration for a reviewer than prose about the
+  schedule.
+
+### Open
+
+The ten issues, of which one is closed:
+
+- **I-1** ARTCO grain rule wrong — **ruled**, 445 legs mis-tagged, unfixed.
+- **I-2** FGIS coverage — explained at MGMT, **unexplained at Bunge Destrehan
+  (85.6%) and ADM Destrehan (88.0%)**.
+- **I-3** `Grain` at MGMT also covers by-products — needs a ruling, blocks nothing.
+- **I-4** `port_call.agency` vs `port_call_leg.agency` — $939,000 mis-attributable.
+- **I-5** $29,495,250 (10.8%) of revenue on legs where the agent changed mid-leg —
+  disclosure, not correction.
+- **I-6** `leg_start` vs `call_start` window basis, $42,000 — documentation only.
+- **I-7** **CLOSED** — ruled A, build already correct.
+- **I-8** Turnover denominator discipline.
+- **I-9** Quality trend; `tpc = 0` the priority.
+- **I-10** Fee-schedule split — recommended, checked clean, reprices nothing.
+
+Plus, unchanged from session 7: **nobody has imported the sample into Claris
+yet** — still the one thing this repo cannot verify for itself.
+
+### The governance point raised and not acted on
+
+Mid-session William said *"it sounds like we need to pause reports and go back to
+build."* That was flagged rather than done: **`CLAUDE.md` directive 2 forbids this
+repo from writing anything under `/Users/billy/Documents/MRTIS`**, and session 7
+recorded William's own confirmation that MRTIS stays parked. Fixing the ARTCO
+dictionary row needs either an MRTIS session in that repo or an explicit
+amendment here. The recommendation given — and accepted by continuing — was to
+keep building reports and batch the fixes, because `build_db.py` reassigns
+surrogate keys and drops the downstream layers, so every rebuild forces a full
+revalidation of the review package. One batched fix is one rebuild.
+
+### Next session
+
+Two candidates, both scoped this session and neither started:
+
+1. **The pivot demo** — any measure (count · tonnes · revenue · hours) against any
+   dimension (facility · cargo · agent · destination · vessel type · month). It is
+   what William described as the platform's whole purpose, and it would stress
+   cargo, destination and vessel type, which nothing has exercised yet.
+2. **Time analysis** — berth, waiting and idle hours by facility and agent. High
+   value, and it does **not** need the parked KPI question settled: those columns
+   sit on the same leg row, and the 20.7%-unattributed problem only bites when the
+   buckets are required to sum to elapsed time.
+
+Then **the build-fix session**, which now has ten measured findings waiting for it.
+
+Standing entry conditions unchanged: re-check MRTIS's commit before trusting any
+figure here, and if it has moved, re-run `figures.py`, both `report_concepts/`
+scripts and both export modes before quoting anything.
+
+---
+
 ## 2026-08-20 (session 7) — The SWP-to-SWP KPI design brief
 
 **MRTIS commit unchanged at `2738601c9a87ff7be264f9c10cb1e1a618ef3436`** — the

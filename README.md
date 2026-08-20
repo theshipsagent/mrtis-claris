@@ -126,6 +126,26 @@ measurements are derived by [`kpi/kpi_baseline.py`](kpi/kpi_baseline.py) into
 destabilise a figure the reviewer is already holding. **Nothing here ships to
 the Claris reviewer.**
 
+## Reporting exercise in progress — not part of the review package
+
+[`report_concepts/`](report_concepts/) holds concept reports built to **test what
+can be pulled** out of the validated data and to surface what that testing
+exposes. Scoped by William 2026-08-20 to the last three years
+(2023-08-01 → 2026-07-31, anchored on the data's last date, never on wall-clock
+today, so figures cannot drift on re-run).
+
+The reports are the instrument; [`report_concepts/ISSUES.md`](report_concepts/ISSUES.md)
+is the output — **ten findings logged, one ruled and closed, none acted on**, to
+be carried into a later build-fix session. Highlights: a grain-only dictionary
+rule on a multi-purpose facility (445 legs mis-tagged), two agency columns that
+give different revenue answers ($939,000), and a `tpc = 0` placeholder rate that
+has risen every year for eight years (4.3% → 18.9%).
+
+Same derivation discipline as the deliverable — every figure scripted, none
+hand-keyed, MRTIS read-only. **Nothing here ships to the Claris reviewer**, and
+nothing here changed the review package: `sample/`, `charts/`, `reports/`,
+`export/` and `docs/FIGURES.md` all still reproduce byte-identically.
+
 ## How to work in this project
 
 Read `CLAUDE.md` in full at the start of every session before doing anything else.
