@@ -1141,9 +1141,58 @@ The bulk half (408 calls, $4.28M at the $10,500 tier) is a separate question aga
 and partly resolves through I-20 (Burnside) and I-17 (layberth zones). The
 lightering half is 294 calls that everyone agrees reached no berth.
 
-**Status** RULED — MRTIS behaves correctly and the no-berth result is right. The
-**fee question remains open**, and the scale is wider than one agent or one
-anchorage.
+**RULE GIVEN — William, 2026-08-20:** *"lets make it easy, any ship that is a
+tanker anchoring and departing with no berth in the call, specially those
+parameters, is a lightering. Tanker only."*
+
+**Implemented in both 2025 exports** as `LIGHTERING_TOOK_CARGO` /
+`LIGHTERING_GAVE_CARGO`:
+
+```
+vessel is a Tanker by the register (NOT LNG/LPG/Gas)
+  and berth_stop_count = 0
+  and anchorage_stop_count > 0
+  and |exit_draft_ft - entry_draft_ft| > 1
+```
+
+**One refinement the rule needs, and it is load-bearing.** "Tanker only" has to
+mean *tanker by the register*, not by the feed. The feed types **64 no-berth gas
+carriers as `Tanker`** (I-18) — those are Venture Global calls (I-12), not
+lightering. Without the register test they would all be mislabelled.
+
+**Across the series:**
+
+| | |
+|---|---:|
+| Calls matching the rule | **245** |
+| Distinct vessels | 207 |
+| Took cargo (draft up) | 138 |
+| Gave cargo (draft down) | 107 |
+| Median draft move | **10 ft** |
+| Median time in port | 102 h |
+| Fee billed today | **$0** |
+
+At a ≥5ft threshold instead of >1ft it is 207 calls rather than 245 — a 38-call
+difference, so the threshold is a choice worth stating. The exports use **>1ft**,
+matching MRTIS's own `min_draft_delta` for draft-based activity resolution.
+
+**Verified against William's own worked examples:**
+
+| Vessel | Call | Draft | Flag |
+|---|---|---|---|
+| `Champion Pomer` | 2025-02-20 | 24 → 39 ft | `LIGHTERING_TOOK_CARGO` |
+| `Bow Sky` | 2025-07-23 | 39 → 31 ft | `LIGHTERING_GAVE_CARGO` |
+| `Champion Pomer` | 2025-11-26 | 25 → 39 ft | **`berthed`** — control: same vessel, similar load, but it berthed |
+
+**Non-tankers keep the generic flags.** Bulk and other types showing anchor draft
+movement stay `NOBERTH_LOADED_UP` / `NOBERTH_LIGHTERED_DOWN`, because William
+restricted the lightering reading to tankers. The bulk population is a separate
+question and partly resolves through I-20 (Burnside buoys) and I-17 (layberth
+wharves).
+
+**Status** RULED and IMPLEMENTED for classification. **The fee question remains
+open** — 245 calls, $0 billed, and William has ruled the no-berth result correct;
+what is undecided is whether a lightering call should attract a fee at all.
 
 ---
 

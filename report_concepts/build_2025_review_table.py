@@ -12,8 +12,11 @@ population is not one thing (report_concepts/ISSUES.md I-12, I-13, I-15):
   berthed                    normal call, reached a berth
   NOBERTH_LNG_FEED_GAP       LNG hull, no berth -- the Venture Global blind
                              window before the geofence appeared (I-12)
-  NOBERTH_LIGHTERED_DOWN     no berth, draft fell >1ft -- gave cargo at anchor
-  NOBERTH_LOADED_UP          no berth, draft rose >1ft -- took cargo at anchor
+  LIGHTERING_TOOK_CARGO      tanker, no berth, anchored, draft rose -- took
+                             cargo ship-to-ship at anchor (William, 2026-08-20)
+  LIGHTERING_GAVE_CARGO      same, draft fell -- gave cargo at anchor
+  NOBERTH_LIGHTERED_DOWN     non-tanker, no berth, draft fell >1ft
+  NOBERTH_LOADED_UP          non-tanker, no berth, draft rose >1ft
   NOBERTH_NO_CARGO_EVIDENCE  no berth, draft flat -- genuinely worked nothing
   NOBERTH_NO_DRAFT_DATA      no berth, drafts missing -- cannot say
   NOT_AN_OCEAN_VESSEL        no IMO and no type from either source -- a tug,
@@ -89,6 +92,16 @@ select
            then 'NOBERTH_LNG_FEED_GAP'
       when c.entry_draft_ft is null or c.exit_draft_ft is null
            then 'NOBERTH_NO_DRAFT_DATA'
+      when c.vessel_type = 'Tanker'
+           and coalesce(v.ship_type,'') not like '%LNG%'
+           and coalesce(v.ship_type,'') not like '%LPG%'
+           and coalesce(v.ship_type,'') not like '%Gas%'
+           and c.anchorage_stop_count > 0
+           and c.entry_draft_ft is not null and c.exit_draft_ft is not null
+           and abs(c.exit_draft_ft - c.entry_draft_ft) > 1
+           then case when c.exit_draft_ft > c.entry_draft_ft
+                     then 'LIGHTERING_TOOK_CARGO'
+                     else 'LIGHTERING_GAVE_CARGO' end
       when c.exit_draft_ft < c.entry_draft_ft - 1 then 'NOBERTH_LIGHTERED_DOWN'
       when c.exit_draft_ft > c.entry_draft_ft + 1 then 'NOBERTH_LOADED_UP'
       else 'NOBERTH_NO_CARGO_EVIDENCE'
@@ -104,8 +117,18 @@ select
            then 'LNG/gas hull, no berth recorded -- Venture Global geofence absent until 2026-02-04 (ISSUES I-12)'
       when c.entry_draft_ft is null or c.exit_draft_ft is null
            then 'No berth and no draft pair -- cannot tell whether cargo moved'
+      when c.vessel_type = 'Tanker'
+           and coalesce(v.ship_type,'') not like '%LNG%'
+           and coalesce(v.ship_type,'') not like '%LPG%'
+           and coalesce(v.ship_type,'') not like '%Gas%'
+           and c.anchorage_stop_count > 0
+           and c.entry_draft_ft is not null and c.exit_draft_ft is not null
+           and abs(c.exit_draft_ft - c.entry_draft_ft) > 1
+           then 'Lightering: tanker anchored, no berth, draft moved '
+                || cast(abs(c.exit_draft_ft - c.entry_draft_ft) as varchar)
+                || 'ft. Ruled by William 2026-08-20 -- correctly no berth (ISSUES I-15)'
       when c.exit_draft_ft < c.entry_draft_ft - 1
-           then 'No berth, left ' || cast(c.entry_draft_ft - c.exit_draft_ft as varchar) || 'ft lighter -- gave cargo at anchor (ISSUES I-15)'
+           then 'No berth, left ' || cast(c.entry_draft_ft - c.exit_draft_ft as varchar) || 'ft lighter -- gave cargo at anchor'
       when c.exit_draft_ft > c.entry_draft_ft + 1
            then 'No berth, left ' || cast(c.exit_draft_ft - c.entry_draft_ft as varchar) || 'ft deeper -- took cargo at anchor (ISSUES I-15)'
       else 'No berth and draft unchanged -- no evidence cargo moved'

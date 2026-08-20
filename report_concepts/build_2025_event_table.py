@@ -52,7 +52,27 @@ FLAG = """
              then 'NOBERTH_LNG_FEED_GAP'
         when c.entry_draft_ft is null or c.exit_draft_ft is null
              then 'NOBERTH_NO_DRAFT_DATA'
-        when c.exit_draft_ft < c.entry_draft_ft - 1 then 'NOBERTH_LIGHTERED_DOWN'
+      when c.vessel_type = 'Tanker'
+           and coalesce(dv.ship_type,'') not like '%LNG%'
+           and coalesce(dv.ship_type,'') not like '%LPG%'
+           and coalesce(dv.ship_type,'') not like '%Gas%'
+           and c.anchorage_stop_count > 0
+           and c.entry_draft_ft is not null and c.exit_draft_ft is not null
+           and abs(c.exit_draft_ft - c.entry_draft_ft) > 1
+           then case when c.exit_draft_ft > c.entry_draft_ft
+                     then 'LIGHTERING_TOOK_CARGO'
+                     else 'LIGHTERING_GAVE_CARGO' end
+        when c.vessel_type = 'Tanker'
+           and coalesce(dv.ship_type,'') not like '%LNG%'
+           and coalesce(dv.ship_type,'') not like '%LPG%'
+           and coalesce(dv.ship_type,'') not like '%Gas%'
+           and c.anchorage_stop_count > 0
+           and c.entry_draft_ft is not null and c.exit_draft_ft is not null
+           and abs(c.exit_draft_ft - c.entry_draft_ft) > 1
+           then case when c.exit_draft_ft > c.entry_draft_ft
+                     then 'LIGHTERING_TOOK_CARGO'
+                     else 'LIGHTERING_GAVE_CARGO' end
+      when c.exit_draft_ft < c.entry_draft_ft - 1 then 'NOBERTH_LIGHTERED_DOWN'
         when c.exit_draft_ft > c.entry_draft_ft + 1 then 'NOBERTH_LOADED_UP'
         else 'NOBERTH_NO_CARGO_EVIDENCE'
       end
@@ -96,6 +116,16 @@ select
            then 'LNG/gas hull, no berth recorded -- Venture Global geofence absent until 2026-02-04'
       when c.entry_draft_ft is null or c.exit_draft_ft is null
            then 'No berth and no draft pair -- cannot tell whether cargo moved'
+      when c.vessel_type = 'Tanker'
+           and coalesce(dv.ship_type,'') not like '%LNG%'
+           and coalesce(dv.ship_type,'') not like '%LPG%'
+           and coalesce(dv.ship_type,'') not like '%Gas%'
+           and c.anchorage_stop_count > 0
+           and c.entry_draft_ft is not null and c.exit_draft_ft is not null
+           and abs(c.exit_draft_ft - c.entry_draft_ft) > 1
+           then 'Lightering: tanker anchored, no berth, draft moved '
+                || cast(abs(c.exit_draft_ft - c.entry_draft_ft) as varchar)
+                || 'ft. Ruled by William 2026-08-20 -- correctly no berth (ISSUES I-15)'
       when c.exit_draft_ft < c.entry_draft_ft - 1
            then 'No berth, left ' || cast(c.entry_draft_ft - c.exit_draft_ft as varchar) || 'ft lighter -- gave cargo at anchor'
       when c.exit_draft_ft > c.entry_draft_ft + 1
