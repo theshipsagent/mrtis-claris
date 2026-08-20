@@ -1342,6 +1342,70 @@ has just told us is unreliable, and it is worth **$44M** at the tier difference.
 **Status** CLOSED for gas. The `Bulk` / `General Cargo` question is OPEN and
 needs William.
 
+---
+
+### I-19 · Calendar-year filtering truncates voyages that cross 1 January — `wrong-figure` (fixed here)
+
+**Severity** `wrong-figure` — an export that silently shows half a voyage
+**Where** This exercise's own export scripts. Not MRTIS.
+**Found** 2026-08-20 by William: *"take care on year end and year start, u took
+calendar year, but the voyage may of ended or began in previous or subsequent
+year."*
+
+**He is right, and the event export was the worse of the two.**
+
+A port call is a span, not a point. Filtering on `call_start` within a calendar
+year drops calls that opened in December and worked through January; filtering
+**events** on `event_time` is worse still — it keeps a call but **cuts its
+sequence at midnight on 31 December**, which destroys the one thing the export
+exists for: reading a call by sorting on vessel and date.
+
+**Measured on the 2025 exports as first built:**
+
+| | |
+|---|---:|
+| Calls that started 2024 and ended 2025 — **dropped entirely** | **105** |
+| Calls that started 2025 and ended 2026 — kept, but tail cut | **97** |
+| **Event rows sitting in a truncated sequence** | **828** |
+
+Boundary-crossing calls are not rare: 97-135 a year in every year of the series,
+median duration ~220 hours. And some are far longer — one call spans
+**2020-03-29 to 2026-06-16**.
+
+**Fixed.** Both exports now select **whole calls that overlap the period**:
+
+```
+call_start < '2026-01-01' and (call_end is null or call_end >= '2025-01-01')
+```
+
+and the event export brings **every event of every selected call, whatever year
+it falls in**, plus unplaced events dated in 2025 (which belong to no call, so no
+call can carry them).
+
+| | Calendar-clipped | Whole calls |
+|---|---:|---:|
+| Calls | 5,483 | **5,589** |
+| Event rows | 37,061 | **37,921** |
+| Truncated sequences | **828 rows** | **0** |
+
+**Asserted, not assumed.** `build_2025_event_table.py` now fails the build unless
+every call in the file carries a complete `event_seq` run from 1 to n. A clipped
+sequence is an error, not a silent defect.
+
+**This is the same discipline the review package already applies** — `sample/`
+has shipped whole port calls since session 5, on the reasoning that *"a truncated
+event stream would show a reviewer a broken version of the very assembly rules
+this package exists to demonstrate."* The exercise exports simply had not
+inherited it. They have now.
+
+**Worth carrying into any future period report.** Any figure cut by calendar
+year — monthly trends, year-on-year comparisons, the G1c per-year table — is
+counting calls by when they *started*. That is defensible and consistent, but it
+is a choice, and boundary calls land in the year they opened rather than being
+split across both.
+
+**Status** CLOSED — fixed and asserted.
+
 ## Closed
 
 - **I-1** — **fixed** in MRTIS `56ad9f5` (§15.1). 445 legs corrected; nothing else in the database moved.

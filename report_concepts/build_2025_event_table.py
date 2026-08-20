@@ -32,6 +32,16 @@ MRTIS_DB = "/Users/billy/Documents/MRTIS/data/db/mrtis.duckdb"
 OUT = Path(__file__).resolve().parent
 YEAR_FROM, YEAR_TO = "2025-01-01", "2026-01-01"
 
+# -- WHOLE CALLS THAT OVERLAP 2025, never calendar-clipped.
+# -- William, 2026-08-20: "take care on year end and year start, u took calendar
+# -- year, but the voyage may of ended or began in previous or subsequent year."
+# -- A calendar filter on call_start dropped 105 calls that opened in 2024 and
+# -- worked through 2025, and a calendar filter on event_time truncated 828 event
+# -- rows mid-sequence. Both are fatal to reading a call by sorting on vessel and
+# -- date. So: any call whose span touches 2025 is included IN FULL, with every
+# -- one of its events whatever year they fall in.
+
+
 FLAG = """
       case
         when c.port_call_id is null then 'EVENT_NOT_IN_ANY_CALL'
@@ -98,8 +108,18 @@ select
 from port_call_event e
 left join port_call c  on c.port_call_id = e.port_call_id
 left join dim_vessel dv on dv.vessel_key = e.vessel_key
-where e.event_time >= timestamp '{YEAR_FROM}'
-  and e.event_time <  timestamp '{YEAR_TO}'
+where (
+    -- every event of any call that overlaps 2025, whatever year it falls in
+    e.port_call_id in (
+        select port_call_id from port_call c
+        where c.call_start < timestamp '2026-01-01'
+    and (c.call_end is null or c.call_end >= timestamp '2025-01-01')
+    )
+    -- plus unplaced events that fall in 2025, which belong to no call at all
+    or (e.port_call_id is null
+        and e.event_time >= timestamp '{YEAR_FROM}'
+        and e.event_time <  timestamp '{YEAR_TO}')
+  )
 order by e.vessel_name, e.imo, e.event_time, e.event_key
 """
 
@@ -111,10 +131,32 @@ def main() -> None:
         capture_output=True, text=True, check=True).stdout.strip()
 
     df = con.execute(SQL).df()
+
+    # Assert no call is truncated: every call in the file must carry its full
+    # event_seq run, 1..n. A gap means the selection clipped a sequence, which
+    # is exactly the defect this whole-call selection exists to prevent.
+    chk = con.execute("""
+        with sel as (
+          select port_call_id from port_call c
+          where c.call_start < timestamp '2026-01-01'
+            and (c.call_end is null or c.call_end >= timestamp '2025-01-01')
+        ),
+        f as (
+          select e.port_call_id, e.event_seq
+          from port_call_event e join sel using (port_call_id)
+        )
+        select count(*) from (
+          select port_call_id from f
+          group by 1
+          having count(*) <> max(event_seq) or min(event_seq) <> 1
+        )
+    """).fetchone()[0]
+    assert chk == 0, f"{chk} calls have a truncated event sequence in this export"
+
     path = OUT / "port_call_events_2025_all_rows.csv"
     df.to_csv(path, index=False)
 
-    print(f"MRTIS commit {commit} · calendar year 2025 · every event row")
+    print(f"MRTIS commit {commit} · whole calls overlapping 2025 · every event row")
     print(f"-> {path}")
     print(f"   {len(df):,} rows x {len(df.columns)} columns, "
           f"sorted by vessel_name, imo, event_time")

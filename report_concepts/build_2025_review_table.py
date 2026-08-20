@@ -41,6 +41,16 @@ MRTIS_DB = "/Users/billy/Documents/MRTIS/data/db/mrtis.duckdb"
 OUT = Path(__file__).resolve().parent
 YEAR_FROM, YEAR_TO = "2025-01-01", "2026-01-01"
 
+# -- WHOLE CALLS THAT OVERLAP 2025, never calendar-clipped.
+# -- William, 2026-08-20: "take care on year end and year start, u took calendar
+# -- year, but the voyage may of ended or began in previous or subsequent year."
+# -- A calendar filter on call_start dropped 105 calls that opened in 2024 and
+# -- worked through 2025, and a calendar filter on event_time truncated 828 event
+# -- rows mid-sequence. Both are fatal to reading a call by sorting on vessel and
+# -- date. So: any call whose span touches 2025 is included IN FULL, with every
+# -- one of its events whatever year they fall in.
+
+
 SQL = f"""
 select
     c.port_call_id,
@@ -105,8 +115,8 @@ from port_call c
 left join dim_vessel v on v.vessel_key = c.vessel_key
 left join port_call_leg l
        on l.port_call_id = c.port_call_id and l.leg_seq = 1
-where c.call_start >= timestamp '{YEAR_FROM}'
-  and c.call_start <  timestamp '{YEAR_TO}'
+where c.call_start < timestamp '2026-01-01'
+  and (c.call_end is null or c.call_end >= timestamp '2025-01-01')
 order by c.call_start, c.port_call_id
 """
 
@@ -121,7 +131,7 @@ def main() -> None:
     path = OUT / "port_calls_2025_review.csv"
     df.to_csv(path, index=False)
 
-    print(f"MRTIS commit {commit} · calendar year 2025")
+    print(f"MRTIS commit {commit} · whole calls overlapping 2025 (not calendar-clipped)")
     print(f"-> {path}  ({len(df):,} calls, {len(df.columns)} columns)")
     print()
     print("review_flag breakdown:")
