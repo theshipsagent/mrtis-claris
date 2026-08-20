@@ -91,6 +91,30 @@ business-rule questions — stated and proceeded on:
   refresh automation. Fine for a one-time review package; would need
   re-running (not rebuilding from scratch) if MRTIS's commit moves.
 
+### Also this session: repo pushed and made public
+
+Committed and pushed all of the above to `origin/main`
+(`b2fef89..f3d9a9d`). William then asked to make the repo public (it had
+been scoped private in MRTIS's 2026-08-19 session log) and explicitly
+acknowledged the risk; changed via `gh repo edit --visibility public
+--accept-visibility-change-consequences`. Consistent with MRTIS's own prior
+call (`docs/SESSION_LOG.md`, same date: "the fee figures are modeled/
+estimated and not sensitive") — that call was about the MRTIS repo itself,
+this is the same judgment extended to the derived package. Now public:
+`github.com/theshipsagent/mrtis-claris`.
+
+### Next session: independent audit, not a build session
+
+William asked for a fresh audit — no memory of this session, re-derive
+everything from the live database rather than trusting what's written here,
+report discrepancies rather than fixing them. Scope: does
+`docs/BUSINESS_RULES.md` actually match MRTIS's sources, does
+`export/build_review_package.py` genuinely read read-only and match the live
+schema, do every chart/report figure reconcile independently. Modeled on
+MRTIS's own audit precedent (`OPEN_QUESTIONS.md` §7, §11) — deliberately
+changes nothing, leaves rulings to William. The prompt used to start that
+session is not repeated here; see the next dated entry for its findings.
+
 ### How to reproduce this build
 
 ```
