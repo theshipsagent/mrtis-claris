@@ -10,7 +10,7 @@ Every rule below is cited back to its source in MRTIS
 ruling in `docs/OPEN_QUESTIONS.md`, or the implementation in
 `scripts/build_db.py` / `scripts/build_port_calls.py`. This document doesn't
 invent anything; it translates. Built against MRTIS commit
-`10c7040241fb037b5e45b62fb6a865907c1cf4f2` — see `SESSION_LOG.md` for how to
+`68b3a6f241fb037b5e45b62fb6a865907c1cf4f2` — see `SESSION_LOG.md` for how to
 tell if that's moved since.
 
 **Where the numbers come from.** Every count, percentage and dollar figure in

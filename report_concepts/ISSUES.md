@@ -1,6 +1,6 @@
 # Issues log — what building the concept reports exposed
 
-Opened 2026-08-20 (session 8). MRTIS commit `2738601c9a87ff7be264f9c10cb1e1a618ef3436` at the time of finding; fixes built at `10c7040`.
+Opened 2026-08-20 (session 8). MRTIS commit `2738601c9a87ff7be264f9c10cb1e1a618ef3436` at the time of finding; fixes built at `68b3a6f`.
 
 Every entry is something the reporting exercise **found**, not something it
 fixed. Nothing in this log has been acted on — that is deliberate, and is the
@@ -162,7 +162,42 @@ is available until a by-product tonnage source is ingested.
   investigating in the build-fix session.
 - **Opens a definitional question (see I-3).**
 
-**Status** PARTLY RESOLVED — explained at MGMT, still open at two elevators.
+**RESOLVED, 2026-08-20 — not a defect, and not a property of those two
+elevators.** Broken out by year, the "low coverage" is a **2023-shaped dip** that
+recovers completely:
+
+| | 2019 | 2022 | **2023** | 2025 | 2026 |
+|---|---:|---:|---:|---:|---:|
+| ADM Destrehan | 97.7% | 93.1% | **75.4%** | 88.5% | **98.2%** |
+| Bunge Destrehan | 89.3% | 86.1% | **69.4%** | 92.4% | **96.8%** |
+| Zen-Noh (control) | 99.1% | 100.0% | 99.6% | 99.6% | 100.0% |
+
+**It is not an FGIS matching failure.** 2023 has the *best* match rate in the
+series — **99.8%**, against 93.9-99.4% elsewhere. The certificates that exist are
+being matched; there are simply fewer of them (1,439 in 2023 against ~1,650
+typical).
+
+**System-wide at elevators, 2023 is the outlier year:**
+
+| Year | Elevator legs | Certified | Coverage | Certified tonnage |
+|---|---:|---:|---:|---:|
+| 2021 | 1,277 | 1,254 | 98.2% | 61.65M t |
+| 2022 | 1,253 | 1,216 | 97.0% | 57.74M t |
+| **2023** | **1,245** | **1,140** | **91.6%** | **50.56M t** |
+| 2024 | 1,327 | 1,275 | 96.1% | 56.50M t |
+| 2025 | 1,422 | 1,374 | 96.6% | 59.40M t |
+
+Leg counts held flat while certified tonnage fell ~12% from 2022 and ~18% from
+2021 — the same number of vessels worked the elevators, but materially fewer
+carried a certified grain export.
+
+**What this leaves.** The pipeline is eliminated as a cause: the join works, the
+matcher works, and the shape is a single year across multiple facilities rather
+than a persistent property of two. The residue is a **trade question, not a data
+question** — what happened to certified Gulf grain export in 2023 — and that is
+William's to answer, not this repo's. Flagged for him; nothing to fix here.
+
+**Status** CLOSED as a data defect. Open only as a trade observation for William.
 
 ---
 
@@ -193,7 +228,7 @@ over-claiming, or (b) introduce a `cargo_subgroup` distinguishing certified grai
 from by-product where evidence allows. Needs William's ruling; both are cheap.
 
 **RULED AND BUILT — William, 2026-08-20:** *"mgmt is grain and by products, add
-cargo_subgroup."* Built at MRTIS `10c7040` (`OPEN_QUESTIONS.md` §15.6).
+cargo_subgroup."* Built at MRTIS `68b3a6f` (`OPEN_QUESTIONS.md` §15.6).
 
 **The design point worth keeping.** The obvious implementation — "no FGIS
 certificate at a grain berth means by-product" — would have been wrong, because
@@ -504,7 +539,7 @@ monotonic one. (c) is the one worth doing first.
 ---
 
 **(c) `tpc = 0` — INVESTIGATED AND RESOLVED, 2026-08-20.** MRTIS commit
-`10c7040` (`OPEN_QUESTIONS.md` §15.7, which also closes the long-deferred §11.3).
+`68b3a6f` (`OPEN_QUESTIONS.md` §15.7, which also closes the long-deferred §11.3).
 
 **Ruled by William:** *"if is there we can populate as available, if becomes a
 larger effort to fix, am ok dropping it."*
@@ -544,8 +579,43 @@ A useful by-product: this is the first demonstration that a **full MRTIS rebuild
 is content-stable** despite the key reassignment its README warns about — and the
 chain runs offline in 36 seconds, since `fgis_source/` is cached.
 
-**Status** (c) CLOSED. **(a) never-berthed legs 1.4% → 6.3% and (b) geofence
-drift 11.3% → 12.7% remain OPEN**, both still uninvestigated.
+---
+
+**(a) never-berthed legs 1.4% → 6.3% — INVESTIGATED AND EXPLAINED, 2026-08-20.
+Not an MRTIS defect: a gap in the source feed. See I-12, which it turned into.**
+
+The drift is real but it is not decay. 2025's 356 never-berthed legs include
+**274 calls with two events or fewer** (against 49 in 2024) — vessels that
+crossed into the SWP and out again with nothing recorded between. **161 of
+those, 58.5%, are Gas carriers**, against only 941 Gas calls in the entire
+eight-year dataset.
+
+Traced to a single cause: a new LNG terminal the feed could not see. Full
+finding and its commercial consequence in **I-12** below.
+
+---
+
+**(b) geofence artifacts — INVESTIGATED, 2026-08-20. Overstated in this log, and
+not a trend.**
+
+**Correction to the figure recorded above.** The "11.3% → 12.7%" in this entry
+was computed against `sum(berth_stop_count)`, which is not the artifact
+denominator. Measured against berth events proper, the rate is:
+
+| 2019 | 2020 | 2021 | 2022 | 2023 | 2024 | 2025 | 2026 |
+|---:|---:|---:|---:|---:|---:|---:|---:|
+| 5.2% | 5.2% | 4.7% | 5.0% | 4.9% | 5.7% | **6.0%** | **4.9%** |
+
+A 1.3-point band over eight years with **2026 already back to 4.9%** — noise, not
+drift. The 2025 bump is concentrated at named facilities (Zen-Noh 174 artifacts,
+DRAX 52 — DRAX being new to the feed), consistent with new or re-drawn geofences
+bedding in rather than with systematic decay.
+
+**Nothing to fix.** The finding here is that this log carried a wrong figure for
+two sessions; `figures.py`'s published geofence numbers (5.23% of all berth
+events, 5.27% of placed) were always correct and are unaffected.
+
+**Status** ALL THREE PARTS CLOSED. (a) → I-12, (b) not a defect, (c) fixed.
 
 
 ---
@@ -672,7 +742,7 @@ was false, through no fault of the code here, and nobody had tested it across an
 actual MRTIS rebuild — only across re-runs of the export against an unchanged
 database, which could never have caught it.
 
-**FIXED — MRTIS commit `10c7040`, 2026-08-20** (`OPEN_QUESTIONS.md` §15.5).
+**FIXED — MRTIS commit `68b3a6f`, 2026-08-20** (`OPEN_QUESTIONS.md` §15.5).
 `ORDER BY` added to all three aggregates, with a comment recording that it is
 load-bearing rather than cosmetic — exactly the kind of clause a later tidy-up
 deletes as noise.
@@ -686,12 +756,72 @@ including the gzipped sample data**.
 
 **Status** CLOSED.
 
+---
+
+### I-12 · A new LNG terminal was invisible to the feed for 13 months — $707,000 of agency fee never billed — `gap` (source feed)
+
+**Severity** `gap` — not a defect in any code; a hole in the source data
+**Where** The Zone Report feed. **Not** MRTIS, and not this package.
+**Found** 2026-08-20, chasing I-9(a)'s never-berthed drift
+
+**The pattern.** Never-berthed Gas-carrier calls ramp from 6 in January 2025 to
+25 in January 2026 — then **collapse to 4 in February 2026** and 0-2 a month
+thereafter.
+
+**The cause, and the correlation is exact.** `Venture Global` — the Plaquemines
+LNG terminal — **first appears anywhere in the feed on 2026-02-04**. Every
+Venture Global event in the database falls on or after that date; there is one
+raw zone spelling and it has no earlier history. The month the geofence appears
+is the month the never-berthed calls stop.
+
+**What was happening in the meantime.** Gas traffic tripled as the terminal came
+up — 103 calls in 2024, **308 in 2025** — and distinct gas vessels went 21 → 93
+→ 113. For thirteen months those vessels crossed into the SWP, spent an average
+of **50.3 hours** inside it, and crossed out again, with **no berth event of any
+kind recorded**. Their only events are `SWP Cross` Enter and Exit.
+
+| The blind window, 2025-01 → 2026-01 | |
+|---|---:|
+| Gas calls with no berth recorded | **202** |
+| Distinct vessels | 78 |
+| Average time inside the SWP | 50.3 hours |
+| Gas tier | $3,500 / leg |
+| **Agency fee never billed** | **$707,000** |
+
+That is **0.26%** of the $272,660,000 billable total, concentrated in thirteen
+months and one trade.
+
+**MRTIS behaved correctly throughout.** William's rule is that a leg bills only
+if it reached a berth (`docs/BUSINESS_RULES.md` §9). No berth was recorded, so no
+fee accrued — the pipeline applied the rule faithfully to the data it was given.
+The data was incomplete.
+
+**Effect on reports** Every figure in this package for 2025 understates gas
+activity and gas revenue by this amount. The port-wide report shows those calls
+(they exist, with fee $0); the fee totals do not include them.
+
+**Proposed fix** None available in code — no rule change can invent a berth event
+that was never recorded. Two real options, both William's:
+
+1. **Ask the feed provider to backfill the Venture Global geofence** to the
+   terminal's actual start of operations. If they can, a rebuild recovers all 202
+   calls and the $707,000 automatically, with no change to MRTIS.
+2. **Accept and annotate.** Treat 2025-01 → 2026-01 gas figures as known-low and
+   say so wherever they are published.
+
+**Worth checking beyond this terminal:** the same blindness would affect *any*
+facility that opened during the covered period. `DRAX` also appears new in the
+feed (2025). A systematic check of first-appearance dates against known terminal
+start-ups would show whether Venture Global is the only case.
+
+**Status** OPEN — no code fix exists; needs a decision from William.
+
 ## Closed
 
 - **I-1** — **fixed** in MRTIS `56ad9f5` (§15.1). 445 legs corrected; nothing else in the database moved.
 - **I-7** — ruled A by William 2026-08-20; the build was already correct, $3,492,500 does not move (§15.3).
 - **I-10** — **built** in MRTIS `56ad9f5` (§15.2), behaviour-preserving: 0 legs changed fee.
-- **I-11** — **fixed** in MRTIS `10c7040` (§15.5). Found while verifying I-1; the build was non-deterministic and the package's byte-identical guarantee was false. Now verified end-to-end across a real rebuild.
+- **I-11** — **fixed** in MRTIS `68b3a6f` (§15.5). Found while verifying I-1; the build was non-deterministic and the package's byte-identical guarantee was false. Now verified end-to-end across a real rebuild.
 
 ### Still open — three investigations and one ruling
 

@@ -135,14 +135,15 @@ exposes. Scoped by William 2026-08-20 to the last three years
 today, so figures cannot drift on re-run).
 
 The reports are the instrument; [`report_concepts/ISSUES.md`](report_concepts/ISSUES.md)
-is the output — **eleven findings, seven now closed**. Highlights: a grain-only
+is the output — **twelve findings, eleven now closed**. Highlights: a grain-only
 dictionary rule on a multi-purpose facility (445 legs mis-tagged, **fixed**), a
 non-deterministic MRTIS build that quietly falsified this package's own
 byte-identical guarantee (**fixed**), a new `cargo_subgroup` splitting certified
 grain from grain by-products (**built**), two agency columns that give different
-revenue answers ($939,000, **disclosed**), and a `tpc = 0` placeholder that turned out to be a
-vendor gap rather than a coverage trend — traced to the raw S&P files and now
-stored as NULL (**fixed**).
+revenue answers ($939,000, **disclosed**), a `tpc = 0` placeholder that turned out to be a
+vendor gap rather than a coverage trend (**fixed**), and a new LNG terminal that
+was invisible to the source feed for thirteen months, leaving **$707,000** of
+agency fee unbilled (**open — needs a decision, not a code change**).
 
 Same derivation discipline as the deliverable — every figure scripted, none
 hand-keyed. **Nothing here ships to the Claris reviewer.** The MRTIS fixes it

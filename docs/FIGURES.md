@@ -5,7 +5,7 @@ Every number this package publishes, re-derived live from MRTIS's database.
 `charts/` and `reports/` all read from this same derivation, so a figure
 cannot go stale in one place and stay current in another.
 
-MRTIS commit: `10c704032d3d48b18f3c5a195f7fda72796a6fc1`
+MRTIS commit: `68b3a6f25dd07e00e26ebef2d228a09df3cf03f3`
 
 ---
 

@@ -3,7 +3,7 @@
 ## 2026-08-20 (session 9) — The build-fix: three findings closed, one found in the act of fixing
 
 **MRTIS moved, deliberately, for the first time since this repo existed.**
-`2738601` → **`10c7040`**. William: *"lets fix the 6 findings."*
+`2738601` → **`68b3a6f`**. William: *"lets fix the 6 findings."*
 
 `CLAUDE.md` directive 2 forbids this repo from writing to MRTIS, so the
 suspension was **recorded in the manual before anything was touched**, scoped to
@@ -90,7 +90,7 @@ agent on the outbound load at full tariff — which had never been written down.
 ### Added after the fixes: `cargo_subgroup` (I-3)
 
 William ruled the last blocked finding the same day: *"mgmt is grain and by
-products, add cargo_subgroup."* Built at MRTIS `10c7040` (§15.6).
+products, add cargo_subgroup."* Built at MRTIS `68b3a6f` (§15.6).
 
 **The design point is the whole finding.** The obvious implementation — "no FGIS
 certificate at a grain berth means by-product" — would have been wrong, because
@@ -163,23 +163,78 @@ question. This package is now verified byte-identical across one.
 the reviewer's data dictionary explains *why* blank is not zero, with the
 evidence attached.
 
+### The last two drifts — investigated, and one is a $707,000 finding
+
+Neither was a defect in MRTIS. One was not a defect anywhere.
+
+**Never-berthed legs, 1.4% → 6.3%: a hole in the source feed.** 2025's 356
+never-berthed legs include **274 calls of two events or fewer** (49 in 2024) —
+vessels crossing into the SWP and out again with nothing recorded between. **161
+of those, 58.5 per cent, are Gas carriers**, against 941 Gas calls in the entire
+eight-year dataset.
+
+`Venture Global` — Plaquemines LNG — **first appears anywhere in the feed on
+2026-02-04**. Never-berthed gas calls ramp 6/month (2025-01) → 25/month
+(2026-01), then **collapse to 4 the month the geofence appears** and 0-2
+thereafter. Meanwhile gas traffic tripled as the terminal came up: 103 calls in
+2024, 308 in 2025, distinct vessels 21 → 93 → 113.
+
+| The blind window, 2025-01 → 2026-01 | |
+|---|---:|
+| Gas calls with no berth recorded | **202** |
+| Distinct vessels | 78 |
+| Average time inside the SWP | 50.3 hours |
+| **Agency fee never accrued** | **$707,000** |
+
+**MRTIS was right the whole time.** A leg bills only if it reached a berth
+(§9). No berth was recorded, so no fee accrued — the rule applied faithfully to
+incomplete data. No code fix can invent an event that was never recorded, so this
+became **I-12**, which needs a decision from William rather than an
+investigation: ask the feed provider to backfill the geofence (a rebuild then
+recovers the $707,000 automatically) or annotate the window as known-low.
+
+**Geofence artifacts: this log had the wrong denominator.** The "11.3% → 12.7%"
+recorded in session 8 was computed against `sum(berth_stop_count)`. Measured
+against berth events proper it is **5.2 / 5.2 / 4.7 / 5.0 / 4.9 / 5.7 / 6.0 /
+4.9** per cent across 2019-2026 — a 1.3-point band with 2026 already back down,
+and the 2025 bump sitting at named facilities (Zen-Noh, and DRAX which is new to
+the feed). Not a trend. `figures.py`'s published geofence figures were always on
+the correct denominator and are unaffected; the error was confined to the issues
+log.
+
+**Elevator FGIS coverage (I-2): a 2023 dip, not a facility property.** ADM
+Destrehan 75.4% in 2023 against 98.2% in 2026; Bunge 69.4% against 96.8%;
+Zen-Noh flat at 99-100% as a control. **Not a matching failure** — 2023 posts the
+*best* FGIS match rate in the series at 99.8%. There were simply fewer
+certificates (1,439 against ~1,650 typical), with elevator certified tonnage at
+50.56M t against 61.65M in 2021 while leg counts held flat. The pipeline is
+eliminated; what remains is a trade question for William.
+
+### The read-only directive is back in force
+
+`CLAUDE.md` directive 2 was suspended on 2026-08-20 for this work and is
+**restored**, with a note recording that it was lifted, why, and that anything
+further in MRTIS needs a fresh explicit suspension. MRTIS ends at **`68b3a6f`**,
+seven commits on from the `2738601` this package had been built against since
+session 3.
+
 ### Still open — the honest remainder
 
-"Fix the 6" was never 6 fixes. Six are closed, one was ruled, and two drifts remain:
+"Fix the 6" was never 6 fixes. **All of them are now resolved** — four built, three explained as not-defects, one ruled with no change needed. What is left is not a fix at all:
 
 | Ref | What it needs |
 |---|---|
-| **I-2** | Investigation. Bunge Destrehan 85.6% / ADM Destrehan 88.0% FGIS coverage against 99.6-100% at peer elevators. MGMT's 40% is explained (grain vs by-products); these two are not. |
-| **I-9 (a), (b)** | Investigation. Never-berthed legs 1.4% → 6.3% and geofence artifacts 11.3% → 12.7%. Part (c), `tpc = 0`, is **closed** — traced to the vendor, now NULL. |
+| **I-12** | **A decision from William, not an investigation.** No code fix exists. Ask the feed provider to backfill the Venture Global geofence — a rebuild then recovers 202 calls and $707,000 automatically — or accept the 13-month gap and annotate 2025 gas figures as known-low. |
 
 `CLAUDE.md`'s read-only suspension **stays in force** until those close, and must
 be restored when they do.
 
 ### Next session
 
-**Both remaining items are uninvestigated drifts** — never-berthed legs
-quadrupling (1.4% → 6.3%) and geofence artifacts creeping (11.3% → 12.7%),
-alongside I-2's two unexplained elevator FGIS rates. None blocks the handover.
+**Nothing is left to investigate.** I-12 needs a decision from William, and the
+2023 grain-export question is his trade knowledge rather than this repo's work.
+Neither blocks the handover, which remains the outstanding item: **nobody has
+imported the sample into Claris yet.**
 Unchanged behind all of it: **nobody has imported the sample into Claris yet.**
 
 ---

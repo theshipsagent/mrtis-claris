@@ -19,35 +19,7 @@ only: proof and evidence, not a native FileMaker build.
    or re-derive a rule from first principles — MRTIS has already done that
    work, session by session, with William's explicit rulings. Quote it, cite
    it, don't reinvent it.
-2. **Read-only against MRTIS — SUSPENDED 2026-08-20 for the build-fix work.**
-   William, 2026-08-20, session 8: *"lets fix the 6 findings."* The reporting
-   exercise produced ten measured findings
-   (`report_concepts/ISSUES.md`); six need changes in MRTIS, and William has
-   directed that they be made. For that work, and only that work, this repo may
-   write to `/Users/billy/Documents/MRTIS`, under three conditions carried over
-   from MRTIS's own standing practice:
-   - **Scratch-copy first.** Changes are built and fully reverified against a
-     copy of `mrtis.duckdb` before the real database is touched — MRTIS's
-     CHANGELOG records this as standing practice, and it is not optional here.
-   - **MRTIS's own governance applies.** Rulings go to `docs/OPEN_QUESTIONS.md`
-     with a section number, changes to `CHANGELOG.md`, the session to
-     `docs/SESSION_LOG.md` — the conventions that repo already uses, not this
-     one's.
-   - **The regression test is `figures.py`.** It re-derives the fee schedule
-     independently and asserts, leg by leg, agreement with what MRTIS stored.
-     A behaviour-preserving change must still report **0 mismatches**.
-
-   **Status, 2026-08-20 (session 9):** I-1, I-3, I-10 and I-11 built at MRTIS
-   `10c7040`; I-7 ruled with no change needed; I-9(c) `tpc = 0` investigated
-   and resolved. **Two remain, both uninvestigated drifts** — I-2 (elevator FGIS
-   coverage) and I-9(a)(b) (never-berthed legs, geofence artifacts). The
-   suspension stays in force until those close.
-
-   **This suspension is scoped to the build-fix work and ends with it.** Once the
-   remaining findings are closed, restore the original directive below. Everything it
-   said still holds in the meantime for anything *outside* that work:
-
-   Never write to
+2. **Read-only against MRTIS.** Never write to
    `/Users/billy/Documents/MRTIS/data/db/mrtis.duckdb` or any file under
    `/Users/billy/Documents/MRTIS`. Query the database read-only; export from
    it; never mutate it. Same discipline for `/Users/billy/Documents/File Maker/`
@@ -64,6 +36,15 @@ only: proof and evidence, not a native FileMaker build.
    proceed on the recommendation rather than opening a long clarifying
    round. Stop and ask only when a business-rule fact (not a technical
    choice) is genuinely unknown and MRTIS's docs don't answer it.
+   > **Suspended once, 2026-08-20, and restored the same day.** William
+   > directed that the reporting exercise's findings be fixed in MRTIS
+   > (*"lets fix the 6 findings"*), so this directive was lifted for that work
+   > and that work only, under MRTIS's own standing practice: scratch-copy
+   > rebuild and full reverification before the real repo was touched. The work
+   > is complete — MRTIS `2738601` → `68b3a6f`, seven findings closed — and the
+   > directive is back in force. See `SESSION_LOG.md` session 9. Anything
+   > further in MRTIS needs a fresh, explicit suspension recorded here first.
+
 5. **Leave a trail.** Every session gets a dated entry in `SESSION_LOG.md` —
    create the file on the first session if it doesn't exist yet, matching
    MRTIS's own log style (what was done, what was decided, what's open, what

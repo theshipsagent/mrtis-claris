@@ -9,7 +9,7 @@ in the brief can be argued from numbers rather than from impressions.
 The package's *published* figures live in [`FIGURES.md`](FIGURES.md),
 derived separately by `figures.py`.
 
-MRTIS commit: `10c704032d3d48b18f3c5a195f7fda72796a6fc1`
+MRTIS commit: `68b3a6f25dd07e00e26ebef2d228a09df3cf03f3`
 
 ---
 
