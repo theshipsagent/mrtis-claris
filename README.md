@@ -135,16 +135,17 @@ exposes. Scoped by William 2026-08-20 to the last three years
 today, so figures cannot drift on re-run).
 
 The reports are the instrument; [`report_concepts/ISSUES.md`](report_concepts/ISSUES.md)
-is the output — **ten findings logged, one ruled and closed, none acted on**, to
-be carried into a later build-fix session. Highlights: a grain-only dictionary
-rule on a multi-purpose facility (445 legs mis-tagged), two agency columns that
-give different revenue answers ($939,000), and a `tpc = 0` placeholder rate that
-has risen every year for eight years (4.3% → 18.9%).
+is the output — **eleven findings, four now closed**. Highlights: a grain-only
+dictionary rule on a multi-purpose facility (445 legs mis-tagged, **fixed**), a
+non-deterministic MRTIS build that quietly falsified this package's own
+byte-identical guarantee (**fixed**), two agency columns that give different
+revenue answers ($939,000, **disclosed**), and a `tpc = 0` placeholder rate that
+has risen every year for eight years (4.3% → 18.9%, still open).
 
 Same derivation discipline as the deliverable — every figure scripted, none
-hand-keyed, MRTIS read-only. **Nothing here ships to the Claris reviewer**, and
-nothing here changed the review package: `sample/`, `charts/`, `reports/`,
-`export/` and `docs/FIGURES.md` all still reproduce byte-identically.
+hand-keyed. **Nothing here ships to the Claris reviewer.** The MRTIS fixes it
+prompted moved **no published figure**: every file in this package differs by
+exactly one line against the rebuild, the commit stamp.
 
 ## How to work in this project
 

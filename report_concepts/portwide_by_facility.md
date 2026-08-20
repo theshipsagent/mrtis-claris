@@ -1,6 +1,6 @@
 # Concept report P1 — Port calls and agency revenue, by facility and by agency
 
-MRTIS commit `2738601` · window **2023-08-01 → 2026-07-31** (trailing 36 months, anchored on the data's last date) · **every vessel, every cargo, whole port**
+MRTIS commit `61c899b` · window **2023-08-01 → 2026-07-31** (trailing 36 months, anchored on the data's last date) · **every vessel, every cargo, whole port**
 
 Ruled by William, 2026-08-20: *"the fee's apply to every ship... the second sample test will be total port calls by facility and agency against count and rev$ as we don't yet have all cargoes into split out by cargo."* So there is **no cargo dimension here** — cargo is carried on only 67% of legs port-wide and is well-evidenced only for grain, so splitting by it would report coverage as if it were trade.
 

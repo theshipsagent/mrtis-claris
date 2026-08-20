@@ -19,7 +19,34 @@ only: proof and evidence, not a native FileMaker build.
    or re-derive a rule from first principles — MRTIS has already done that
    work, session by session, with William's explicit rulings. Quote it, cite
    it, don't reinvent it.
-2. **Read-only against MRTIS.** Never write to
+2. **Read-only against MRTIS — SUSPENDED 2026-08-20 for the build-fix work.**
+   William, 2026-08-20, session 8: *"lets fix the 6 findings."* The reporting
+   exercise produced ten measured findings
+   (`report_concepts/ISSUES.md`); six need changes in MRTIS, and William has
+   directed that they be made. For that work, and only that work, this repo may
+   write to `/Users/billy/Documents/MRTIS`, under three conditions carried over
+   from MRTIS's own standing practice:
+   - **Scratch-copy first.** Changes are built and fully reverified against a
+     copy of `mrtis.duckdb` before the real database is touched — MRTIS's
+     CHANGELOG records this as standing practice, and it is not optional here.
+   - **MRTIS's own governance applies.** Rulings go to `docs/OPEN_QUESTIONS.md`
+     with a section number, changes to `CHANGELOG.md`, the session to
+     `docs/SESSION_LOG.md` — the conventions that repo already uses, not this
+     one's.
+   - **The regression test is `figures.py`.** It re-derives the fee schedule
+     independently and asserts, leg by leg, agreement with what MRTIS stored.
+     A behaviour-preserving change must still report **0 mismatches**.
+
+   **Status, 2026-08-20 (session 9):** I-1, I-10 and I-11 built at MRTIS
+   `61c899b`; I-7 ruled with no change needed. **Three remain** — I-2 and I-9
+   (investigations) and I-3 (needs a ruling from William). The suspension stays in
+   force until those close.
+
+   **This suspension is scoped to the build-fix work and ends with it.** Once the
+   remaining findings are closed, restore the original directive below. Everything it
+   said still holds in the meantime for anything *outside* that work:
+
+   Never write to
    `/Users/billy/Documents/MRTIS/data/db/mrtis.duckdb` or any file under
    `/Users/billy/Documents/MRTIS`. Query the database read-only; export from
    it; never mutate it. Same discipline for `/Users/billy/Documents/File Maker/`

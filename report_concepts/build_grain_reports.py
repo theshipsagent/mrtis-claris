@@ -327,46 +327,65 @@ def addendum(con, c):
         where {W} and l.first_berth_facility = '{BUOY_EVIDENCE_ONLY}'
           and l.cargo_source is distinct from 'fgis'""").fetchone()
     ld, ve, fm, tn, fee, ch = r
-    L = [f"# Addendum — `{BUOY_EVIDENCE_ONLY}`: the legs held out of the grain reports",
+    L = [f"# Addendum — `{BUOY_EVIDENCE_ONLY}`: a defect found, ruled, and fixed",
          "",
-         f"MRTIS commit `{c}` · window **{WIN_FROM} → 2026-07-31** · "
+         f"MRTIS commit `{c}` · window **{WIN_FROM} → 2026-07-31** · these legs are "
          "**excluded from G1 and G2**",
          "",
-         "**Ruled by William, 2026-08-20:** *\"artco can occasionally add grain ships "
-         "tagged to that into the report, as we can\'t bake it in as it remains multi "
-         "purpose facility.\"*",
+         "**This page records a closed loop.** The grain reports found a defect, "
+         "William ruled on it, and MRTIS has since been corrected — so this addendum "
+         "is now a record of what was wrong rather than a warning about what still is.",
          "",
-         "So `ARTCO Destrehan Buoys` is a multi-purpose midstream berth that sometimes "
-         "loads grain — and the grain-only rule in "
-         "`MRTIS/dictionaries/zone_facility.csv` (Cargo group `Grain`, *\"Can never be a "
-         "liquid cargo\"*, *\"Apply always\"*) is **wrong**. G1 and G2 therefore admit "
-         "ARTCO legs **only where an FGIS certificate proves grain**, and never on that "
-         "dictionary tag.",
+         "## What was found",
          "",
-         "This page is what that exclusion removed: legs the dictionary calls grain with "
-         "no evidence behind the claim. It is the measured size of the defect, for the "
-         "build-fix session.",
+         f"`{BUOY_EVIDENCE_ONLY}` carried a grain-only rule in "
+         "`MRTIS/dictionaries/zone_facility.csv` identical to MGMT\'s — Mid-Stream, ops "
+         "`Load`, Cargo group `Grain`, rule *\"Can never be a liquid cargo\"*, note "
+         "*\"Apply always\"*. Every one of its 622 legs was tagged grain, but only 177 "
+         "(28.5%) carried an FGIS certificate. The other 445 were grain solely because "
+         "the dictionary said so.",
          "",
-         "## Held out of the reports — dictionary-tagged grain, no FGIS evidence", ""]
+         "## What was ruled",
+         "",
+         "**William, 2026-08-20:** *\"artco can occasionally add grain ships tagged to "
+         "that into the report, as we can\'t bake it in as it remains multi purpose "
+         "facility.\"* The rule over-claimed: the berth does load grain, but not only "
+         "grain.",
+         "",
+         "## What was fixed",
+         "",
+         "`Cargo group` cleared on both dictionary rows (MRTIS "
+         "`OPEN_QUESTIONS.md` §15.1). `ops = Load` and the rule text were left alone — "
+         "the ruling was about cargo, not direction. **445 legs moved from `Grain` to no "
+         "cargo group; the 177 FGIS-evidenced legs kept their grain tag and their "
+         "tonnage.** Verified leg by leg against a pre-change copy of the database: "
+         "nothing else in MRTIS moved at all — 0 legs changed fee, activity, agency, "
+         "hours or facility, and the billable total stayed at $272,660,000.",
+         "",
+         "## The legs this excludes from G1 and G2, in the reporting window",
+         "",
+         "G1 and G2 admit ARTCO legs **only on FGIS evidence**, which was the right "
+         "policy before the fix and remains the right policy after it. These are the "
+         "legs that policy leaves out:",
+         ""]
     L.append(md_table(
         ["Measure", "Value"],
         [["Loadings excluded", f"{ld:,}"],
          ["Distinct vessels", f"{ve:,}"],
-         ["FGIS matched", f"{fm:,} (nil by definition — this is the no-evidence set)"],
-         ["Tonnes", tons(tn) + " (none: no certificate, no tonnage)"],
+         ["Tonnes", "none — no certificate, so no tonnage exists for them"],
          ["Chargeable legs", f"{ch:,}"],
          ["Agency fee not counted in G2", money(fee)]],
         ["---", "---:"]))
     L += ["",
-          f"> **What a dictionary fix would move.** Clearing `Cargo group` on ARTCO\'s two "
-          f"rows retags these {ld:,} legs from `Grain` to no cargo group. They keep their "
-          f"agency fee and their berth activity — only the false cargo label goes. The "
-          "177 all-time FGIS-evidenced ARTCO legs are unaffected and stay grain.",
+          "> **Their fee and berth activity were never in question** — only the cargo "
+          "label was, and it is now correct. They appear in full in the port-wide report "
+          "`portwide_by_facility.md`, which counts every leg regardless of cargo.",
           "",
-          "> **Worth checking at the same time:** 17 dictionary rows carry a Grain cargo "
-          "group. MGMT\'s is confirmed correct; ARTCO\'s is confirmed wrong. The other 13 "
-          "sit at Elevator facilities, where a grain-only rule is safe — but the pattern "
-          "that produced ARTCO\'s row may have produced others at multi-purpose berths.",
+          "> **Worth checking in a later session:** 15 dictionary rows still carry a "
+          "Grain cargo group (down from 17). MGMT\'s is confirmed correct by William; "
+          "the remaining 13 sit at Elevator facilities, where a grain-only rule is safe. "
+          "But the pattern that produced ARTCO\'s row is worth looking for at other "
+          "multi-purpose berths.",
           ""]
     (OUT / "addendum_artco_destrehan.md").write_text("\n".join(L) + "\n")
     return ld, fee

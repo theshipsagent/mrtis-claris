@@ -58,9 +58,9 @@ PORT_CALL_LEG,layberth_hours,NUMBER,"Hours alongside a layberth (lay-up/repair w
 PORT_CALL_LEG,agency,TEXT,"THE COLUMN TO USE FOR REVENUE-BY-AGENT REPORTING. The inbound agency of this leg specifically -- the agency that brought the vessel in owns the leg (docs/BUSINESS_RULES.md section 6). Prefer this over PORT_CALL::agency, which is a single call-level pick.",1.5,HOST
 PORT_CALL_LEG,agency_source,TEXT,Where the leg's agency was determined from: 'inbound' / 'leg' / 'call' / 'none'.,0.0,none
 PORT_CALL_LEG,agent_changed_in_leg,NUMBER,"1 if the source data showed more than one distinct agency inside this leg. MATERIAL: 3,233 chargeable legs (8.03%) carrying $29,495,250 (10.82% of the billable total) are flagged here. The fee still goes wholly to the inbound agency by rule, so a by-agent revenue report is not a clean division of the book -- about $1 in $9 is attributed to an agent where another agency was also involved. Ordinary on a chartered voyage: owner's agent inbound, charterer's agent on the outbound load. See docs/BUSINESS_RULES.md section 6.",0.0,0.0
-PORT_CALL_LEG,cargo_group,TEXT,"From FGIS ('Grain'), else the zone dictionary's typical cargo group for the first berth.",33.8,Coal/Petcoke
+PORT_CALL_LEG,cargo_group,TEXT,"From FGIS ('Grain'), else the zone dictionary's typical cargo group for the first berth.",34.8,Coal/Petcoke
 PORT_CALL_LEG,cargo,TEXT,"FGIS grain/grain class, where certified.",73.4,SOYBEANS
-PORT_CALL_LEG,cargo_source,TEXT,'fgis' / 'dictionary' / blank.,33.8,dictionary
+PORT_CALL_LEG,cargo_source,TEXT,'fgis' / 'dictionary' / blank.,34.8,dictionary
 PORT_CALL_LEG,destination,TEXT,FGIS-declared destination (export legs only).,73.4,INDONESIA
 PORT_CALL_LEG,estimated_tons,NUMBER,"FGIS certified metric tons for this leg. An ESTIMATE, not certified actual weight -- do not sum across the leg's individual event rows.",73.4,58121.0
 PORT_CALL_LEG,actual_tons,NUMBER,Reserved for certified/actual tonnage. NULL everywhere today.,100.0,
@@ -106,7 +106,7 @@ PORT_CALL_EVENT,dwell_hours,NUMBER,On an Arrive/Anchor row: hours until the matc
 PORT_CALL_EVENT,hours_since_prev,NUMBER,Gap in hours from the previous event of the call.,15.4,395.28
 PORT_CALL_EVENT,activity,TEXT,Carried down from the leg: 'Load' / 'Discharge' / 'No Cargo' / blank.,14.5,Load
 PORT_CALL_EVENT,activity_method,TEXT,Carried down from the leg: how activity was decided.,0.0,no_berth_stop
-PORT_CALL_EVENT,cargo_group,TEXT,Carried down from the leg.,26.1,Coal/Petcoke
+PORT_CALL_EVENT,cargo_group,TEXT,Carried down from the leg.,27.2,Coal/Petcoke
 PORT_CALL_EVENT,cargo,TEXT,Carried down from the leg.,67.2,SOYBEANS
 PORT_CALL_EVENT,destination,TEXT,Carried down from the leg.,67.2,INDONESIA
 PORT_CALL_EVENT,estimated_tons,NUMBER,Carried down from the leg -- a LEG TOTAL. Do not sum across a leg's individual event rows.,67.2,58121.0

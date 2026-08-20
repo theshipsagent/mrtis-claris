@@ -1,5 +1,113 @@
 # mrtis-claris session log
 
+## 2026-08-20 (session 9) — The build-fix: three findings closed, one found in the act of fixing
+
+**MRTIS moved, deliberately, for the first time since this repo existed.**
+`2738601` → **`61c899b`**. William: *"lets fix the 6 findings."*
+
+`CLAUDE.md` directive 2 forbids this repo from writing to MRTIS, so the
+suspension was **recorded in the manual before anything was touched**, scoped to
+this work and with three conditions carried over from MRTIS's own standing
+practice: scratch-copy first, MRTIS's governance for MRTIS's changes, and
+`figures.py`'s 0-mismatch self-check as the acceptance test.
+
+### Method
+
+MRTIS's CHANGELOG records the protocol: *"Scratch-copy rebuild and full
+reverification before the real repo was touched."* Followed exactly — an isolated
+copy of the database, scripts and dictionaries in the scratchpad, every change
+built and verified there first, plus a rollback copy of the real database taken
+before promotion. **Every claim below is a leg-by-leg comparison against a
+pre-change copy, not a comparison of summary totals** — which is precisely why
+I-11 was caught.
+
+Only `build_port_calls.py` was re-run. `build_db.py` was **not**, so surrogate
+keys were never reassigned and the FGIS layer was never rebuilt.
+
+### Fixed
+
+**I-1 — `ARTCO Destrehan Buoys` no longer asserts grain** (MRTIS §15.1). Both
+dictionary rows had `Cargo group = Grain` / *"Apply always"*; William ruled the
+berth multi-purpose. **445 legs moved from `Grain` to no cargo group**; the 177
+FGIS-evidenced legs kept their tag and tonnage. `ops = Load` and the rule text
+left alone — the ruling was about cargo, not direction.
+
+**I-10 — the §12 rule layer split by rule subject** (MRTIS §15.2).
+`_fee_bulk_berth_rules()` (R5, the branch that grows) and
+`_fee_vessel_type_rules()` (R1-R4, the branch that shouldn't move).
+
+> **One correction to William's proposal, found before building it.** It could
+> **not** fork on `vessel_type == "Bulk"`: **R2 (Ro-Ro) fires on bulk-typed
+> hulls** — both R2 legs carry `vessel_type = 'Bulk'` — so a vessel-class fork
+> would have repriced them. The branches divide by what each rule is *about*
+> instead. Built as proposed, it would have been a silent regression.
+
+**I-11 — the port-call build was not deterministic** (MRTIS §15.5). **Found while
+verifying I-1, not by looking for it.** The sample export changed on rebuild in
+columns the ARTCO fix could not have touched; a controlled two-build test proved
+the build itself was the cause.
+
+| Column | Legs differing between two builds of identical code |
+|---|---:|
+| `cargo` | **524** |
+| `destination` | **19** |
+| everything numeric and categorical | **0** |
+
+Cause: `string_agg(DISTINCT x, ', ')` with no `ORDER BY` — DuckDB does not
+guarantee iteration order, so the same certificates produced `CORN, SOYBEANS` in
+one build and `SOYBEANS, CORN` in the next.
+
+**No figure was ever wrong. What was wrong was a guarantee.** This package has
+published byte-identical reproducibility for its sample export since session 5.
+It was false — and untestable by the way it had been checked, since every prior
+test re-ran the export against an *unchanged* database. Only a real MRTIS rebuild
+could expose it, and this was the first one.
+
+### Ruled, no change needed
+
+**I-7** (MRTIS §15.3) — the General Cargo discount is a **berth** rule, not a
+direction rule. *"vessel type rules, then after that, can modify for bulk ships at
+gen cargo facs."* The 635 bulk legs loading at gen-cargo docks keep $5,000;
+**$3,492,500 does not move.** The build was already correct. Also recorded: the
+commercial reason for the tier — owner's agent inbound at a discount, charterer's
+agent on the outbound load at full tariff — which had never been written down.
+
+### Verified
+
+- **Nothing was repriced.** Leg by leg against the pre-change database: **0 legs
+  changed `agency_fee`, activity, agency, hours or facility; 0 added or removed; 0
+  differing cells across the whole fee-tier × vessel-type grid.** Billable total
+  unchanged at **$272,660,000** over 40,245 chargeable legs.
+- **`figures.py` still reports 0 attribution mismatches** — an independent
+  re-implementation of the schedule, unchanged and still agreeing.
+- **No published figure moved.** Every file in this package differs against the
+  rebuild by exactly one line: the MRTIS commit stamp.
+- **Reproducibility now verified end-to-end, for the first time.** A full MRTIS
+  rebuild followed by `figures.py`, `kpi/kpi_baseline.py`, both `report_concepts/`
+  scripts, `reports/build_reports.py` and `export/build_review_package.py --sample`
+  reproduces **byte-identical output, gzipped sample data included**.
+
+### Still open — the honest remainder
+
+"Fix the 6" was never 6 fixes. Three are closed, one was ruled, and three remain:
+
+| Ref | What it needs |
+|---|---|
+| **I-2** | Investigation. Bunge Destrehan 85.6% / ADM Destrehan 88.0% FGIS coverage against 99.6-100% at peer elevators. MGMT's 40% is explained (grain vs by-products); these two are not. |
+| **I-3** | **A ruling from William.** `cargo_group = 'Grain'` at MGMT also covers by-products — rename the group, or add a `cargo_subgroup`? |
+| **I-9** | Investigation, three parts. `tpc = 0` at 4.3% → 18.9% monotonic over eight years is the priority, and probably needs a *new ships-register source* rather than a code change. Also never-berthed legs 1.4% → 6.3% and geofence drift 11.3% → 12.7%. |
+
+`CLAUDE.md`'s read-only suspension **stays in force** until those close, and must
+be restored when they do.
+
+### Next session
+
+**I-3 is one question and unblocks a fix** — worth asking first. Then the two
+investigations, of which `tpc = 0` is the largest and the only monotonic one.
+Unchanged behind all of it: **nobody has imported the sample into Claris yet.**
+
+---
+
 ## 2026-08-20 (session 8) — The reporting exercise: ten findings, one closed
 
 **MRTIS commit unchanged at `2738601c9a87ff7be264f9c10cb1e1a618ef3436`** — the

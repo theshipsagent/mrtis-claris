@@ -1,6 +1,6 @@
 # Issues log — what building the concept reports exposed
 
-Opened 2026-08-20 (session 8). MRTIS commit `2738601c9a87ff7be264f9c10cb1e1a618ef3436`.
+Opened 2026-08-20 (session 8). MRTIS commit `2738601c9a87ff7be264f9c10cb1e1a618ef3436` at the time of finding; fixes built at `61c899b`.
 
 Every entry is something the reporting exercise **found**, not something it
 fixed. Nothing in this log has been acted on — that is deliberate, and is the
@@ -76,7 +76,25 @@ over-assertion exists on other multi-purpose midstream rows — 17 dictionary ro
 carry a Grain cargo group and only MGMT's is now confirmed correct at a
 multi-purpose berth.
 
-**Status** OPEN — ruled, not yet fixed. MRTIS is read-only from this repo.
+**FIXED — MRTIS commit `56ad9f5`, 2026-08-20** (`OPEN_QUESTIONS.md` §15.1).
+`Cargo group` cleared on both `ARTCO Destrehan Buoys` dictionary rows; `ops = Load`
+and the rule text left untouched, since the ruling was about cargo, not direction,
+and `ops` is what resolves activity at that berth. Rebuilt with
+`build_port_calls.py` only — `build_db.py` was not re-run, so surrogate keys were
+not reassigned.
+
+**Verified leg by leg against a pre-change copy of the database:** 445 legs moved
+`cargo_group` from `Grain` to NULL; the 177 FGIS-evidenced legs kept their grain
+tag and tonnage; **0 legs changed fee, activity, agency, hours or facility; 0 legs
+added or removed**; billable total unchanged at $272,660,000. MGMT untouched.
+Dictionary rows carrying a Grain cargo group: 17 → 15.
+
+Downstream, **no published figure moved** — every file in this package re-derived
+against the rebuild differs by exactly one line, the MRTIS commit stamp. The grain
+reports had routed around the defect on FGIS evidence, so the fix confirmed them
+rather than changing them.
+
+**Status** CLOSED.
 
 ---
 
@@ -535,8 +553,85 @@ Three reasons it is worth doing:
 routing on today's evidence order. **Zero fee changes expected; `figures.py` must
 still report 0 mismatches.** Nothing else in either repo changes.
 
-**Status** OPEN — recommended, awaiting the build-fix session.
+**BUILT — MRTIS commit `56ad9f5`, 2026-08-20** (`OPEN_QUESTIONS.md` §15.2).
+`agency_fee_for()` now routes the §12 layer through `_fee_2026_rules()`, which
+calls `_fee_bulk_berth_rules()` (R5 — the branch that will grow) then
+`_fee_vessel_type_rules()` (R1-R4 — the branch that should stay still).
+
+**One correction to the recommendation, found before building it.** The split
+could **not** fork on `vessel_type == "Bulk"`: **R2 (Ro-Ro) fires on bulk-typed
+hulls** — both R2 legs carry `vessel_type = 'Bulk'` — so a vessel-class fork would
+have repriced them. The branches divide by what each rule is *about* (a bulk
+carrier at a kind of berth, vs a vessel type at any berth), not by hull class.
+The `(unknown)` vessel-type hazard flagged above was avoided the same way: the
+base tiers below the rule layer were not touched at all.
+
+**Verified: 0 legs changed fee.** Leg-by-leg against a pre-change copy, 0 differing
+cells across the whole fee-tier × vessel-type grid, the build's own `[PASS] fee
+matches its vessel's tier -- 0 legs`, and `figures.py` still reporting **0
+attribution mismatches across 40,245 chargeable legs**.
+
+**Status** CLOSED.
+
+---
+
+### I-11 · The port-call build was not deterministic — `wrong-figure` (reproducibility)
+
+**Severity** `wrong-figure` — not a wrong number, a **false guarantee**
+**Where** MRTIS `scripts/build_port_calls.py:219-221`
+**Found** 2026-08-20, while verifying the I-1 fix — not by looking for it
+
+The sample export changed on rebuild in columns the ARTCO fix could not have
+touched. A controlled test — **two builds of identical code against identical
+data** — showed the build itself was non-deterministic.
+
+| Column | Legs differing between two builds |
+|---|---:|
+| `cargo` | **524** |
+| `destination` | **19** |
+| `cargo_group`, `cargo_source`, `estimated_tons`, `fgis_record_count`, `agency_fee`, `activity`, `agency` | **0** |
+
+**Cause** `string_agg(DISTINCT x, ', ')` with no `ORDER BY`. DuckDB does not
+guarantee iteration order for a distinct aggregate, so identical certificates
+produced differently-ordered strings run to run — the same leg reading
+`CORN, SOYBEANS` in one build and `SOYBEANS, CORN` in the next. The duplicates
+visible in some values (`CORN, SOYBEANS, SOYBEANS`) are a second consequence: the
+leg-level aggregate joins already-joined per-stop strings.
+
+**Why it mattered more than it looks.** No figure was ever wrong — every numeric
+and categorical column was stable, so nothing this package has published moved.
+What it broke was **reproducibility**, and this package has published a
+byte-identical guarantee for its sample export since session 5. That guarantee
+was false, through no fault of the code here, and nobody had tested it across an
+actual MRTIS rebuild — only across re-runs of the export against an unchanged
+database, which could never have caught it.
+
+**FIXED — MRTIS commit `61c899b`, 2026-08-20** (`OPEN_QUESTIONS.md` §15.5).
+`ORDER BY` added to all three aggregates, with a comment recording that it is
+load-bearing rather than cosmetic — exactly the kind of clause a later tidy-up
+deletes as noise.
+
+**Verified** Two consecutive MRTIS builds now agree on **every column of every
+leg**: `cargo` 524 → **0**, `destination` 19 → **0**. And end-to-end, for the
+first time: a full MRTIS rebuild followed by re-running `figures.py`, both
+`report_concepts/` scripts, `reports/build_reports.py` and
+`export/build_review_package.py --sample` reproduces **byte-identical output
+including the gzipped sample data**.
+
+**Status** CLOSED.
 
 ## Closed
 
-- **I-7** — ruled A by William 2026-08-20; the build was already correct, $3,492,500 does not move.
+- **I-1** — **fixed** in MRTIS `56ad9f5` (§15.1). 445 legs corrected; nothing else in the database moved.
+- **I-7** — ruled A by William 2026-08-20; the build was already correct, $3,492,500 does not move (§15.3).
+- **I-10** — **built** in MRTIS `56ad9f5` (§15.2), behaviour-preserving: 0 legs changed fee.
+- **I-11** — **fixed** in MRTIS `61c899b` (§15.5). Found while verifying I-1; the build was non-deterministic and the package's byte-identical guarantee was false. Now verified end-to-end across a real rebuild.
+
+### Still open — three investigations and one ruling
+
+| Ref | What it needs |
+|---|---|
+| **I-2** | Investigation. Bunge Destrehan 85.6% / ADM Destrehan 88.0% FGIS coverage vs 99.6-100% at peer elevators. MGMT's 40% is explained; these two are not. |
+| **I-3** | **A ruling from William.** Rename `Grain` to something covering by-products, or add a `cargo_subgroup`? |
+| **I-9** | Investigation, three parts. `tpc = 0` 4.3% → 18.9% monotonic over eight years is the priority and probably needs a *new register source* rather than a code change; never-berthed legs 1.4% → 6.3%; geofence drift 11.3% → 12.7%. |
+| **I-4 / I-5 / I-6 / I-8** | Already disclosed in this package (commit `511c763`); no MRTIS change intended. |
