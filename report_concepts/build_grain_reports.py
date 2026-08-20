@@ -137,6 +137,17 @@ def g1_trend(con, c, anchor):
         group by 1, 2 order by 3 desc, 1
     """).fetchall()
 
+    by_subgroup = con.execute(f"""
+        select l.first_berth_facility as facility,
+               count(*) as loadings,
+               count(*) filter (where l.cargo_subgroup = 'Certified grain') as certified,
+               count(*) filter (where l.cargo_subgroup = 'Grain by-product') as byproduct,
+               count(*) filter (where l.cargo_subgroup is null) as unknown,
+               sum(l.estimated_tons) as tons
+        from port_call_leg l where {W} and {SCOPE}
+        group by 1 order by 2 desc, 1
+    """).fetchall()
+
     by_fac_year = con.execute(f"""
         select l.first_berth_facility as facility,
                year(l.leg_start) as yr, count(*) as loadings,
@@ -206,8 +217,42 @@ def g1_trend(con, c, anchor):
           "difference. Ship count for MGMT is sound; tonnage is a partial view.",
           ""]
 
+    # cargo subgroup -- the grain / by-product split (MRTIS OPEN_QUESTIONS 15.6)
+    L += ["## G1c — Certified grain vs grain by-product", "",
+          "**Ruled by William, 2026-08-20:** *\"mgmt is grain and by products.\"* MRTIS "
+          "now carries `cargo_subgroup`, so the grain group can be split where the "
+          "evidence allows it — and only there.",
+          "",
+          "Read the three columns as three different statements. `Certified grain` is "
+          "**proven** by an FGIS certificate. `By-product` is **declared by the berth** "
+          "in MRTIS\'s zone dictionary, not inferred from a missing certificate. "
+          "`Not known` is exactly that — a certificate that did not match, at a berth "
+          "that has declared nothing, so the cargo could be either.",
+          ""]
+    L.append(md_table(
+        ["Facility", "Loadings", "Certified grain", "By-product (declared)", "Not known"],
+        [[fa, f"{ld:,}", f"{ce:,}", f"{bp:,}" if bp else "·", f"{un:,}" if un else "·"]
+         for fa, ld, ce, bp, un, _ in by_subgroup],
+        ["---", "---:", "---:", "---:", "---:"]))
+    tot_bp = sum(r[3] for r in by_subgroup)
+    tot_un = sum(r[4] for r in by_subgroup)
+    L += ["",
+          f"> **Only MGMT declares by-product**, and it is the only berth in scope where "
+          f"the uncertified remainder has a known identity — {tot_bp:,} loadings in this "
+          "window. The elevators\' unmatched loadings stay `Not known` rather than being "
+          f"relabelled: {tot_un:,} of them. Calling those by-product would have invented "
+          "a cargo type at nine grain elevators, which is precisely what the per-berth "
+          "declaration exists to prevent.",
+          "",
+          "> **This changes what a grain ship-count means at MGMT.** Before the split, all "
+          "of its loadings counted as grain. They are still all *cargo* at a grain berth — "
+          "the fee and the berth activity are unaffected — but a report about the **grain "
+          "trade** should now use the certified column, and a report about **berth "
+          "activity** should use loadings.",
+          ""]
+
     # per-facility × year
-    L += ["## G1c — Loadings by facility and year", ""]
+    L += ["## G1d — Loadings by facility and year", ""]
     years = sorted({y for _, y, _, _ in by_fac_year})
     facs = [r[0] for r in by_fac]
     grid = {(f, y): (0, 0) for f in facs for y in years}

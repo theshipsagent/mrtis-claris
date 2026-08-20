@@ -1,6 +1,6 @@
 # Concept report G1 — Grain volume trended against ship count
 
-MRTIS commit `27d8a19` · window **2023-08-01 → 2026-07-31** (trailing 36 months, anchored on the data's last date `2026-07-31`, not on today) · scope **9 grain elevators + MGMT**
+MRTIS commit `699a9fc` · window **2023-08-01 → 2026-07-31** (trailing 36 months, anchored on the data's last date `2026-07-31`, not on today) · scope **9 grain elevators + MGMT**
 
 > **Read the two denominators before the numbers.** Ship count is complete: every one of the **4,254 loadings** (2,467 distinct vessels) is counted. Tonnage is not — tons exist only where an FGIS certificate matched, which is **4,001 of 4,254 loadings (94.1%)**. The tonnage column therefore measures a *subset* of the ships in the same row. Comparing tons across facilities without reading the coverage column will mislead you — see `ISSUES.md` I-2.
 
@@ -65,7 +65,31 @@ MRTIS commit `27d8a19` · window **2023-08-01 → 2026-07-31** (trailing 36 mont
 
 > **MGMT's coverage is the outlier.** At 40.3% it is roughly half the elevators' rate, so its tonnes-per-loading is not comparable with theirs. The gap is a certificate-matching gap, not a trade difference. Ship count for MGMT is sound; tonnage is a partial view.
 
-## G1c — Loadings by facility and year
+## G1c — Certified grain vs grain by-product
+
+**Ruled by William, 2026-08-20:** *"mgmt is grain and by products."* MRTIS now carries `cargo_subgroup`, so the grain group can be split where the evidence allows it — and only there.
+
+Read the three columns as three different statements. `Certified grain` is **proven** by an FGIS certificate. `By-product` is **declared by the berth** in MRTIS's zone dictionary, not inferred from a missing certificate. `Not known` is exactly that — a certificate that did not match, at a berth that has declared nothing, so the cargo could be either.
+
+| Facility | Loadings | Certified grain | By-product (declared) | Not known |
+|---|---:|---:|---:|---:|
+| Zen-Noh | 834 | 831 | · | 3 |
+| ADM AMA | 588 | 558 | · | 30 |
+| ADM Destrehan | 523 | 460 | · | 63 |
+| Cargill Reserve | 487 | 465 | · | 22 |
+| Cargill Westwego | 383 | 380 | · | 3 |
+| CHS Myrtle Grove | 362 | 362 | · | · |
+| ADM Reserve | 342 | 341 | · | 1 |
+| Bunge Destrehan | 306 | 262 | · | 44 |
+| LDC Port Allen | 227 | 226 | · | 1 |
+| MGMT | 144 | 58 | 86 | · |
+| ARTCO Destrehan Buoys | 58 | 58 | · | · |
+
+> **Only MGMT declares by-product**, and it is the only berth in scope where the uncertified remainder has a known identity — 86 loadings in this window. The elevators' unmatched loadings stay `Not known` rather than being relabelled: 167 of them. Calling those by-product would have invented a cargo type at nine grain elevators, which is precisely what the per-berth declaration exists to prevent.
+
+> **This changes what a grain ship-count means at MGMT.** Before the split, all of its loadings counted as grain. They are still all *cargo* at a grain berth — the fee and the berth activity are unaffected — but a report about the **grain trade** should now use the certified column, and a report about **berth activity** should use loadings.
+
+## G1d — Loadings by facility and year
 
 | Facility | 2023 loadings | 2024 loadings | 2025 loadings | 2026 loadings |
 |---|---:|---:|---:|---:|

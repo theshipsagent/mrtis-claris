@@ -37,10 +37,10 @@ only: proof and evidence, not a native FileMaker build.
      independently and asserts, leg by leg, agreement with what MRTIS stored.
      A behaviour-preserving change must still report **0 mismatches**.
 
-   **Status, 2026-08-20 (session 9):** I-1, I-10 and I-11 built at MRTIS
-   `27d8a19`; I-7 ruled with no change needed. **Three remain** — I-2 and I-9
-   (investigations) and I-3 (needs a ruling from William). The suspension stays in
-   force until those close.
+   **Status, 2026-08-20 (session 9):** I-1, I-3, I-10 and I-11 built at MRTIS
+   `ac139a2`; I-7 ruled with no change needed. **Two remain, both investigations**
+   — I-2 (elevator FGIS coverage) and I-9 (`tpc = 0` and the never-berthed /
+   geofence drift). The suspension stays in force until those close.
 
    **This suspension is scoped to the build-fix work and ends with it.** Once the
    remaining findings are closed, restore the original directive below. Everything it

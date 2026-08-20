@@ -3,7 +3,7 @@
 ## 2026-08-20 (session 9) — The build-fix: three findings closed, one found in the act of fixing
 
 **MRTIS moved, deliberately, for the first time since this repo existed.**
-`2738601` → **`27d8a19`**. William: *"lets fix the 6 findings."*
+`2738601` → **`ac139a2`**. William: *"lets fix the 6 findings."*
 
 `CLAUDE.md` directive 2 forbids this repo from writing to MRTIS, so the
 suspension was **recorded in the manual before anything was touched**, scoped to
@@ -87,14 +87,44 @@ agent on the outbound load at full tariff — which had never been written down.
   scripts, `reports/build_reports.py` and `export/build_review_package.py --sample`
   reproduces **byte-identical output, gzipped sample data included**.
 
+### Added after the fixes: `cargo_subgroup` (I-3)
+
+William ruled the last blocked finding the same day: *"mgmt is grain and by
+products, add cargo_subgroup."* Built at MRTIS `ac139a2` (§15.6).
+
+**The design point is the whole finding.** The obvious implementation — "no FGIS
+certificate at a grain berth means by-product" — would have been wrong, because
+**the evidence is asymmetric**. A certificate *proves* certified grain; its
+absence proves by-product at MGMT and proves nothing at all at Zen-Noh, which
+runs 99.6 per cent coverage. Applied globally that rule would have **invented
+by-product cargo at nine grain elevators**.
+
+So the fact is **declared per berth** in MRTIS's zone dictionary — a new
+`Cargo subgroup uncertified` column, 2 of 220 rows populated, both MGMT — and
+NULL everywhere it is genuinely unknown.
+
+| `cargo_subgroup` | Legs | Facilities |
+|---|---:|---:|
+| `Certified grain` | 10,545 | 40 |
+| `Grain by-product` | 254 | **1 — MGMT only** |
+| NULL | 31,005 | 108 |
+
+Purely additive: 0 legs differ on `agency_fee`, `activity`, `agency`,
+`cargo_group`, `cargo`, `cargo_source`, `destination` or `estimated_tons`.
+
+Downstream, the payoff is visible in **G1c**, a new section of the grain report:
+MGMT resolves to 58 certified + 86 declared by-product, while the elevators' 167
+unmatched loadings stay **"Not known"** rather than being relabelled. The
+reviewer's `DATA_DICTIONARY.csv` and `docs/BUSINESS_RULES.md` §8 both carry the
+rule and the reason it is shaped that way.
+
 ### Still open — the honest remainder
 
-"Fix the 6" was never 6 fixes. Three are closed, one was ruled, and three remain:
+"Fix the 6" was never 6 fixes. Four are closed, one was ruled, and two remain:
 
 | Ref | What it needs |
 |---|---|
 | **I-2** | Investigation. Bunge Destrehan 85.6% / ADM Destrehan 88.0% FGIS coverage against 99.6-100% at peer elevators. MGMT's 40% is explained (grain vs by-products); these two are not. |
-| **I-3** | **A ruling from William.** `cargo_group = 'Grain'` at MGMT also covers by-products — rename the group, or add a `cargo_subgroup`? |
 | **I-9** | Investigation, three parts. `tpc = 0` at 4.3% → 18.9% monotonic over eight years is the priority, and probably needs a *new ships-register source* rather than a code change. Also never-berthed legs 1.4% → 6.3% and geofence drift 11.3% → 12.7%. |
 
 `CLAUDE.md`'s read-only suspension **stays in force** until those close, and must
@@ -102,8 +132,9 @@ be restored when they do.
 
 ### Next session
 
-**I-3 is one question and unblocks a fix** — worth asking first. Then the two
-investigations, of which `tpc = 0` is the largest and the only monotonic one.
+**Both remaining findings are investigations**, of which `tpc = 0` is the largest
+and the only monotonic one — rising every year for eight years without exception,
+and likely needing a new ships-register source rather than a code change.
 Unchanged behind all of it: **nobody has imported the sample into Claris yet.**
 
 ---

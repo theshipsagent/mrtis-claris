@@ -10,7 +10,7 @@ Every rule below is cited back to its source in MRTIS
 ruling in `docs/OPEN_QUESTIONS.md`, or the implementation in
 `scripts/build_db.py` / `scripts/build_port_calls.py`. This document doesn't
 invent anything; it translates. Built against MRTIS commit
-`27d8a19241fb037b5e45b62fb6a865907c1cf4f2` — see `SESSION_LOG.md` for how to
+`ac139a2241fb037b5e45b62fb6a865907c1cf4f2` — see `SESSION_LOG.md` for how to
 tell if that's moved since.
 
 **Where the numbers come from.** Every count, percentage and dollar figure in
@@ -349,7 +349,37 @@ Populated only where an actual external source can say — never inferred:
 |---|---|
 | `cargo`, `destination`, `estimated_tons` | FGIS grain certificates, aggregated per leg |
 | `cargo_group` | FGIS (`Grain`), else the zone dictionary's typical cargo group |
+| `cargo_subgroup` | FGIS (`Certified grain`), else the berth's *declared* uncertified cargo |
 | `dwt`, `tpc`, `ship_type`, `ship_type_group` | the ships register, matched by canonical IMO |
+
+### `cargo_subgroup` — and why absence of evidence is not evidence
+
+`cargo_group = 'Grain'` is a broad group: at some berths it covers grain
+**by-products** (meal, hulls, pellets) as well as grain itself. William,
+2026-08-20: *"mgmt is grain and by products."* `cargo_subgroup` splits the two
+where that can be done honestly.
+
+The evidence is **asymmetric**, and the rule follows from that:
+
+- An **FGIS certificate positively proves** certified grain → `Certified grain`.
+- The **absence of one proves nothing by itself.** At MGMT it means by-product;
+  at Zen-Noh, running 99.6% certificate coverage, it means a certificate that
+  simply failed to match.
+
+So "what is the uncertified cargo at this berth" is a fact only the berth knows,
+and it is **declared per berth** in MRTIS's zone dictionary rather than inferred
+from a missing certificate. Two of 220 dictionary rows carry a declaration today
+— both MGMT.
+
+| `cargo_subgroup` | Legs | Facilities |
+|---|---:|---:|
+| `Certified grain` | 10,545 | 40 |
+| `Grain by-product` | 254 | **1 — MGMT only** |
+| *(blank — not known)* | 31,005 | 108 |
+
+A blank here means **not known**, never "not grain" and never "zero". Inferring
+by-product from a missing certificate would have invented by-product cargo at
+nine grain elevators. (MRTIS `OPEN_QUESTIONS.md` §15.6.)
 
 `estimated_tons` is a **leg total** aggregated across every FGIS certificate
 tied to that leg (one sailing can carry several) — never sum it again across

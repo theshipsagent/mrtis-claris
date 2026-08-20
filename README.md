@@ -135,10 +135,11 @@ exposes. Scoped by William 2026-08-20 to the last three years
 today, so figures cannot drift on re-run).
 
 The reports are the instrument; [`report_concepts/ISSUES.md`](report_concepts/ISSUES.md)
-is the output — **eleven findings, four now closed**. Highlights: a grain-only
+is the output — **eleven findings, five now closed**. Highlights: a grain-only
 dictionary rule on a multi-purpose facility (445 legs mis-tagged, **fixed**), a
 non-deterministic MRTIS build that quietly falsified this package's own
-byte-identical guarantee (**fixed**), two agency columns that give different
+byte-identical guarantee (**fixed**), a new `cargo_subgroup` splitting certified
+grain from grain by-products (**built**), two agency columns that give different
 revenue answers ($939,000, **disclosed**), and a `tpc = 0` placeholder rate that
 has risen every year for eight years (4.3% → 18.9%, still open).
 

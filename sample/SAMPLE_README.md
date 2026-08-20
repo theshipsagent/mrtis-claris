@@ -1,6 +1,6 @@
 # Sample review package
 
-Built read-only from MRTIS at commit `27d8a1913c6972dcc89289d3bab794e7a1a43854`. Rebuild with:
+Built read-only from MRTIS at commit `699a9fcdf3f1e6a9b94e29603080ee88b1c756dd`. Rebuild with:
 
 ```
 python3 export/build_review_package.py --sample
@@ -23,7 +23,7 @@ exactly as the full export does -- gzip is transport only, the CSV and XML
 inside are untouched.
 
 They are gzipped because this directory is committed to the repo:
-**4.2 MB** compressed against 83 MB expanded, a 20x saving.
+**4.3 MB** compressed against 85 MB expanded, a 20x saving.
 FMPXMLRESULT repeats a field tag around every single value, which compresses
 away almost entirely -- that is what lets a full year of real rows travel
 through git at all.

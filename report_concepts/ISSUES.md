@@ -1,6 +1,6 @@
 # Issues log — what building the concept reports exposed
 
-Opened 2026-08-20 (session 8). MRTIS commit `2738601c9a87ff7be264f9c10cb1e1a618ef3436` at the time of finding; fixes built at `27d8a19`.
+Opened 2026-08-20 (session 8). MRTIS commit `2738601c9a87ff7be264f9c10cb1e1a618ef3436` at the time of finding; fixes built at `ac139a2`.
 
 Every entry is something the reporting exercise **found**, not something it
 fixed. Nothing in this log has been acted on — that is deliberate, and is the
@@ -192,7 +192,29 @@ rename the group to something like `Grain & by-products` so the label stops
 over-claiming, or (b) introduce a `cargo_subgroup` distinguishing certified grain
 from by-product where evidence allows. Needs William's ruling; both are cheap.
 
-**Status** OPEN — needs a ruling, blocks nothing.
+**RULED AND BUILT — William, 2026-08-20:** *"mgmt is grain and by products, add
+cargo_subgroup."* Built at MRTIS `ac139a2` (`OPEN_QUESTIONS.md` §15.6).
+
+**The design point worth keeping.** The obvious implementation — "no FGIS
+certificate at a grain berth means by-product" — would have been wrong, because
+the evidence is asymmetric. A certificate *proves* certified grain; its absence
+proves by-product only at MGMT, and at Zen-Noh (99.6% coverage) proves nothing
+but a failed match. Applied globally that rule would have **invented by-product
+cargo at nine grain elevators**. So the fact is **declared per berth** in the zone
+dictionary — 2 of 220 rows, both MGMT — and NULL everywhere it is genuinely not
+known.
+
+| `cargo_subgroup` | Legs | Facilities |
+|---|---:|---:|
+| `Certified grain` | 10,545 | 40 |
+| `Grain by-product` | 254 | **1 — MGMT only** |
+| NULL | 31,005 | 108 |
+
+**Verified** Purely additive: 0 legs differ on `agency_fee`, `activity`,
+`agency`, `cargo_group`, `cargo`, `cargo_source`, `destination` or
+`estimated_tons`. Billable total unchanged at $272,660,000.
+
+**Status** CLOSED.
 
 ---
 
@@ -606,7 +628,7 @@ was false, through no fault of the code here, and nobody had tested it across an
 actual MRTIS rebuild — only across re-runs of the export against an unchanged
 database, which could never have caught it.
 
-**FIXED — MRTIS commit `27d8a19`, 2026-08-20** (`OPEN_QUESTIONS.md` §15.5).
+**FIXED — MRTIS commit `ac139a2`, 2026-08-20** (`OPEN_QUESTIONS.md` §15.5).
 `ORDER BY` added to all three aggregates, with a comment recording that it is
 load-bearing rather than cosmetic — exactly the kind of clause a later tidy-up
 deletes as noise.
@@ -625,13 +647,12 @@ including the gzipped sample data**.
 - **I-1** — **fixed** in MRTIS `56ad9f5` (§15.1). 445 legs corrected; nothing else in the database moved.
 - **I-7** — ruled A by William 2026-08-20; the build was already correct, $3,492,500 does not move (§15.3).
 - **I-10** — **built** in MRTIS `56ad9f5` (§15.2), behaviour-preserving: 0 legs changed fee.
-- **I-11** — **fixed** in MRTIS `27d8a19` (§15.5). Found while verifying I-1; the build was non-deterministic and the package's byte-identical guarantee was false. Now verified end-to-end across a real rebuild.
+- **I-11** — **fixed** in MRTIS `ac139a2` (§15.5). Found while verifying I-1; the build was non-deterministic and the package's byte-identical guarantee was false. Now verified end-to-end across a real rebuild.
 
 ### Still open — three investigations and one ruling
 
 | Ref | What it needs |
 |---|---|
 | **I-2** | Investigation. Bunge Destrehan 85.6% / ADM Destrehan 88.0% FGIS coverage vs 99.6-100% at peer elevators. MGMT's 40% is explained; these two are not. |
-| **I-3** | **A ruling from William.** Rename `Grain` to something covering by-products, or add a `cargo_subgroup`? |
 | **I-9** | Investigation, three parts. `tpc = 0` 4.3% → 18.9% monotonic over eight years is the priority and probably needs a *new register source* rather than a code change; never-berthed legs 1.4% → 6.3%; geofence drift 11.3% → 12.7%. |
 | **I-4 / I-5 / I-6 / I-8** | Already disclosed in this package (commit `511c763`); no MRTIS change intended. |
