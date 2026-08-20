@@ -1551,6 +1551,27 @@ should look like.
 **Vessel-type control passes.** No-berth, ≥5ft, at `Burnside Anch`: **49 Bulk**,
 10 Tanker, 1 Gas — consistent with William's *"only dry bulk uses those buoys."*
 
+**ATTRIBUTION REVISED 2026-08-20 — the agent test does not support the buoys.**
+An agent-match test was run after this entry was first written: does the orphan
+set's dominant agent match the nearby terminal's? For Burnside it does **not**.
+
+| | Orphan set top agent | Terminal's top agent | Match |
+|---|---|---|---|
+| Burnside Anch → **ABT Buoys** | Southport (35 of 48, 73%) | **HOST** (24 legs) | **no** |
+| Burnside Anch → ABT Burnside | Southport | HOST (196) | no |
+| Burnside Anch → **Zen-Noh** | Southport | Blue Water 833, **Southport 692** | **plausible** |
+
+**Southport works Zen-Noh heavily — 1,592 legs between miles 155-175 — and
+Zen-Noh is at mile 164, two miles from the anchorage.** The orphans also load
+**21 ft → 33 ft, a 13 ft grain-sized gain**, which fits an elevator better than a
+coal/petcoke buoy berth (`ABT Burnside`'s dictionary row is `Cargo group =
+Coal/Petcoke`).
+
+So William's reading — *"its burnside anchor its really burnside buoys"* — may be
+right operationally, but **the data points at Zen-Noh, not the buoys**. Both are
+within a few miles of the anchorage. **This needs William to resolve before
+anything is built**, because it changes which facility gains 48 calls.
+
 **Two limits, stated before anyone builds this**
 
 1. **Burnside is not uniquely affected.** The same signature — bulk, no berth,
@@ -1786,6 +1807,73 @@ the 135 and 2 hours captures 103**, so the window is a ruling, not a derivation.
 Cheap to build and low-risk — it only merges events the feed duplicated.
 
 **Status** OPEN — needs William's window, then an MRTIS session.
+
+---
+
+### I-23 · Davant Anch and UBT Davant overlap the same way — 14 loaded calls, HOST-dominated — `gap`
+
+**Severity** `gap` — same class as I-20, with stronger corroboration
+**Where** MRTIS zone resolution, `Davant Anch` vs `UBT Davant`
+**Raised** 2026-08-20 by William: *"any dry bulk ship missing a berth that came in
+light and sailed deep from only davant anchorage, and hint most of time the agent
+is Host, loaded at UBT Davant, another known AIS gap."*
+
+**The zones are two miles apart:**
+
+| Zone | Facility | Type | Mile | Events | Berth stops |
+|---|---|---|---:|---:|---:|
+| `Davant Anch` | — | Anchorage | **53** | 3,007 | **0** |
+| `United Bulk` / `United Bulk Terminal` | **UBT Davant** | Bulk Cargo | **55** | 1,650 | 1,650 |
+
+**The rule as stated resolves cleanly.** Bulk, no berth, Davant Anch, by size of
+draft move:
+
+| Move | Calls | Loaded up | Lightered down | Agents |
+|---|---:|---:|---:|---|
+| **10+ ft** | **14** | **14** | **0** | **HOST 11**, Biehl 2, Southport 1, Gen Steamship 1 |
+| 5-9 ft | 1 | 1 | 0 | |
+| 2-4 ft | 4 | 1 | 3 | Biehl 4, Blue Water 1 |
+| 0-1 ft | 16 | 0 | 2 | |
+
+**The 10+ ft band is unambiguous: 14 calls, every one loaded, no exceptions.**
+
+**The agent test passes — and this is what I-20 lacks.** The orphan set's dominant
+agent is **HOST (11 of 16, 69%)**, and UBT Davant's own agent mix is **HOST 481
+legs**, far ahead of General Steamship 124 and Biehl 54. The orphaned calls look
+like the terminal's actual customers.
+
+**A second anchorage shares the signature.** `Pt Celeste Anch` (mile 52, also two
+to three miles from UBT Davant) shows **12 calls with HOST at 58%** — the same
+pattern. **The rule likely covers 28 calls, not 16**, if William agrees Pt Celeste
+belongs.
+
+**One example William offered does NOT fit, and is excluded.** `Scarlet Cardinal`
+(9544059, Sept 2025) came in at 25 ft and left at **23 ft — 2 ft lighter, not
+deeper** — agented by **Blue Water, not HOST**. It sits in the 2-4 ft band, which
+is 3 down / 1 up and agented by Biehl and Blue Water. That band reads as noise or
+partial transfer, **not** UBT Davant loadings, and folding it in would blur a
+rule that is otherwise clean.
+
+**A general method came out of this, worth keeping.** Every anchorage showing the
+signature has a dry-bulk facility within six miles, so proximity alone proves
+nothing. **The discriminator is the agent test** — does the orphan set's dominant
+agent match the candidate terminal's? Applied across the suspects:
+
+| Anchorage → candidate terminal | Match |
+|---|---|
+| Davant Anch → UBT Davant | **HOST / HOST — match** |
+| Pt Celeste Anch → UBT Davant | **HOST / HOST — match** |
+| 12 Mile Anch → AST Meraux Buoys | **Southport / Southport — match** |
+| Burnside Anch → ABT Buoys | Southport / HOST — **no** |
+| Belle Chasse Anch → Cooper Dockside | Southport / HOST — **no** |
+
+**Estimated effect if built:** 14 calls (Davant, 10+ ft) or 28 (with Pt Celeste)
+gain a berth stop and a `Load` activity at UBT Davant, becoming fee-bearing at the
+$10,500 bulk tier — **$147,000 or $294,000**. UBT Davant's recorded volume rises
+by about 1%.
+
+**Status** OPEN — needs William on two points: whether `Pt Celeste Anch` is
+included, and confirmation that the 2-4 ft band stays excluded.
 
 ## Closed
 
