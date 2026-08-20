@@ -101,9 +101,9 @@
     "legs": 3,
     "fee": 10500.0,
     "by_vessel_type": {
+      "Container": 1,
       "Other": 1,
-      "Tanker": 1,
-      "Container": 1
+      "Tanker": 1
     }
   },
   "canonical_fallback": {

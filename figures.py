@@ -217,7 +217,7 @@ def derive(con) -> dict:
             select unassigned_reason, count(*) n, sum(agency_fee) fee
             from port_call_event
             where agency_fee is not null and port_call_id is null
-            group by 1 order by fee desc""").fetchdf().iterrows()
+            group by 1 order by fee desc, unassigned_reason""").fetchdf().iterrows()
     }
 
     # --- A8: multi-charging under the per-departure basis --------------------
@@ -236,7 +236,7 @@ def derive(con) -> dict:
     # --- A7: activity resolution --------------------------------------------
     am = con.execute("""
         select coalesce(activity_method, '(null)') m, count(*) n
-        from port_call_leg group by 1 order by n desc""").fetchdf()
+        from port_call_leg group by 1 order by n desc, m""").fetchdf()
     f["activity_method"] = {r["m"]: {"legs": int(r["n"]),
                                      "pct": round(100 * int(r["n"]) / legs, 2)}
                             for _, r in am.iterrows()}
@@ -248,7 +248,7 @@ def derive(con) -> dict:
                                      "fee": (None if r["fee"] != r["fee"] else float(r["fee"]))}
         for _, r in con.execute("""
             select activity a, count(*) n, sum(agency_fee) fee
-            from port_call_leg group by 1 order by n desc""").fetchdf().iterrows()
+            from port_call_leg group by 1 order by n desc, a nulls last""").fetchdf().iterrows()
     }
 
     # --- A14: geofence artifact rate, both denominators ---------------------
@@ -277,7 +277,7 @@ def derive(con) -> dict:
         select vt, count(*) legs, sum(agency_fee) fee from leg_classified
         where agency_fee is not null and stg like 'Bulk Carrier%'
           and coalesce(vt,'') <> '' and vt <> 'Bulk'
-        group by 1 order by 2 desc""").fetchdf()
+        group by 1 order by 2 desc, 1""").fetchdf()
     f["base_tier_counterexamples"] = {
         "legs": int(ce["legs"].sum()) if len(ce) else 0,
         "fee": float(ce["fee"].sum()) if len(ce) else 0.0,
@@ -289,7 +289,7 @@ def derive(con) -> dict:
         select coalesce(vt, '(none)') vt, count(*) legs, sum(agency_fee) fee
         from leg_classified
         where agency_fee is not null and coalesce(st,'') = ''
-        group by 1 order by 2 desc""").fetchdf()
+        group by 1 order by 2 desc, 1""").fetchdf()
     f["canonical_fallback"] = {
         "legs_without_register_row": int(fb["legs"].sum()) if len(fb) else 0,
         "fee": float(fb["fee"].sum()) if len(fb) else 0.0,

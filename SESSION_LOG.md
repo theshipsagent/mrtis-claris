@@ -137,6 +137,45 @@ reviewer picking either one silently gets a different answer.
 - The SWP-to-SWP KPI framework is still parked and needs its own design
   session.
 
+### Session 4 close (2026-08-20)
+
+Everything above is committed and pushed to `origin/main` (`e7e0898`, plus
+`81ed1a8` withdrawing the spec-staleness note). Working tree clean, level
+with origin. MRTIS untouched and still at `2738601c` — verified at close, not
+just at open.
+
+**The package's own figures needed no rebuild.** MRTIS hasn't moved since
+session 3, so `package/` is still valid; its
+`ROW_COUNT_RECONCILIATION.md` totals were re-checked against `figures.py`
+this session and match exactly.
+
+**Next session — the delivery question, open since session 1 and now the
+biggest thing standing between this package and its purpose.** `package/` is
+**644 MB** and gitignored. A Claris reviewer cannot import what they cannot
+receive, and right now nothing in the repo gets it to them.
+
+Recommendation, ready to execute rather than re-litigate:
+
+1. **Add a `--sample` mode to `export/build_review_package.py`** producing a
+   committable subset — whole port calls with all their legs and events
+   intact (never a truncated event stream, which would break the assembly
+   rules the package exists to demonstrate). One recent full year is the
+   obvious cut. This is what lives in git and what a reviewer opens first.
+2. **Keep the full 644 MB package as an on-request transfer**, built by the
+   existing default mode. Nothing about it changes.
+3. The bulk is `PORT_CALL_EVENT` (422 MB XML + 100 MB CSV). `PORT_CALL` and
+   `PORT_CALL_LEG` together are ~108 MB and may be shippable whole — worth
+   measuring before assuming the sample has to cover all three tables.
+
+Why a sample rather than compression: a reviewer assessing *Claris
+compatibility* needs to exercise import, relationships and a report against
+real rows, not to hold all 290,305 events. Zipping solves transfer and leaves
+the "what does the reviewer actually open" question unanswered.
+
+Also still open, unchanged and not blocking: MRTIS §13 (ruled, unbuilt),
+§11.3 `tpc = 0` (deferred to `Ships_Register`), and the SWP-to-SWP KPI
+framework (parked, needs a design session).
+
 
 ## 2026-08-19 (session 3) — Re-export against the rebuilt MRTIS
 
