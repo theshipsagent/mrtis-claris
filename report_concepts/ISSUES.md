@@ -990,6 +990,98 @@ Named examples and their reasons:
 
 **Status** REFERENCE — no action, ever. Recorded to prevent a well-meaning tidy-up.
 
+---
+
+### I-15 · Most "no-berth" tankers are lightering at anchorage — real cargo work billing $0 — `gap` (business rule)
+
+**Severity** `gap` — a business-rule question, worth ~$1.04M over the series
+**Where** Not a defect anywhere. `docs/BUSINESS_RULES.md` §9 applied exactly as ruled.
+**Found** 2026-08-20, following William's question about tanker size and type
+
+**William's hypothesis, tested:** *"my guess, only a guess, it will be smaller
+chemical type carriers."* The data says the opposite, and the opposite is more
+interesting.
+
+**By type — chemical carriers are exactly proportional, not over-represented:**
+
+| `ship_type` | No-berth | % | All tankers | % | Index |
+|---|---:|---:|---:|---:|---:|
+| Chemical/Products Tanker | 324 | 69.1% | 9,020 | 69.2% | **1.00** |
+| **Crude Oil Tanker** | 92 | 19.6% | 1,570 | 12.0% | **1.63** |
+| Crude/Oil Products Tanker | 28 | 6.0% | 952 | 7.3% | 0.82 |
+| Products Tanker | 17 | 3.6% | 560 | 4.3% | 0.84 |
+| Asphalt/Bitumen Tanker | 6 | 1.3% | 474 | 3.6% | 0.35 |
+| LPG Tanker | **0** | 0.0% | 421 | 3.2% | **0.00** |
+
+Chemical carriers lead the list only because they dominate the fleet. **Crude oil
+tankers are the over-represented type**, and LPG never does this at all.
+
+**By size — the biggest ships, not the smallest:**
+
+| Band | No-berth % | Berthed % | Index |
+|---|---:|---:|---:|
+| under 20k | 9.8% | 18.4% | 0.53 |
+| 20-40k (Handy) | 11.5% | 21.1% | 0.55 |
+| 40-60k (MR) | 49.9% | 39.4% | 1.27 |
+| 60-85k (LR1/Panamax) | 7.0% | 7.2% | 0.97 |
+| 85-125k (LR2/Aframax) | 14.9% | 12.2% | 1.22 |
+| **125k+ (Suezmax/VLCC)** | **6.8%** | **1.7%** | **3.95** |
+
+Mean DWT 62,138 for no-berth against 50,044 for berthed. **The largest class is
+four times over-represented; the smallest are half as likely.**
+
+**Why: they are lightering.** Draft on no-berth calls, by band:
+
+| Band | Median draft in → out | Draft dropped >1ft |
+|---|---|---:|
+| 85-125k | **39ft → 31ft** | **54%** |
+| 125k+ | **42ft → 35ft** | **50%** |
+| 40-85k | 28ft → **37ft** ↑ | 19% |
+| under 40k | 26ft → **30ft** ↑ | 33% |
+
+Large ships arrive deep and leave 7-8 feet shallower **without ever berthing**.
+Smaller ships on the same population go the other way — arriving light, leaving
+deeper. That is the two halves of a lightering operation: the mother ship
+discharges to lighter vessels at anchor because the river cannot take her loaded.
+
+**The scale of the cargo work:**
+
+| No-berth tanker calls | |
+|---|---:|
+| Total | 469 |
+| With both drafts recorded | 408 |
+| **Draft moved >1ft — cargo worked** | **298 (73%)** |
+| — lightered down (gave cargo) | 119 |
+| — loaded up (received cargo) | 179 |
+| Had an anchorage stop | 370 of 469 |
+
+**The question this raises is William's, not this repo's.** These 298 calls did
+real cargo work in the river and bill **$0**, because §9 rules that a leg bills
+only if it reached a berth. MRTIS applied that rule exactly as written — nothing
+is broken. But the rule was framed around berth work, and lightering at anchor
+was very likely not in view when it was set.
+
+At the $3,500 tanker tier the 298 calls would be **$1,043,000** across the series
+— roughly **$130,000 a year**. Whether they *should* bill is a commercial matter:
+does the agency work a lightering call the way it works a berth call?
+
+**Confidence note.** AIS draft is self-reported and noisy, so individual calls
+may be wrong. The population signal is not noise: the direction splits cleanly
+(119 down / 179 up rather than a random 50/50 of small wobbles), the magnitudes
+are 7-8 feet on the large ships, and the >1ft threshold is the same one MRTIS
+itself uses for draft-based activity resolution.
+
+**This also refines I-13.** The 39% of no-berth tanker calls that left within 12
+hours are not idle vessels — a large share were working cargo at anchor. The
+2021-22 AMA/Kenner Bend coverage question in I-13 still stands separately.
+
+**Proposed fix** None in code until ruled. If William rules lightering billable,
+the fee logic needs a concept it does not currently have — cargo work evidenced
+by draft change at an anchorage rather than a berth stop — which is a real
+change to §9, not a tweak.
+
+**Status** OPEN — needs a business ruling from William.
+
 ## Closed
 
 - **I-1** — **fixed** in MRTIS `56ad9f5` (§15.1). 445 legs corrected; nothing else in the database moved.
