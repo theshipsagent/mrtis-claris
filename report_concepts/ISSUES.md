@@ -1082,6 +1082,77 @@ change to §9, not a tweak.
 
 **Status** OPEN — needs a business ruling from William.
 
+---
+
+### I-16 · Pre-arrival waiting at `SWP Anch` is invisible to every port call — 294,293 hours — `gap` (scope)
+
+**Severity** `gap` — not a defect; an unstated boundary with a large number behind it
+**Where** The port-call boundary itself (`PORT_CALL_SPEC.md` §2), by construction
+**Found** 2026-08-20 by William, reading the raw 2025 event rows: *"see how many
+of the flagged vessels are for swp anch as the zone?"*
+
+**`SWP Anch` behaves unlike every other anchorage in the data.**
+
+| | Events | Never placed in a call | |
+|---|---:|---:|---:|
+| **`SWP Anch`** | 14,476 | **14,331** | **99.0%** |
+| All other anchorages combined | 97,952 | 1,467 | 1.5% |
+
+And it is not a drift or a bad year — the rate is 98.6-99.5% in **every single
+year** from 2019 to 2026.
+
+**Why: the anchorage sits outside the boundary.** A port call opens at the
+`SWP Cross` entry. `SWP Anch` is seaward of it, so a vessel riding at anchor
+waiting for a berth, a pilot or orders has not yet entered — its anchor and weigh
+events precede the call and land nowhere. `unassigned_reason` records this
+faithfully as `before_first_entry` or `no_open_call`.
+
+**What that boundary excludes.** Pairing `Anchor` → `Weigh Anchor` per vessel at
+that zone:
+
+| Year | Anchor stints | Hours | Median stint |
+|---|---:|---:|---:|
+| 2019 | 1,842 | 111,645 | 35.6h |
+| 2020 | 872 | 36,109 | 17.9h |
+| 2021 | 720 | 26,346 | 18.9h |
+| 2022 | 584 | 27,065 | 24.1h |
+| 2023 | 575 | 26,777 | 23.6h |
+| 2024 | 564 | 24,949 | 20.3h |
+| 2025 | 531 | 25,771 | 26.9h |
+| 2026 (7 months) | 330 | 15,631 | 25.1h |
+| **Total** | **6,018** | **294,293 hrs** | **12,262 vessel-days** |
+
+Against the **2,470,459 hours** of `waiting_hours` MRTIS *does* count on legs,
+this is **11% of the two combined** — a ninth of all waiting in the dataset,
+sitting outside the model entirely.
+
+**This is almost certainly the right boundary, and that is the point.** A vessel
+at the sea buoy is not in the river and not yet the agent's berth problem, so
+excluding it from a port call is defensible. What was missing is that the
+exclusion was never *stated*, and nobody knew its size. A reader of
+`docs/BUSINESS_RULES.md` §7 would reasonably assume `waiting_hours` is waiting
+time, full stop.
+
+**Effect on reports** No published figure is wrong — `waiting_hours` measures
+what it says it measures, in-call waiting after the SWP entry. But any report or
+conversation about *how long ships wait* understates it by roughly a ninth, and
+2019's 111,645 hours would dominate a like-for-like year comparison if it were
+ever added.
+
+**Direct bearing on the parked KPI work.** `docs/KPI_DESIGN_BRIEF.md` frames the
+question as **SWP-to-SWP**. This finding shows that framing has a hard edge:
+a SWP-to-SWP clock structurally cannot see pre-arrival waiting, no matter how the
+other eight questions are answered. That belongs in the brief as a ninth
+decision — *does the KPI start at the SWP crossing, or at first contact with the
+anchorage?* — because the answer changes the denominator of every wait metric
+built on it.
+
+**Proposed fix** Nothing in MRTIS. Two documentation actions, both in this repo:
+state the boundary and its size in `docs/BUSINESS_RULES.md` §7, and add the
+start-of-clock question to the KPI brief.
+
+**Status** OPEN — documentation, plus one new question for the KPI conversation.
+
 ## Closed
 
 - **I-1** — **fixed** in MRTIS `56ad9f5` (§15.1). 445 legs corrected; nothing else in the database moved.
