@@ -71,7 +71,11 @@ full write-up and the MRTIS commit this was built against.
    vessel type, split-call rate, calls by vessel type, §12 fee-tier impact).
 4. ✅ Sample canned reports demonstrating reporting capability —
    [`reports/`](reports/) (agency fee by vessel type, port calls by agent,
-   R5 general-cargo-bulk drill-down).
+   R5 general-cargo-bulk drill-down). **Proof of concept** (William,
+   2026-08-20): downstream is not yet known, so these demonstrate that the
+   data supports reporting — they are not written against a FileMaker layout,
+   a print format or a house style. The derivation discipline still applies
+   in full: every figure comes from `figures.py`, never hand-keyed.
 5. ✅ [`figures.py`](figures.py) → [`docs/FIGURES.md`](docs/FIGURES.md) — the
    single derivation every other deliverable reads from, with the fee-rule
    attribution self-check described above.

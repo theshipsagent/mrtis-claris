@@ -106,18 +106,44 @@ block the handover:
   `OPEN_QUESTIONS.md` §14's open scope question as a side effect.
 - **MRTIS §13**, **§11.3 `tpc = 0`** — ruled/deferred upstream, still unbuilt.
 
+### Ruled after close (William, 2026-08-20)
+
+**The reports are proof of concept.** Asked whether the sample reports should be
+designed against a known downstream consumer, William: *"for the moment,
+downstream is not known, so the reports are simply proof of concept."*
+
+That settles the question raised at the end of this session — whether a report
+is a working artifact the reviewer re-runs, or a presentation mockup of what a
+finished FileMaker report should look like. Neither, for now: they demonstrate
+that the data supports reporting at all. The consequences worth holding onto:
+
+- **No downstream contract to satisfy**, so no report needs to anticipate a
+  FileMaker layout, a print format or a house style that has not been specified.
+- **The derivation discipline still applies in full.** Proof of concept
+  describes the *audience*, not the rigour: a figure in a report still comes
+  from `figures.py`, never hand-keyed, or the package loses the guarantee
+  session 4 built.
+- **Presentation polish is explicitly out of scope** until downstream is known.
+  When it is wanted, the split discussed this session holds — spec and
+  derivation here, formatting elsewhere, with a derived data file as the
+  contract between them so no figure is ever retyped into a template.
+
+**MRTIS stays parked**, confirmed by William the same day: the end goal is
+handover and integration into FileMaker, and that work lives in this repo.
+
 ### Next session
 
-1. **Run the KPI conversation with William**, in the brief's order: Q1 first,
-   then Q2-Q4. Those four are definitions, cost nothing to decide, and unblock
+**Focused on building the reports**, on the proof-of-concept footing ruled
+above. It opens with the Q&A to articulate what William wants, and each answer
+is a rule to be logged and cited like any other.
+
+Two things still take precedence if they arrive first:
+
+1. **The reviewer's questions**, if the handover has happened — specifically
+   whether the FMPXMLRESULT import behaved as `IMPORT_GUIDE.md` describes.
+2. **The KPI conversation**, whenever it is wanted, in the brief's order: Q1
+   first, then Q2-Q4. Definitions only; they cost nothing to decide and unblock
    the rest.
-2. **Then prototype a KPI report here**, read-only against the current columns —
-   the brief's §7 notes everything except Q1's residual column is computable
-   without MRTIS being unparked, so the definitions can be made concrete before
-   any upstream build.
-3. **Or work the reviewer's questions** if the handover has happened by then —
-   that still takes precedence, and specifically whether the FMPXMLRESULT import
-   behaved as `IMPORT_GUIDE.md` describes.
 
 Standing entry conditions unchanged: re-check MRTIS's commit before trusting any
 figure here, and if it has moved, re-run `figures.py`, `kpi/kpi_baseline.py` and
