@@ -117,10 +117,18 @@ reviewer picking either one silently gets a different answer.
 
 ### Open
 
-- **`docs/PORT_CALL_SPEC.md` in MRTIS is itself stale** relative to the
-  post-§8/§12 rebuild (A7 noted its percentages are what session 1 copied).
-  Not this repo's to fix — read-only — but worth a note if MRTIS is ever
-  unparked.
+- ~~`docs/PORT_CALL_SPEC.md` in MRTIS is itself stale.~~ **Withdrawn — checked,
+  and it isn't.** This entry originally carried A7's finding forward without
+  re-reading the current file. A7 was written during audit #2, *before* the
+  rebuild; MRTIS updated the spec as part of that rebuild. Re-checked against
+  this session's independent derivation and every figure agrees: §3's
+  dictionary 35.9 / draft 46.1 / FGIS 0.8 / unresolved 13.8 / never-berthed
+  3.4 and **82.8% resolved** against 35.86 / 46.14 / 0.79 / 13.82 / 3.38 and
+  82.79%; §4's 4.1% split against 4.06%; §2's 5,102 collapsed berth events
+  exactly; §1's 98.8% complete against 98.81%. The spec even states it is
+  "post the 2026-08-19 non-commercial-time rebuild". **Nothing to fix
+  upstream.** The lesson worth keeping: an audit finding names a moment, not a
+  permanent state — re-verify before carrying one into a later session.
 - **MRTIS §13** (General Cargo berths discharge-only, buoy sequencing) is
   ruled but not built. It would move the split/leg baseline these fee figures
   sit on. Disclosed in `§10`.
