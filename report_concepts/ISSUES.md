@@ -1491,6 +1491,123 @@ adjoins an anchorage.
 **Status** OPEN — rule stated, evidence gathered, threshold confirmed by the
 data; needs William's sign-off and an MRTIS session to build.
 
+---
+
+### I-21 · A bad crossing event orphans an entire working voyage — 683 berth stops, $2,835,000 — `wrong-figure`
+
+**Severity** `wrong-figure` — real cargo work sits outside every port call
+**Where** MRTIS crossing-event handling; root cause is the feed
+**Found** 2026-08-20 by William, reading the raw rows: *"this one just a glitch,
+as the ship clearly arrived and sailed 110 buoys."*
+
+**The worked example — `Balsa 92`, IMO 9616060, July 2025:**
+
+| Time | Event | Zone | Draft | Call |
+|---|---|---|---:|---|
+| 07-05 06:40 | Enter | SWP Cross | 19 | `...202507050640` |
+| 07-05 18:52 | Arrived | Avondale | 19 | `...202507050640` |
+| 07-07 12:15 | Sailed | Avondale | 19 | `...202507050640` |
+| **07-07 19:58** | **Exit** | **SWP Cross** | 19 | `...202507050640` **← call closes** |
+| 07-08 04:24 | Anchor | Belle Chasse Anch (mile 75) | 19 | **none** |
+| 07-09 19:32 | **Arrived** | **110 Buoys** | 19 | **none** |
+| 07-11 17:42 | **Sailed** | **110 Buoys** | **23** | **none** — carries $10,500 |
+| 07-11 18:41 | Anchor | Upr Kenner Bend | 23 | none |
+| 07-12 12:42 | Exit | SWP Cross | 23 | none |
+
+Eight hours after "exiting", the vessel is anchored at **mile 75, deep inside the
+river**, with no `Enter` in between. She then loads 19 → 23 ft at 110 Buoys and
+leaves. **A complete, coherent, fee-bearing voyage, entirely outside any port
+call.**
+
+Either the 07-07 Exit is spurious and she never left, or she left and re-entered
+with the entry unrecorded. Either way **one bad crossing event discards
+everything after it.** Contrast the same vessel in April, where `Weigh Anchor` at
+SWP Anch is followed by a proper `Enter` three minutes later and the call
+assembles correctly.
+
+**Scale:**
+
+| | |
+|---|---:|
+| Berth-stop events with no call at all | **683**, across **284 vessels** |
+| Fee-bearing unplaced departure events | **360** |
+| **Fee never attributed to a call** | **$2,835,000** |
+| `Exit` immediately followed by upriver activity with no `Enter` | **85** occurrences |
+
+**By year, the problem is shrinking sharply** — 404 unplaced berth stops in 2019,
+then 57 / 76 / 45 / 52 / 16 / 18 / 15. 2019 alone holds $1,771,000 of the
+$2,835,000, consistent with I-9's finding that 2019 is the worst feed year.
+
+Facilities losing work this way are ordinary busy ones — Nashville Ave (34),
+Zen-Noh (31), CHS Myrtle Grove (28), IMTT St Rose (25) — so it is not a
+facility-specific geofence problem, it is a crossing-event problem.
+
+**This is `OPEN_QUESTIONS.md` §11.2 with a mechanism attached.** That entry
+records the $2,835,000 gap between the event-level and call-level fee bases and
+was ruled "leave as is". William may want to revisit now that the *cause* is
+visible: it is not an accounting quirk, it is voyages being discarded by a single
+missing or false crossing.
+
+**Proposed fix (needs a ruling).** Treat a berth stop upriver as implying a call:
+if events appear inside the river with no open call, open one at the first such
+event rather than discarding everything until the next `Enter`. That is a real
+change to the assembly rules (`PORT_CALL_SPEC.md` §2) and must be William's.
+
+**Status** OPEN — needs a ruling; relates to §11.2.
+
+---
+
+### I-22 · Duplicate `Enter` signals create phantom one-event port calls — 135 calls — `wrong-figure`
+
+**Severity** `wrong-figure` — phantom calls inflate call counts and the no-berth population
+**Where** MRTIS `build_port_calls.py` — the bounce guard exists for berths, not for crossings
+**Found** 2026-08-20 by William: *"this too, I thought we planned for where the
+signal glitches, clear the ship did not enter, not exit and enter again 10 mins
+later."*
+
+**The worked example — `Betty`, IMO 9522881, November 2025:**
+
+| Time | Event | Call created | Outcome |
+|---|---|---|---|
+| **11-15 01:00** | Enter SWP Cross | `...202511150100` | **1 event, `open_end`, no berth — phantom** |
+| **11-15 01:10** | Enter SWP Cross | `...202511150110` | the real voyage |
+| 11-15 08:54 | Anchor 9 Mile | | |
+| 11-16 02:34 | Arrived 175 Buoys (Cooper Darrow) | | |
+| 11-20 11:15 | Sailed, draft 20 → **35** | | $10,500 |
+| 11-21 01:55 | Exit | | `complete` |
+
+**Two `Enter` events ten minutes apart.** The first opened a call that never went
+anywhere; the second carried the actual voyage.
+
+**William is right that this was planned for — but only for berths.**
+`berth_stops_of(ev, call, zdict, bounce_hours=2.0)` collapses berth bounces, and
+the source comment even notes that *"events in this data sit within ten minutes
+of the previous one."* **No equivalent guard exists on SWP crossings.**
+
+**Scale:**
+
+| | |
+|---|---:|
+| Consecutive `Enter` → `Enter` pairs, ≤15 min apart | **34** |
+| ≤60 min apart | 96 |
+| **Calls with exactly one event** — all `open_end`, all no-berth | **135** |
+| — followed by another `Enter` within **30 min** | **74** |
+| — within 2 hours | **103** |
+
+**Effect on figures already reported in this log.** Those 135 phantoms are
+counted in the 1,557 no-berth calls, inside the `NOBERTH_NO_DRAFT_DATA` and
+`NOBERTH_NO_CARGO_EVIDENCE` categories. **Up to 135 of the 454 "genuinely
+unexplained" no-berth calls are this glitch** — which would cut the unexplained
+residue to roughly **319, about 0.79% of all calls.**
+
+**Proposed fix.** Apply the existing bounce concept to crossings: collapse
+consecutive same-direction crossing events for one vessel inside a short window
+into a single event. The berth guard uses 2 hours; **30 minutes captures 74 of
+the 135 and 2 hours captures 103**, so the window is a ruling, not a derivation.
+Cheap to build and low-risk — it only merges events the feed duplicated.
+
+**Status** OPEN — needs William's window, then an MRTIS session.
+
 ## Closed
 
 - **I-1** — **fixed** in MRTIS `56ad9f5` (§15.1). 445 legs corrected; nothing else in the database moved.
