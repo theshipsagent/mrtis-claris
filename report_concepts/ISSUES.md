@@ -1644,12 +1644,72 @@ was ruled "leave as is". William may want to revisit now that the *cause* is
 visible: it is not an accounting quirk, it is voyages being discarded by a single
 missing or false crossing.
 
-**Proposed fix (needs a ruling).** Treat a berth stop upriver as implying a call:
-if events appear inside the river with no open call, open one at the first such
-event rather than discarding everything until the next `Enter`. That is a real
-change to the assembly rules (`PORT_CALL_SPEC.md` §2) and must be William's.
+**RULED — William, 2026-08-20**, on a second worked example (`Orfeas`, IMO
+9358917, June 2025 — AMA Anch, then **Arrived and Sailed MPLX Garyville 5**
+carrying $3,500, all with **no `Enter` event anywhere**):
 
-**Status** OPEN — needs a ruling; relates to §11.2.
+> *"this one is missing pilot and anchor times, but it has the arrival and
+> sailing from its fac MPLX, so it should count at least for ship counts and
+> revenue stats. Port call KPI, it will have to remain broken, no problem."*
+
+**So the ruling is: a berth stop is enough to constitute a call.** Where events
+appear inside the river with no open call, a call opens at the first such event
+rather than everything being discarded until the next `Enter`. Ship counts and
+revenue are recovered; **SWP-to-SWP elapsed time for those calls is accepted as
+broken**, because the crossings genuinely are not in the feed.
+
+**What the ruling recovers.** Grouping unplaced events into runs per vessel (a
+gap over 7 days starts a new run), excluding `SWP Anch` which is out of scope by
+William's other ruling (I-16):
+
+| | |
+|---|---:|
+| Orphan event-runs | 412 |
+| **Runs containing a berth stop — these become calls** | **311** |
+| **Fee recovered** | **$2,835,000** |
+
+**That figure matches `OPEN_QUESTIONS.md` §11.2 exactly.** §11.2 recorded a
+$2,835,000 gap between the event-level and call-level fee bases and was ruled
+"leave as is" as an accounting artefact. It is not an artefact — **it is 311
+voyages discarded by missing crossing events**, and this ruling closes it.
+
+| Year | Recoverable calls | Fee |
+|---|---:|---:|
+| 2019 | **188** | $1,771,000 |
+| 2020 | 24 | $245,000 |
+| 2021 | 38 | $308,000 |
+| 2022 | 17 | $150,500 |
+| 2023 | 15 | $143,500 |
+| 2024 | 10 | $73,500 |
+| 2025 | 10 | $77,000 |
+| 2026 | 9 | $66,500 |
+
+62% of the value is 2019, consistent with I-9's finding that 2019 is the worst
+feed year.
+
+**This moves the headline figure the reviewer holds.** Expected effects:
+
+| | Now | After |
+|---|---:|---:|
+| Billable total | $272,660,000 | **~$275,495,000** (+1.04%) |
+| Port calls | 40,170 | ~40,481 |
+| §11.2 two-basis gap | $2,835,000 | **closes** |
+| Calls with both crossings seen | 98.81% | falls — the 311 have none |
+
+**Note the honest cost:** completeness *drops* as a headline, because 311 calls
+that previously did not exist will exist and will be incomplete by construction.
+That is the ruling working as intended — William has explicitly accepted a broken
+KPI clock for these in exchange for correct counts and revenue.
+
+**Proposed implementation.** In `build_port_calls.py`'s assembly: where a berth
+stop occurs with no open call, open one; close it at the next `Exit` or at the
+last event before a long gap. Flag those calls so the KPI layer can exclude them
+— `call_status` already carries `open_end`, and a distinct status such as
+`no_crossing` would be clearer.
+
+**Status** RULED — needs an MRTIS session to build. `CLAUDE.md`'s read-only
+directive is back in force, so this requires a fresh, explicitly recorded
+suspension.
 
 ---
 
