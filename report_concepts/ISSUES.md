@@ -1406,6 +1406,91 @@ split across both.
 
 **Status** CLOSED — fixed and asserted.
 
+---
+
+### I-20 · Burnside: AIS overlaps the anchorage and the buoys, so buoy loadings are recorded as anchorage stops — `gap` (needs a ruling)
+
+**Severity** `gap` — a rule William has stated; needs a threshold confirmed before building
+**Where** MRTIS zone resolution, `Burnside Anch` vs `Burnside Buoys`
+**Raised** 2026-08-20 by William: *"ais for burnside anchorage and burnside buoys
+often gets overlapped, so if there is a draft change over a threshold, say 5
+feet?... its burnside anchor its really burnside buoys and only dry bulk ships,
+no other type uses those buoys."*
+
+**The three Burnside zones:**
+
+| Zone | Facility | Type | Mile | Events | Berth stops |
+|---|---|---|---:|---:|---:|
+| **`Burnside Anch`** | — | Anchorage | 166 | **5,494** | **0** |
+| `Burnside Buoys` | ABT Buoys | Mid-Stream | 169 | **100** | 100 |
+| `Burnside Terminal` | ABT Burnside | Bulk Cargo | 170 | 799 | 799 |
+
+`Burnside Buoys` records **100 events in eight years** — roughly 50 calls — for a
+working midstream facility three miles from the anchorage.
+
+**The 5-foot threshold is empirically right, not arbitrary.** No-berth Bulk calls
+touching `Burnside Anch`, by draft change:
+
+| 0ft | 1-2ft | 3-4ft | 5-9ft | 10-14ft | 15+ft |
+|---:|---:|---:|---:|---:|---:|
+| 3 | **0** | **0** | 8 | 24 | 17 |
+
+**Nothing at all sits in the 1-4ft band.** The distribution is bimodal: no
+movement, or cargo-sized movement. 5ft lands in the gap.
+
+**The suspect set: 49 calls, 47 vessels, median draft move 13ft.** Adding them
+would roughly double ABT Buoys' recorded activity.
+
+**Direction confirms the reading:**
+
+| | Calls | Median time in port |
+|---|---:|---:|
+| **Loaded (draft up)** | **48** | 248h |
+| Discharged (draft down) | 1 | 402h |
+
+`ABT Burnside`'s dictionary row says **`ops = Load`, `Cargo group =
+Coal/Petcoke`**. 48 of 49 loading is exactly what a coal/petcoke buoy berth
+should look like.
+
+**Vessel-type control passes.** No-berth, ≥5ft, at `Burnside Anch`: **49 Bulk**,
+10 Tanker, 1 Gas — consistent with William's *"only dry bulk uses those buoys."*
+
+**Two limits, stated before anyone builds this**
+
+1. **Burnside is not uniquely affected.** The same signature — bulk, no berth,
+   ≥5ft — appears at `12 Mile Anch` (44), `Belle Chasse Anch` (31), `9 Mile Anch`
+   (31). Burnside leads at 49 but not dramatically. What distinguishes it is a
+   *known dry-bulk-only buoy facility three miles away that is demonstrably
+   under-recorded*; the other anchorages may have no such neighbour, in which
+   case their calls are genuine anchor work (I-15) rather than a zone overlap.
+   **A rule written for Burnside must not be generalised to all anchorages
+   without checking each one has the same adjacency.**
+2. **The 10 tanker calls cannot be buoy work**, since tankers do not use those
+   buoys. So the dry-bulk restriction William gave is load-bearing — the rule
+   cannot be "draft change at Burnside means a buoy stop" on its own.
+
+**Proposed implementation, not built.** In `dictionaries/zone_facility.csv` or
+`build_port_calls.py`: where a **dry-bulk** vessel's call touches `Burnside Anch`,
+records **no berth stop anywhere**, and shows a draft change of **≥5ft**, resolve
+that stop to `Burnside Buoys` / `ABT Buoys` (Mid-Stream) rather than to the
+anchorage. Effects to expect: ~49 calls gain a berth stop and an activity of
+`Load`; ABT Buoys' recorded volume roughly doubles; **those calls become
+fee-bearing at the $10,500 bulk tier — about $514,500** — since a leg that
+reaches a berth bills under §9.
+
+**Note this interacts with I-15.** Those 49 calls are currently part of the 408
+bulk "worked at anchor" population. If this rule is built, they move from *"cargo
+worked at anchor, unbilled"* into *"berthed at a midstream facility, billed"* —
+which resolves 49 of the 408 without needing the broader I-15 ruling.
+
+**Before building, two things are needed from William:** confirmation that **5ft**
+is the threshold he intends (the data supports it), and whether the rule is
+**Burnside-only** or should be applied wherever a dry-bulk-only buoy facility
+adjoins an anchorage.
+
+**Status** OPEN — rule stated, evidence gathered, threshold confirmed by the
+data; needs William's sign-off and an MRTIS session to build.
+
 ## Closed
 
 - **I-1** — **fixed** in MRTIS `56ad9f5` (§15.1). 445 legs corrected; nothing else in the database moved.
