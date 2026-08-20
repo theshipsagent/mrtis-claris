@@ -38,9 +38,10 @@ stops at "here is proof this works, packaged for review."
 
 ## Deliverables
 
-Built in session 1, re-exported in session 3, and re-derived end-to-end in
-session 4 (all 2026-08-19) — see `SESSION_LOG.md` for the full write-up and
-the MRTIS commit this was built against.
+Built in session 1, re-exported in session 3, re-derived end-to-end in
+session 4 (all 2026-08-19), and made deliverable in session 5 (2026-08-20) —
+see `SESSION_LOG.md` for the full write-up and the MRTIS commit this was built
+against.
 
 > **Every published figure is derived, not hand-keyed.**
 > [`figures.py`](figures.py) re-derives every count, percentage and dollar
@@ -56,8 +57,8 @@ the MRTIS commit this was built against.
    (following the pattern proven in
    `Ships_Register/src/build_filemaker_package.py`), producing CSV +
    FMPXMLRESULT XML + `DATA_DICTIONARY.csv` for `port_call`,
-   `port_call_leg`, `port_call_event` in `package/` (not committed — see
-   `SESSION_LOG.md`'s "Open" section).
+   `port_call_leg`, `port_call_event`. Two modes — see **How a reviewer
+   receives this** below.
 2. ✅ [`docs/BUSINESS_RULES.md`](docs/BUSINESS_RULES.md) — the port-call
    assembly and fee-tier rules, written for a FileMaker developer, not a
    Python one, every rule cited to its MRTIS source. Current as of the
@@ -71,6 +72,29 @@ the MRTIS commit this was built against.
 5. ✅ [`figures.py`](figures.py) → [`docs/FIGURES.md`](docs/FIGURES.md) — the
    single derivation every other deliverable reads from, with the fee-rule
    attribution self-check described above.
+
+## How a reviewer receives this
+
+The full export is 644 MB, which is why it stayed undeliverable through three
+sessions. It now ships two ways, from the one script:
+
+| | [`sample/`](sample/) — committed | `package/` — on request |
+|---|---|---|
+| Build | `python3 export/build_review_package.py --sample` | `python3 export/build_review_package.py` |
+| Scope | calendar year 2025 — 5,483 calls, 5,679 legs, 35,703 events | everything — 40,170 / 41,804 / 290,305 |
+| Size | 4.2 MB gzipped (83 MB expanded) | 644 MB, gitignored |
+| For | opening on day one: import, relationships, a report | completeness, edge cases, the unplaced-event stream |
+
+**The sample is whole port calls only** — every selected call brings all of its
+legs and all of its events, and the build *asserts* that per call rather than
+assuming it. A truncated event stream would show a reviewer a broken version of
+the very assembly rules this package exists to demonstrate. Start at
+[`sample/SAMPLE_README.md`](sample/SAMPLE_README.md), which states exactly what
+the cut includes, what it deliberately excludes, and which of its numbers are
+subtotals rather than the published figures.
+
+Both modes emit rows in an explicit, total key order, so a rebuild against an
+unchanged MRTIS is byte-identical and the committed sample never churns.
 
 ## How to work in this project
 

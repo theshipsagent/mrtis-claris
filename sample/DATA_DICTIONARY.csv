@@ -1,0 +1,116 @@
+table,field,filemaker_type,description,null_pct,example
+PORT_CALL,port_call_id,TEXT,Primary key: '<imo|NONAME:name>-<YYYYMMDDHHMM of first event>'.,0.0,1012919-202501270659
+PORT_CALL,vessel_key,NUMBER,"Internal MRTIS join key. WARNING -- NOT a stable identity: it is assigned by row position at build time, so it changes on every MRTIS rebuild. Do NOT key a FileMaker file on it; use imo, or port_call_id/leg_id, which are content-derived and stable. (MRTIS OPEN_QUESTIONS.md section 10 tracks making these stable; approved, not yet built.)",0.0,2
+PORT_CALL,imo,TEXT,Canonical 7-digit IMO number.,0.5,1012919
+PORT_CALL,vessel_name,TEXT,Vessel's current/canonical name.,0.0,Dreamboat
+PORT_CALL,call_name,TEXT,Name actually carried on this call's source events (may differ from vessel_name if renamed since).,0.0,Dreamboat
+PORT_CALL,vessel_type,TEXT,"Canonical vessel type (Bulk/Container/Gas/Other/Passenger/Reefer/Tanker), from the Zone Report's own Type field.",0.8,Other
+PORT_CALL,ship_type,TEXT,"Ships register's raw, fine-grained type (e.g. 'Container Ship (Fully Cellular)'). Drives the R1-R4 fee tiers.",0.6,Yacht
+PORT_CALL,ship_type_group,TEXT,Ships register's size-bucketed group within a type family (e.g. 'Bulk Carrier-Handymax').,0.6,Yacht
+PORT_CALL,dwt,NUMBER,"Deadweight tonnage, from the ships register.",0.6,723.0
+PORT_CALL,tpc,NUMBER,"Tonnes per centimetre immersion, from the ships register. CAUTION: 0 appears on ~10% of calls and is stored as a literal zero, not a blank -- it is a placeholder for 'not available' in the upstream register, not a measured value. Filter tpc > 0 before any draft-survey calculation. (MRTIS OPEN_QUESTIONS.md section 11.3; the fix belongs upstream in Ships_Register and is deferred.)",0.6,0.0
+PORT_CALL,call_start,TIMESTAMP,"Timestamp of the call's first event (the SWP entry, when the call is complete).",0.0,2025-01-27 06:59:00
+PORT_CALL,call_end,TIMESTAMP,"Timestamp of the call's last event (the SWP exit, when complete).",0.0,2025-02-12 18:16:00
+PORT_CALL,call_hours,NUMBER,"call_end minus call_start, in hours.",0.0,395.28
+PORT_CALL,call_status,TEXT,'complete' (both SWP ends present) / 'open_start' / 'open_end' / 'fragment'. Only 'complete' calls have reliable duration figures.,0.0,complete
+PORT_CALL,is_complete,NUMBER,"1 if call_status = 'complete', else 0.",0.0,1.0
+PORT_CALL,leg_count,NUMBER,"Number of legs in this call. 1 = single call, 2+ = split call.",0.0,1
+PORT_CALL,is_split,NUMBER,1 if leg_count > 1.,0.0,0.0
+PORT_CALL,is_commercial_call,NUMBER,"FILTER ON THIS BY DEFAULT for any count or fee report. 0 marks a non-commercial call -- every berth visit was layberth (lay-up/repair), so it does not count as a port call and accrues no fee. The row, its events and its timestamps are all kept so the elapsed time is never lost. A call that never reached a berth at all is a different category and stays 1. See docs/BUSINESS_RULES.md section 5.",0.0,1.0
+PORT_CALL,call_class,TEXT,Names why: 'commercial' or 'layup'. Today layup is the only non-commercial class; it is built as a general classification so other non-commercial cases can join it later.,0.0,commercial
+PORT_CALL,berth_stop_count,NUMBER,"Count of real, non-artifact, NON-LAYBERTH berth stops across the whole call -- i.e. actual cargo work. A pure lay-up call reads 0 here, same as a call that never berthed; tell those apart by layberth_hours > 0, not by this column.",0.0,0
+PORT_CALL,layberth_hours,NUMBER,"Hours alongside a layberth (lay-up/repair wharf) across the whole call -- real elapsed time, excluded from berth_hours and from every count and fee. Summed from this call's legs.",0.0,0.0
+PORT_CALL,anchorage_stop_count,NUMBER,Count of anchorage stops across the whole call.,0.0,0
+PORT_CALL,event_count,NUMBER,Total raw events (port_call_event rows) belonging to this call.,0.0,2
+PORT_CALL,entry_draft_ft,NUMBER,Draft in feet at the SWP entry crossing. NULL if no Enter event was recorded.,0.2,14
+PORT_CALL,exit_draft_ft,NUMBER,Draft in feet at the SWP exit crossing. NULL if no Exit event was recorded.,0.7,14
+PORT_CALL,agency,TEXT,Canonical agency for the call -- the inbound agency (the one that brought the vessel in).,1.6,HOST
+PORT_CALL,agency_fee_total,NUMBER,BILLABLE FIGURE. Sum of this call's legs' agency_fee (one fee per leg that reached a berth). See docs/BUSINESS_RULES.md section 9.,6.5,10500.0
+PORT_CALL,agency_fee_departures_total,NUMBER,Comparison-only figure: what this call would total under the old per-departure-charges-every-sailing basis. Not the billing figure.,7.8,10500.0
+PORT_CALL,fgis_record_count,NUMBER,Count of FGIS grain certificates tied to this call.,0.0,0
+PORT_CALL,estimated_tons,NUMBER,"FGIS certified metric tons, summed across the call's legs. An ESTIMATE per William's original mapping, not a certified actual weight.",72.4,58121.0
+PORT_CALL,actual_tons,NUMBER,Reserved for a genuinely certified/actual tonnage. NULL everywhere today -- no source wired in yet.,100.0,
+PORT_CALL_LEG,leg_id,TEXT,Primary key: '<port_call_id>-L<n>'.,0.0,1012919-202501270659-L1
+PORT_CALL_LEG,port_call_id,TEXT,Foreign key to port_call.,0.0,1012919-202501270659
+PORT_CALL_LEG,leg_seq,NUMBER,1-based sequence of this leg within its call.,0.0,1
+PORT_CALL_LEG,leg_count,NUMBER,Legs in the parent call (denormalized for convenience -- same as port_call.leg_count).,0.0,1
+PORT_CALL_LEG,vessel_key,NUMBER,Internal MRTIS join key -- NOT a stable identity; see the PORT_CALL.vessel_key note. Do not key a FileMaker file on it.,0.0,2
+PORT_CALL_LEG,leg_start,TIMESTAMP,Timestamp of the leg's first event.,0.0,2025-01-27 06:59:00
+PORT_CALL_LEG,leg_end,TIMESTAMP,Timestamp of the leg's last event.,0.0,2025-02-12 18:16:00
+PORT_CALL_LEG,leg_hours,NUMBER,"leg_end minus leg_start, in hours.",0.0,395.28
+PORT_CALL_LEG,activity,TEXT,"'Load' / 'Discharge' / 'No Cargo' / blank (unresolved -- never guessed). Real activity wins first; below that an UNRESOLVED stop outranks 'No Cargo', so a layberth stop elsewhere in the leg cannot overwrite an honest 'we don't know'. Only a leg of nothing but layberth stops reports 'No Cargo'. See docs/BUSINESS_RULES.md section 4.",20.0,Load
+PORT_CALL_LEG,activity_method,TEXT,"How activity was decided: 'dictionary' / 'fgis' / 'draft_delta' / 'unresolved', tried in that priority order.",0.0,no_berth_stop
+PORT_CALL_LEG,activity_conflict,NUMBER,"1 if the dictionary/FGIS evidence and the draft delta disagreed. Flagged, never silently overridden.",0.0,0.0
+PORT_CALL_LEG,activity_conflict_reason,TEXT,'draft' or 'fgis' -- which two sources disagreed.,98.5,draft
+PORT_CALL_LEG,draft_delta_ft,NUMBER,"Sailing draft minus arrival draft at the leg's berth work, in feet.",24.8,22
+PORT_CALL_LEG,berth_stop_count,NUMBER,"Real, non-artifact, NON-LAYBERTH berth stops in this leg -- i.e. actual cargo work. A pure lay-up leg reads 0; distinguish it from a leg that never berthed by layberth_hours > 0.",0.0,0
+PORT_CALL_LEG,geofence_artifact_events,NUMBER,"Berth events in this leg that are neither the first docking nor the last sailing of their visit -- AIS/geofence noise, not operations.",0.0,0
+PORT_CALL_LEG,first_berth_zone,TEXT,"Raw source zone name of the leg's first WORKING berth stop. Layberth stops are skipped when resolving this, so a vessel that lays up before working cargo reports the berth where the work actually happened.",6.3,Convent Marine Terminal
+PORT_CALL_LEG,first_berth_facility,TEXT,Canonical facility name of the leg's first WORKING (non-layberth) berth stop.,6.3,Convent Marine Terminal
+PORT_CALL_LEG,facility_type,TEXT,"Facility type of the leg's first WORKING (non-layberth) berth stop (Elevator / Tank Storage / General Cargo / etc). Decides fee rule R5 -- so a bulk carrier that lays up at a repair yard before loading at an elevator is priced from the elevator, not the repair yard. Falls back to the literal first stop only when every stop in the leg is layberth.",6.3,Bulk Cargo
+PORT_CALL_LEG,berth_arrive_time,TIMESTAMP,Arrival timestamp at the leg's first berth.,6.3,2025-01-14 10:59:00
+PORT_CALL_LEG,berth_depart_time,TIMESTAMP,Sailing timestamp from the leg's last berth.,7.5,2025-01-15 23:50:00
+PORT_CALL_LEG,waiting_hours,NUMBER,Anchorage dwell BEFORE the leg's first berth arrival only -- the only figure that means 'waiting for a berth'.,0.0,0.0
+PORT_CALL_LEG,inter_berth_idle_hours,NUMBER,Dwell between the leg's berth arrival and its last sailing.,0.0,0.0
+PORT_CALL_LEG,outbound_idle_hours,NUMBER,"Dwell after the leg's last sailing -- the vessel departing, not waiting on a dock.",0.0,0.0
+PORT_CALL_LEG,berth_hours,NUMBER,"Hours alongside doing real, non-layberth cargo work. Layberth dwell is reported separately in layberth_hours, so a 'days alongside' or berth-productivity figure is never inflated by a repair-yard stay.",0.0,0.0
+PORT_CALL_LEG,layberth_hours,NUMBER,"Hours alongside a layberth (lay-up/repair wharf) on this leg -- real elapsed time, but not cargo work, so it is held here rather than folded into berth_hours. 0 for a leg with no layberth stop.",0.0,0.0
+PORT_CALL_LEG,agency,TEXT,Canonical agency for this leg (the inbound agency of this leg specifically).,1.5,HOST
+PORT_CALL_LEG,agency_source,TEXT,Where the leg's agency was determined from: 'inbound' / 'leg' / 'call' / 'none'.,0.0,none
+PORT_CALL_LEG,agent_changed_in_leg,NUMBER,1 if the source data showed more than one distinct agency inside this leg.,0.0,0.0
+PORT_CALL_LEG,cargo_group,TEXT,"From FGIS ('Grain'), else the zone dictionary's typical cargo group for the first berth.",33.8,Coal/Petcoke
+PORT_CALL_LEG,cargo,TEXT,"FGIS grain/grain class, where certified.",73.4,SOYBEANS
+PORT_CALL_LEG,cargo_source,TEXT,'fgis' / 'dictionary' / blank.,33.8,dictionary
+PORT_CALL_LEG,destination,TEXT,FGIS-declared destination (export legs only).,73.4,INDONESIA
+PORT_CALL_LEG,estimated_tons,NUMBER,"FGIS certified metric tons for this leg. An ESTIMATE, not certified actual weight -- do not sum across the leg's individual event rows.",73.4,58121.0
+PORT_CALL_LEG,actual_tons,NUMBER,Reserved for certified/actual tonnage. NULL everywhere today.,100.0,
+PORT_CALL_LEG,fgis_record_count,NUMBER,Count of FGIS certificates tied to this leg.,0.0,0
+PORT_CALL_LEG,agency_fee,NUMBER,"BILLABLE FIGURE. One fee per leg that reached a berth, priced per docs/BUSINESS_RULES.md section 9's tier rules. NULL if the leg never berthed, or the vessel has no usable identity/type (a tug or government craft).",6.3,10500.0
+PORT_CALL_LEG,agency_fee_departures,NUMBER,"Comparison-only: what this leg would total charging every berth departure (the old, frozen basis). Not the billing figure.",7.5,10500.0
+PORT_CALL_EVENT,event_key,NUMBER,"Primary key, 1:1 with MRTIS's fact_zone_event -- every raw source event has exactly one row here, always, including events that couldn't be placed in a call.",0.0,215653
+PORT_CALL_EVENT,port_call_id,TEXT,Foreign key to port_call. NULL when the event could not be placed (see unassigned_reason).,0.0,1012919-202501270659
+PORT_CALL_EVENT,leg_id,TEXT,Foreign key to port_call_leg. NULL when unplaced.,0.0,1012919-202501270659-L1
+PORT_CALL_EVENT,leg_seq,NUMBER,"Sequence of the leg this event belongs to, within its call.",0.0,1
+PORT_CALL_EVENT,event_seq,NUMBER,"1-based position of this event within its call, in time order.",0.0,1
+PORT_CALL_EVENT,unassigned_reason,TEXT,Why this event has no call: 'before_first_entry' (export window opens mid-voyage) or 'no_open_call' (no Enter was ever recorded). Blank when the event is placed.,100.0,
+PORT_CALL_EVENT,vessel_key,NUMBER,Internal MRTIS join key -- NOT a stable identity; see the PORT_CALL.vessel_key note. Do not key a FileMaker file on it.,0.0,2
+PORT_CALL_EVENT,src_imo,TEXT,IMO exactly as exported in the source Zone Report row.,0.0,1012919
+PORT_CALL_EVENT,imo,TEXT,Canonical 7-digit IMO.,0.2,1012919
+PORT_CALL_EVENT,vessel_name,TEXT,Vessel name carried on this specific event.,0.0,Dreamboat
+PORT_CALL_EVENT,src_vessel_type,TEXT,Type exactly as exported (often blank).,22.1,Yacht
+PORT_CALL_EVENT,vessel_type,TEXT,"Canonical vessel type, back-filled from the vessel where the source row itself was blank.",0.4,Other
+PORT_CALL_EVENT,ship_type,TEXT,"Ships register's raw, fine-grained type.",0.2,Yacht
+PORT_CALL_EVENT,ship_type_group,TEXT,Ships register's size-bucketed group.,0.2,Yacht
+PORT_CALL_EVENT,dwt,NUMBER,"Deadweight tonnage, from the ships register.",0.2,723.0
+PORT_CALL_EVENT,tpc,NUMBER,"Tonnes per centimetre immersion, from the ships register.",0.2,0.0
+PORT_CALL_EVENT,src_action,TEXT,Action exactly as exported: Arrive / Depart / Enter / Exit.,0.0,Enter
+PORT_CALL_EVENT,action,TEXT,"Canonical action label: Arrived/Sailed at a berth, Anchor/Weigh Anchor at anchorage, Enter/Exit at the pilot station.",0.0,Enter
+PORT_CALL_EVENT,event_time,TIMESTAMP,"Timestamp of the event, unchanged from source (military time).",0.0,2025-01-27 06:59:00
+PORT_CALL_EVENT,src_zone,TEXT,Zone exactly as exported.,0.0,SWP Cross
+PORT_CALL_EVENT,berth,TEXT,"The zone, relabelled (e.g. 'SWP Cross' becomes In/Out by direction).",0.0,SWP Cross In
+PORT_CALL_EVENT,facility,TEXT,Canonical facility name (e.g. multiple 'Shell Norco' berth zones collapse to one facility).,0.0,SWP Cross
+PORT_CALL_EVENT,facility_type,TEXT,Facility type: Elevator / Tank Storage / General Cargo / Anchorage / Pilot Station / etc.,0.0,Pilot Station
+PORT_CALL_EVENT,src_mile,NUMBER,Mile marker exactly as parsed off the source row.,15.4,-19.0
+PORT_CALL_EVENT,mile,NUMBER,Canonical mile for the zone.,0.0,-20.0
+PORT_CALL_EVENT,draft_ft,NUMBER,"Draft in feet, from the source 'Draft FT' field.",0.2,14
+PORT_CALL_EVENT,src_agent,TEXT,Agent exactly as exported (blank stays blank here).,2.2,T Parker
+PORT_CALL_EVENT,agency,TEXT,"Canonical agency of the raw agent, per the agent dictionary. Row-level, NOT the leg-owning agency -- see agency_leg.",2.2,HOST
+PORT_CALL_EVENT,agency_leg,TEXT,"THE COLUMN TO USE FOR REPORTING. The leg's inbound agency, applied to every event of that leg -- fills source blanks and corrects a known pilot-sheet artefact. See docs/BUSINESS_RULES.md section 6.",1.2,HOST
+PORT_CALL_EVENT,agency_normalized,NUMBER,1 where agency_leg differs from this row's own raw agency.,0.0,0.0
+PORT_CALL_EVENT,berth_stop_seq,NUMBER,Which berth stop of the call this event belongs to.,65.0,1
+PORT_CALL_EVENT,is_berth_stop,NUMBER,1 if this event is a berth arrival/departure.,0.0,0.0
+PORT_CALL_EVENT,is_geofence_artifact,NUMBER,"1 for a berth event that is neither the first docking nor the last sailing of its visit -- AIS/geofence noise, kept on the spine but not read as a real operation.",0.0,0.0
+PORT_CALL_EVENT,is_anchorage,NUMBER,1 if this event is an anchorage event.,0.0,0.0
+PORT_CALL_EVENT,is_waiting_time,NUMBER,1 on an anchorage event that sits before the leg's first berth arrival -- i.e. counts as waiting for that berth.,0.0,0.0
+PORT_CALL_EVENT,dwell_hours,NUMBER,On an Arrive/Anchor row: hours until the matching Depart.,67.0,63.95
+PORT_CALL_EVENT,hours_since_prev,NUMBER,Gap in hours from the previous event of the call.,15.4,395.28
+PORT_CALL_EVENT,activity,TEXT,Carried down from the leg: 'Load' / 'Discharge' / 'No Cargo' / blank.,14.5,Load
+PORT_CALL_EVENT,activity_method,TEXT,Carried down from the leg: how activity was decided.,0.0,no_berth_stop
+PORT_CALL_EVENT,cargo_group,TEXT,Carried down from the leg.,26.1,Coal/Petcoke
+PORT_CALL_EVENT,cargo,TEXT,Carried down from the leg.,67.2,SOYBEANS
+PORT_CALL_EVENT,destination,TEXT,Carried down from the leg.,67.2,INDONESIA
+PORT_CALL_EVENT,estimated_tons,NUMBER,Carried down from the leg -- a LEG TOTAL. Do not sum across a leg's individual event rows.,67.2,58121.0
+PORT_CALL_EVENT,actual_tons,NUMBER,Carried down from the leg. NULL everywhere today.,100.0,
+PORT_CALL_EVENT,call_status,TEXT,Carried down from the call: 'complete' / 'open_start' / 'open_end' / 'fragment'.,0.0,complete
+PORT_CALL_EVENT,is_split_call,NUMBER,1 if the parent call has more than one leg.,0.0,0.0
+PORT_CALL_EVENT,agency_fee,NUMBER,"COMPARISON-ONLY. The old per-departure fee for this specific sailing, unchanged. NOT the billable figure -- that lives on port_call_leg.agency_fee. Summing this column instead of the billable one over-states the total by about 28% on the current build -- see package/ROW_COUNT_RECONCILIATION.md, which re-derives both bases on every export rather than quoting a figure here that goes stale.",82.8,10500.0

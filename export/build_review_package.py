@@ -13,8 +13,19 @@ never writes to it, per CLAUDE.md's prime directive #2. Also records the exact
 MRTIS git commit this export was built against, since that commit is what
 docs/BUSINESS_RULES.md's rule citations and dollar figures are pinned to.
 
+Two modes:
+
+  * default -- the FULL export (every row of all three tables). ~644 MB, so it
+    is gitignored and shipped on request, not through the repo.
+  * --sample -- a committable subset: WHOLE port calls only, with every one of
+    their legs and events intact. Never a truncated event stream; a partial
+    call would break the very assembly rules this package exists to
+    demonstrate. This is what a reviewer opens first.
+
 Usage:
     python3 export/build_review_package.py
+    python3 export/build_review_package.py --sample
+    python3 export/build_review_package.py --sample --sample-start 2025-07-01 --sample-end 2026-01-01
     python3 export/build_review_package.py --mrtis-db /path/to/mrtis.duckdb --out package/
 """
 
@@ -22,6 +33,8 @@ from __future__ import annotations
 
 import argparse
 import csv
+import gzip
+import shutil
 import subprocess
 from pathlib import Path
 from xml.sax.saxutils import escape
@@ -184,6 +197,20 @@ TABLES = [
     ("port_call_event", "PORT_CALL_EVENT", PORT_CALL_EVENT_DESC),
 ]
 
+# Explicit, total row order per table. DuckDB does not promise a stable order
+# for an unordered SELECT, and the sample is COMMITTED -- without this, a
+# rebuild against an unchanged MRTIS could reshuffle every row and churn the
+# whole file for no reason. Each ordering is verified unique: port_call_id is
+# the port_call PK, (port_call_id, leg_seq) is unique on legs, and event_key is
+# a unique BIGINT that totalises the event order even where port_call_id and
+# event_seq are NULL (the unplaced events). Ordering events by call and then by
+# sequence also happens to be the order a reviewer wants to read them in.
+ORDER_BY = {
+    "port_call": "port_call_id",
+    "port_call_leg": "port_call_id, leg_seq",
+    "port_call_event": "port_call_id NULLS LAST, event_seq NULLS LAST, event_key",
+}
+
 
 def mrtis_commit() -> str:
     try:
@@ -216,7 +243,7 @@ def load_table(con: duckdb.DuckDBPyConnection, table: str, desc: dict) -> tuple[
         if fm_type is None:
             raise SystemExit(f"{table}.{col}: unmapped DuckDB type '{dtype}' -- add it to DUCKDB_TO_FM_TYPE.")
         spec.append((col, fm_type, desc[col]))
-    df = con.execute(f"SELECT * FROM {table}").fetchdf()
+    df = con.execute(f"SELECT * FROM {table} ORDER BY {ORDER_BY[table]}").fetchdf()
     return df, spec
 
 
@@ -261,11 +288,234 @@ def write_fmpxmlresult(df: pd.DataFrame, spec: list[tuple], table_name: str, pat
     path.write_text("\n".join(lines), encoding="utf-8")
 
 
+def gzip_in_place(path: Path) -> Path:
+    """Replace `path` with `path.gz`, deterministically.
+
+    mtime=0 and no stored filename, so identical input always produces
+    identical bytes -- a rebuild against an unchanged MRTIS leaves the
+    committed sample untouched rather than churning it. FMPXMLRESULT repeats
+    a field tag around every value, so it compresses ~33x on its own and ~20x
+    across the package -- which is what lets a full year of real rows live in
+    the repo at all. The sample guide derives both figures from the files it
+    just wrote rather than quoting these.
+    """
+    out = path.with_suffix(path.suffix + ".gz")
+    with path.open("rb") as src, out.open("wb") as raw:
+        with gzip.GzipFile(fileobj=raw, mode="wb", compresslevel=9, mtime=0) as dst:
+            shutil.copyfileobj(src, dst)
+    path.unlink()
+    return out
+
+
+def resolve_sample_window(calls: pd.DataFrame, start: str | None, end: str | None):
+    """Decide the sample's window: the most recent COMPLETE calendar year in
+    the data, unless both --sample-start and --sample-end are given.
+
+    Derived from the data, never hard-coded, so the sample rolls forward on
+    its own as MRTIS's export window advances. Returns a half-open interval
+    [lo, hi) on call_start, plus a one-line description for the docs.
+    """
+    if start or end:
+        if not (start and end):
+            raise SystemExit("--sample-start and --sample-end must be given together.")
+        lo, hi = pd.Timestamp(start), pd.Timestamp(end)
+        if lo >= hi:
+            raise SystemExit(f"--sample-start {lo.date()} is not before --sample-end {hi.date()}.")
+        return lo, hi, f"explicit window {lo.date()} <= call_start < {hi.date()}"
+
+    first, last = calls["call_start"].min(), calls["call_start"].max()
+    # A year is complete only if the data actually runs to its 31 December.
+    year = last.year if (last.month, last.day) == (12, 31) else last.year - 1
+    lo, hi = pd.Timestamp(year=year, month=1, day=1), pd.Timestamp(year=year + 1, month=1, day=1)
+    if first > lo:
+        raise SystemExit(
+            f"Data starts {first.date()}, so calendar year {year} is not fully covered. "
+            "Pass --sample-start/--sample-end explicitly."
+        )
+    return lo, hi, f"calendar year {year} (the most recent complete year in the data)"
+
+
+def filter_to_sample(frames: dict, lo, hi) -> dict:
+    """Cut the frames down to WHOLE port calls whose call_start falls in
+    [lo, hi) -- every leg and every event of each selected call comes with it.
+
+    Selection is on the CALL, never on the leg or event. A call that starts in
+    the window and runs past it keeps all of its events, including the ones
+    dated outside the window: a truncated event stream would break the
+    assembly rules this package exists to demonstrate.
+
+    Every invariant below is asserted rather than assumed. All five hold on
+    the full dataset, so a failure here means the cut is wrong, not the data.
+    """
+    calls = frames["PORT_CALL"]
+    kept = calls[(calls["call_start"] >= lo) & (calls["call_start"] < hi)].copy()
+    if kept.empty:
+        raise SystemExit(f"No port calls with {lo.date()} <= call_start < {hi.date()}.")
+    ids = set(kept["port_call_id"])
+
+    legs = frames["PORT_CALL_LEG"]
+    legs = legs[legs["port_call_id"].isin(ids)].copy()
+    events = frames["PORT_CALL_EVENT"]
+    events = events[events["port_call_id"].isin(ids)].copy()
+
+    # 1. every sampled call brought its legs, and exactly leg_count of them
+    got = legs.groupby("port_call_id").size()
+    want = kept.set_index("port_call_id")["leg_count"]
+    bad = want[want != got.reindex(want.index).fillna(0).astype(int)]
+    if len(bad):
+        raise SystemExit(f"Sample integrity: {len(bad)} call(s) have the wrong leg count, e.g. {bad.index[0]}.")
+
+    # 2. every sampled call brought its events, and exactly event_count of them
+    got = events.groupby("port_call_id").size()
+    want = kept.set_index("port_call_id")["event_count"]
+    bad = want[want != got.reindex(want.index).fillna(0).astype(int)]
+    if len(bad):
+        raise SystemExit(f"Sample integrity: {len(bad)} call(s) have the wrong event count, e.g. {bad.index[0]}.")
+
+    # 3. no leg or event points at a call that did not come along
+    if not set(legs["port_call_id"]) <= ids:
+        raise SystemExit("Sample integrity: a leg references a port call outside the sample.")
+    if not set(events["port_call_id"].dropna()) <= ids:
+        raise SystemExit("Sample integrity: an event references a port call outside the sample.")
+
+    # 4. every event's leg came along too
+    orphans = set(events["leg_id"].dropna()) - set(legs["leg_id"])
+    if orphans:
+        raise SystemExit(f"Sample integrity: {len(orphans)} event(s) reference a leg outside the sample.")
+
+    # 5. unplaced events (port_call_id NULL) belong to no call, so none can be here
+    if events["port_call_id"].isna().any():
+        raise SystemExit("Sample integrity: an unplaced event was selected; the sample is whole calls only.")
+
+    return {"PORT_CALL": kept, "PORT_CALL_LEG": legs, "PORT_CALL_EVENT": events}
+
+
+def write_sample_readme(out: Path, frames: dict, full: dict, window, commit: str,
+                        compress: bool, expanded_bytes: int) -> None:
+    """The one page a reviewer reads before importing the sample.
+
+    Its whole job is to make the cut impossible to misread: what came, what
+    deliberately did not, and which numbers here are subtotals rather than the
+    package's published figures.
+    """
+    lo, hi, window_desc = window
+    gz_bytes = sum(f.stat().st_size for f in out.glob("*.gz"))
+    calls, legs, events = frames["PORT_CALL"], frames["PORT_CALL_LEG"], frames["PORT_CALL_EVENT"]
+    ev_lo, ev_hi = events["event_time"].min(), events["event_time"].max()
+
+    lines = [
+        "# Sample review package", "",
+        f"Built read-only from MRTIS at commit `{commit}`. Rebuild with:", "",
+        "```",
+        "python3 export/build_review_package.py --sample",
+        "```", "",
+    ]
+    if compress:
+        lines += [
+            "## Open it first", "",
+            "The six data files are gzipped. On macOS, double-click each in Finder, or",
+            "from a terminal in this directory:", "",
+            "```",
+            "gunzip -k *.gz",
+            "```", "",
+            "`-k` keeps the `.gz` alongside the expanded file so your working copy stays",
+            "clean; drop it if you would rather not keep both. Everything then imports",
+            "exactly as the full export does -- gzip is transport only, the CSV and XML",
+            "inside are untouched.", "",
+            "They are gzipped because this directory is committed to the repo:",
+            f"**{gz_bytes / 1e6:.1f} MB** compressed against {expanded_bytes / 1e6:.0f} MB expanded, "
+            f"a {expanded_bytes / gz_bytes:.0f}x saving.",
+            "FMPXMLRESULT repeats a field tag around every single value, which compresses",
+            "away almost entirely -- that is what lets a full year of real rows travel",
+            "through git at all.", "",
+        ]
+    lines += [
+        "## What this is", "",
+        "A committable subset of the full export, sized so it travels through the",
+        "repo rather than by side channel. It exists so a Claris/FileMaker reviewer",
+        "can import real rows, wire up the relationships and run a report on day one,",
+        "without waiting on a 644 MB transfer.", "",
+        f"**Scope: {window_desc}** -- selected on `PORT_CALL.call_start`, and selected",
+        "on the **call**, never on the leg or the event.", "",
+        "## The one rule that matters", "",
+        "**Whole port calls only.** Every selected call brings all of its legs and all",
+        "of its events. Nothing is truncated. A partially-shipped call would show a",
+        "reviewer a broken version of the very assembly rules this package exists to",
+        "demonstrate -- a split call missing its second leg reads as a single call, and",
+        "a leg missing its berth events reads as a leg that never worked cargo.", "",
+        "The build asserts this rather than trusting it. For every call in the sample it",
+        "checks that the shipped leg count equals `PORT_CALL.leg_count` and the shipped",
+        "event count equals `PORT_CALL.event_count`, that no leg or event points at a",
+        "call left behind, and that no event points at a leg left behind. The export",
+        "fails rather than writing a sample that would import wrong.", "",
+        "A consequence worth stating: a call that starts inside the window and runs past",
+        f"it keeps its later events, so event timestamps here run to {ev_hi:%Y-%m-%d},",
+        f"past the {(hi - pd.Timedelta(days=1)):%Y-%m-%d} end of the window. That is correct, not a leak.",
+        f"(Events span {ev_lo:%Y-%m-%d} to {ev_hi:%Y-%m-%d}.)", "",
+        "## What is in it", "",
+        "| Table | Rows here | Rows in full export |",
+        "|---|---:|---:|",
+        f"| PORT_CALL | {len(calls):,} | {full['counts']['PORT_CALL']:,} |",
+        f"| PORT_CALL_LEG | {len(legs):,} | {full['counts']['PORT_CALL_LEG']:,} |",
+        f"| PORT_CALL_EVENT | {len(events):,} | {full['counts']['PORT_CALL_EVENT']:,} |",
+        "",
+        "Enough of each to exercise the interesting cases:", "",
+        f"- {int(calls['is_split'].sum()):,} split calls (calls with more than one leg)",
+        f"- {int((~calls['is_commercial_call'].astype(bool)).sum()):,} non-commercial (lay-up) calls, flagged not deleted",
+        f"- {calls['vessel_type'].nunique()} vessel types, {calls['imo'].nunique():,} distinct vessels",
+        f"- {int(legs['agency'].notna().sum()):,} of {len(legs):,} legs carry an agency",
+        f"- {int(legs['activity_conflict'].fillna(0).astype(int).sum()):,} legs with a flagged activity conflict",
+        "",
+        "## What is deliberately not in it", "",
+        f"- **Every other year.** The full export covers {full['first_call']:%Y-%m-%d} to "
+        f"{full['last_call']:%Y-%m-%d}; this is one year of it.",
+        f"- **Unplaced events.** The full export carries {full['unplaced_events']:,} events that",
+        "  belong to no port call at all (`unassigned_reason` = `before_first_entry` or",
+        "  `no_open_call`). They have no call, so a whole-calls cut cannot include them.",
+        "  A reviewer assessing completeness handling should ask for the full export.",
+        "",
+        "## Numbers in here are subtotals", "",
+        "`ROW_COUNT_RECONCILIATION.md` shows the sample's fee totals **beside** the",
+        "full-dataset ones for exactly this reason. The package's published figures are",
+        "the full-dataset ones, derived in [`docs/FIGURES.md`](../docs/FIGURES.md); the",
+        "charts and reports in this repo are built from the full dataset, not from this",
+        "sample. Do not quote a number off this directory.", "",
+        "`DATA_DICTIONARY.csv` describes the same fields as the full export, with the",
+        "same wording. Its `null_pct` and `example` columns are computed over the rows",
+        "in *this* directory, so a rarely-populated field can read 100% null here while",
+        "being populated in the full export.", "",
+        "## The full export", "",
+        "Same script, no flag: `python3 export/build_review_package.py`. It writes",
+        "`package/` -- all 3 tables in full, ~644 MB across CSV and XML, gitignored and",
+        "shipped on request. Nothing about it changed to make this sample exist.", "",
+    ]
+    (out / "SAMPLE_README.md").write_text("\n".join(lines) + "\n")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--mrtis-db", type=Path, default=DEFAULT_DB)
-    ap.add_argument("--out", type=Path, default=Path(__file__).resolve().parent.parent / "package")
+    ap.add_argument("--out", type=Path, default=None,
+                    help="Output directory. Defaults to package/ (full) or sample/ (--sample).")
+    ap.add_argument("--sample", action="store_true",
+                    help="Build the committable subset: whole port calls only, all their legs and events.")
+    ap.add_argument("--sample-start", default=None, help="Inclusive lower bound on call_start (with --sample-end).")
+    ap.add_argument("--sample-end", default=None, help="Exclusive upper bound on call_start (with --sample-start).")
+    ap.add_argument("--no-compress", action="store_true",
+                    help="With --sample, leave the CSV/XML uncompressed instead of writing .gz.")
     args = ap.parse_args()
+
+    repo = Path(__file__).resolve().parent.parent
+    if args.out is None:
+        args.out = repo / ("sample" if args.sample else "package")
+    if not args.sample and (args.sample_start or args.sample_end):
+        raise SystemExit("--sample-start/--sample-end only apply with --sample.")
+    if not args.sample and args.no_compress:
+        raise SystemExit("--no-compress only applies with --sample; the full export is never compressed.")
+    # The sample is committed, so it ships gzipped (~4 MB instead of ~83 MB).
+    # The full export is not committed and stays plain -- it is handed over
+    # directly, and a 644 MB gzip step would only slow the handover down.
+    compress = args.sample and not args.no_compress
 
     commit = mrtis_commit()
     print(f"MRTIS commit: {commit}")
@@ -279,14 +529,46 @@ def main() -> int:
         specs[out_name] = spec
     con.close()
 
+    # Full-dataset totals, captured BEFORE any cut: the sample's own docs quote
+    # these alongside its own so nobody reads a sample subtotal as the headline.
+    full = {
+        "counts": {name: len(df) for name, df in frames.items()},
+        "fee_leg": frames["PORT_CALL_LEG"]["agency_fee"].sum(),
+        "fee_call": frames["PORT_CALL"]["agency_fee_total"].sum(),
+        "fee_dep": frames["PORT_CALL_EVENT"]["agency_fee"].sum(),
+        "unplaced_events": int(frames["PORT_CALL_EVENT"]["port_call_id"].isna().sum()),
+        "first_call": frames["PORT_CALL"]["call_start"].min(),
+        "last_call": frames["PORT_CALL"]["call_start"].max(),
+    }
+
+    window = None
+    if args.sample:
+        lo, hi, window_desc = resolve_sample_window(frames["PORT_CALL"], args.sample_start, args.sample_end)
+        frames = filter_to_sample(frames, lo, hi)
+        window = (lo, hi, window_desc)
+        print(f"Sample window: {window_desc}")
+        print(f"  {len(frames['PORT_CALL']):,} of {full['counts']['PORT_CALL']:,} port calls, "
+              f"whole, with all their legs and events -- integrity checks passed")
+
     args.out.mkdir(parents=True, exist_ok=True)
+    expanded_bytes = 0  # pre-gzip total, so the sample guide can derive its own size claim
 
     for db_table, out_name, _ in TABLES:
         df, spec = frames[out_name], specs[out_name]
         fields = [f for f, _, _ in spec]
-        write_csv(df, fields, args.out / f"{out_name}.csv")
-        write_fmpxmlresult(df, spec, out_name, args.out / f"{out_name}.xml")
-        print(f"{out_name}: {len(df):,} rows x {len(fields)} fields -> {args.out}/{out_name}.csv, {out_name}.xml")
+        written = [args.out / f"{out_name}.csv", args.out / f"{out_name}.xml"]
+        write_csv(df, fields, written[0])
+        write_fmpxmlresult(df, spec, out_name, written[1])
+        if compress:
+            expanded_bytes += sum(f.stat().st_size for f in written)
+            written = [gzip_in_place(f) for f in written]
+        else:
+            # drop a .gz left behind by an earlier compressed build
+            for f in written:
+                f.with_suffix(f.suffix + ".gz").unlink(missing_ok=True)
+        print(f"{out_name}: {len(df):,} rows x {len(fields)} fields -> "
+              + ", ".join(f.name for f in written)
+              + (f" ({sum(f.stat().st_size for f in written) / 1e6:.1f} MB gzipped)" if compress else ""))
 
     # --- data dictionary, one row per field across all three tables ---
     dict_rows = []
@@ -307,27 +589,67 @@ def main() -> int:
     print(f"Data dictionary -> {args.out}/DATA_DICTIONARY.csv ({len(dict_rows)} fields across {len(TABLES)} tables)")
 
     # --- row-count reconciliation against the MRTIS build report ---
-    recon_lines = [
-        "# Row-count reconciliation", "",
-        f"Built read-only from `{args.mrtis_db}` at MRTIS commit `{commit}`.", "",
-        "Cross-check against `docs/PORT_CALL_QUALITY.md` in MRTIS if these move "
-        "unexpectedly between exports.", "",
-        "| Table | Rows |", "|---|---|",
-    ]
-    for _, out_name, _ in TABLES:
-        recon_lines.append(f"| **{out_name}** | **{len(frames[out_name]):,}** |")
+    # In sample mode every row is carried alongside its full-dataset counterpart,
+    # so a sample subtotal can never be mistaken for the headline figure.
     fee_leg_total = frames["PORT_CALL_LEG"]["agency_fee"].sum()
     fee_call_total = frames["PORT_CALL"]["agency_fee_total"].sum()
     fee_dep_total = frames["PORT_CALL_EVENT"]["agency_fee"].sum()
-    recon_lines += [
-        "", "## Agency fee totals (sanity check against docs/BUSINESS_RULES.md section 9)", "",
-        "| Basis | Total |", "|---|---|",
-        f"| Per-leg (billable), summed from PORT_CALL_LEG | ${fee_leg_total:,.0f} |",
-        f"| Per-leg (billable), summed from PORT_CALL.agency_fee_total | ${fee_call_total:,.0f} |",
-        f"| Per-departure (frozen, comparison-only), summed from PORT_CALL_EVENT | ${fee_dep_total:,.0f} |",
-    ]
+
+    def pct(part, whole):
+        return f"{100 * part / whole:.1f}%" if whole else "n/a"
+
+    if args.sample:
+        lo, hi, window_desc = window
+        recon_lines = [
+            "# Row-count reconciliation -- SAMPLE", "",
+            f"Built read-only from `{args.mrtis_db}` at MRTIS commit `{commit}`.", "",
+            f"**Scope: {window_desc}.** Whole port calls only -- every leg and every "
+            "event of each selected call is present, and nothing else is. See "
+            "`SAMPLE_README.md` for what that includes and excludes.", "",
+            "Cross-check the full-dataset column against `docs/PORT_CALL_QUALITY.md` "
+            "in MRTIS if it moves unexpectedly between exports.", "",
+            "| Table | Rows in sample | Rows in full dataset | Share |",
+            "|---|---:|---:|---:|",
+        ]
+        for _, out_name, _ in TABLES:
+            n, t = len(frames[out_name]), full["counts"][out_name]
+            recon_lines.append(f"| **{out_name}** | **{n:,}** | {t:,} | {pct(n, t)} |")
+        recon_lines += [
+            "",
+            "## Agency fee totals",
+            "",
+            "The sample column is a subtotal of this window and **is not the "
+            "package's headline figure**. The published totals are the full-dataset "
+            "ones, derived in `docs/FIGURES.md`.",
+            "",
+            "| Basis | Sample | Full dataset |", "|---|---:|---:|",
+            f"| Per-leg (billable), summed from PORT_CALL_LEG | ${fee_leg_total:,.0f} | ${full['fee_leg']:,.0f} |",
+            f"| Per-leg (billable), summed from PORT_CALL.agency_fee_total | ${fee_call_total:,.0f} | ${full['fee_call']:,.0f} |",
+            f"| Per-departure (frozen, comparison-only), summed from PORT_CALL_EVENT | ${fee_dep_total:,.0f} | ${full['fee_dep']:,.0f} |",
+        ]
+    else:
+        recon_lines = [
+            "# Row-count reconciliation", "",
+            f"Built read-only from `{args.mrtis_db}` at MRTIS commit `{commit}`.", "",
+            "Cross-check against `docs/PORT_CALL_QUALITY.md` in MRTIS if these move "
+            "unexpectedly between exports.", "",
+            "| Table | Rows |", "|---|---|",
+        ]
+        for _, out_name, _ in TABLES:
+            recon_lines.append(f"| **{out_name}** | **{len(frames[out_name]):,}** |")
+        recon_lines += [
+            "", "## Agency fee totals (sanity check against docs/BUSINESS_RULES.md section 9)", "",
+            "| Basis | Total |", "|---|---|",
+            f"| Per-leg (billable), summed from PORT_CALL_LEG | ${fee_leg_total:,.0f} |",
+            f"| Per-leg (billable), summed from PORT_CALL.agency_fee_total | ${fee_call_total:,.0f} |",
+            f"| Per-departure (frozen, comparison-only), summed from PORT_CALL_EVENT | ${fee_dep_total:,.0f} |",
+        ]
     (args.out / "ROW_COUNT_RECONCILIATION.md").write_text("\n".join(recon_lines) + "\n")
     print(f"Reconciliation -> {args.out}/ROW_COUNT_RECONCILIATION.md")
+
+    if args.sample:
+        write_sample_readme(args.out, frames, full, window, commit, compress, expanded_bytes)
+        print(f"Sample guide -> {args.out}/SAMPLE_README.md")
 
     (args.out / "MRTIS_COMMIT.txt").write_text(commit + "\n")
 

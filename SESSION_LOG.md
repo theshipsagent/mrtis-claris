@@ -1,5 +1,159 @@
 # mrtis-claris session log
 
+## 2026-08-20 (session 5) — The delivery question, closed
+
+**MRTIS commit unchanged at `2738601c9a87ff7be264f9c10cb1e1a618ef3436`** — the
+same commit sessions 3 and 4 built against, verified at open and again at
+close. Read-only throughout: the database was opened `read_only=True`, and
+MRTIS's working tree ends the session exactly as it started (same commit, same
+five untracked `sample_port_calls*.csv` files, all timestamped 17:19–17:24 on
+2026-08-19, i.e. before this repo existed — not ours).
+
+Objective: close the delivery question, open since session 1 and named in
+session 4 as the biggest thing between this package and its purpose. `package/`
+was 644 MB and gitignored, so a Claris reviewer had no way to receive it.
+Session 4 left a recommendation ready to execute; per CLAUDE.md's directive 4 it
+was executed rather than re-litigated.
+
+### What shipped
+
+**`--sample` mode on `export/build_review_package.py`**, plus `--sample-start` /
+`--sample-end` to override the window and `--no-compress` to build it plain.
+
+The cut is **the most recent complete calendar year**, derived from the data at
+run time rather than hard-coded — it rolls forward on its own as MRTIS's export
+window advances. Today that is 2025: **5,483 calls, 5,679 legs, 35,703 events**
+(13.6% / 13.6% / 12.3% of the full set).
+
+Selection is on the **call**, never on the leg or the event. Every selected call
+brings all of its legs and all of its events, including events dated past the
+window when the call ran long (event timestamps reach 2026-05-22). Session 4's
+constraint — never a truncated event stream — is the whole design: a split call
+missing its second leg reads as a single call, and a leg missing its berth
+events reads as a leg that never worked cargo. Shipping either would break the
+assembly rules this package exists to demonstrate.
+
+The build **asserts** that instead of assuming it. Per call it checks the
+shipped leg count against `PORT_CALL.leg_count` and the shipped event count
+against `PORT_CALL.event_count`, then checks that no leg or event points at a
+call left behind, that no event points at a leg left behind, and that no
+unplaced event slipped in. All five invariants were confirmed to hold on the
+full dataset first, so a failure means the cut is wrong, not the data.
+
+### Measured, then decided against the plan on one point
+
+Session 4 said "measure before assuming the sample has to cover all three
+tables" and rejected compression on the grounds that zipping solves transfer but
+leaves "what does the reviewer actually open" unanswered. Both were right, and
+the measurement changed the answer:
+
+| | |
+|---|---:|
+| One year, all three tables, uncompressed | **83 MB** |
+| ...of which `PORT_CALL_EVENT.xml` alone | 52 MB |
+| Same content, gzipped per file | **4.2 MB** |
+
+52 MB is past GitHub's per-file warning, and 83 MB would land in history again
+on every re-export. But FMPXMLRESULT repeats a field tag around every single
+value, so it compresses **33x on its own** and **20x across the package** —
+the sample therefore ships gzipped per file. This does not contradict session 4's
+reasoning — compression *instead of* a sample would have left the reviewer
+question unanswered; compression *of* the sample is transport only. The sample
+answers what to open; gzip answers how it fits in git. `SAMPLE_README.md`,
+`DATA_DICTIONARY.csv`, `ROW_COUNT_RECONCILIATION.md` and `MRTIS_COMMIT.txt`
+stay plain so they read on GitHub without downloading anything.
+
+The alternative — narrowing to a quarter to fit uncompressed — was rejected: it
+costs the full annual cycle the reporting demo depends on, to save 4 MB.
+
+A small correction worth recording, because it is the project's own standard
+biting: the sample guide's size sentence was first written with the figures
+hand-keyed from `du` output (79 MB, 33x). Deriving them from the actual byte
+counts gave 83 MB and 20x — `du` was reporting 4 KB disk blocks, and 33x is the
+XML-only ratio, not the package's. The generated text now computes both from
+the files it just wrote, so no window can produce a wrong claim about itself.
+
+### Found and fixed: the export had no `ORDER BY`
+
+Session 4's determinism work covered `figures.py` only. `build_review_package.py`
+did `SELECT * FROM {table}` with no ordering — harmless while `package/` was
+gitignored and regenerated, but a *committed* sample must be byte-stable or
+every rebuild churns the whole file for no reason.
+
+Every table now has an explicit **total** order, each verified unique first:
+`port_call_id` on calls, `(port_call_id, leg_seq)` on legs, and
+`port_call_id NULLS LAST, event_seq NULLS LAST, event_key` on events —
+`event_key` is a unique BIGINT, so it totalises the order even across the
+16,969 unplaced events where the first two columns are NULL.
+
+This was not theoretical. Re-exporting showed `PORT_CALL` and `PORT_CALL_LEG`
+hashing identically but **`PORT_CALL_EVENT` changing** — its old unordered
+output was in storage order, not key order, and nothing guaranteed it would
+come back the same way twice. Both modes are now byte-identical across
+consecutive runs, and the event table additionally reads grouped by call and in
+sequence, which is the order a reviewer wants anyway.
+
+### Verified
+
+- **Determinism:** two consecutive `--sample` builds byte-identical (gzip
+  written with `mtime=0` and no stored filename); two consecutive full builds
+  byte-identical.
+- **Independently, not just via the script's own assertions:** the sample was
+  decompressed and re-checked from scratch — 11 checks, all pass. Referential
+  integrity in both directions; no unplaced events; every call has ≥1 leg; all
+  `call_start` inside the window; each call's `agency_fee_total` equals the sum
+  of its legs' fees; and counts *and* fee total re-queried straight from MRTIS
+  for the same window match exactly (5,483 / 5,679 / 35,703, $36,544,500).
+- **XML:** all three files parse; `FOUND` attribute equals the actual row count
+  in each; XML row order matches CSV row order.
+- **Full export unchanged where it matters:** `ROW_COUNT_RECONCILIATION.md` and
+  `DATA_DICTIONARY.csv` byte-identical to before the ordering change. No figure
+  moved.
+- **Guardrails still green:** `figures.py` reports 0 fee-attribution mismatches
+  across 40,245 chargeable legs; all three reports pass their assertions;
+  re-running produced no diff in any derived doc.
+
+### Decided
+
+- **The sample's numbers are subtotals, and say so in three places.** Its
+  reconciliation prints every sample total beside the full-dataset one; its
+  README says not to quote a number off that directory; and it points at
+  `docs/FIGURES.md` for the published figures. A reviewer reading
+  $36,544,500 must not mistake it for the $272,660,000 headline.
+- **`DATA_DICTIONARY.csv` keeps an identical schema and identical wording in
+  both modes**, with `null_pct`/`example` computed over the rows actually
+  shipped. Disclosed in the sample README, since a rarely-populated field can
+  read 100% null in a one-year cut while being populated in the full set.
+- **Unplaced events are excluded and disclosed.** 16,969 events belong to no
+  call, so a whole-calls cut structurally cannot carry them; the README says a
+  reviewer assessing completeness handling should ask for the full export.
+
+### Open
+
+Unchanged from session 4, none of it blocking:
+
+- **MRTIS §13** (General Cargo berths discharge-only, buoy sequencing) — ruled
+  upstream but not built. It would move the split/leg baseline these fee figures
+  sit on. Disclosed in `docs/BUSINESS_RULES.md` §10.
+- **§11.3 `tpc = 0`** — deferred upstream; the fix belongs in `Ships_Register`.
+- **The SWP-to-SWP KPI framework** — still parked, needs its own design session.
+
+Newly open, and small:
+
+- **Nobody has imported the sample into Claris yet.** The XML is well-formed
+  FMPXMLRESULT and the CSV is clean, but "FileMaker parses it" is asserted from
+  the format, not observed. That is a reviewer's step, not something this repo
+  can verify for them — worth stating plainly rather than implying it was
+  tested.
+
+### Next session
+
+The package is now deliverable end to end, which retires the thing that was
+blocking it. The natural next move is William's call rather than an obvious
+technical one: either **hand the sample to the Claris reviewer and work their
+questions**, or **pick up the parked KPI design session**. No further build
+work is required to send it.
+
 ## 2026-08-19 (session 4) — Clearing the stale figures: one derivation, and the audit backlog
 
 **MRTIS commit unchanged at `2738601c9a87ff7be264f9c10cb1e1a618ef3436`** —
