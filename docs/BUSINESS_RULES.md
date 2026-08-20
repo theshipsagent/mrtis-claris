@@ -22,6 +22,16 @@ and every figure in the package moves together — that is deliberate, because
 in earlier sessions hard-coded figures went stale in one place while staying
 current in another.
 
+**Where to start.** If you read three sections, read **§2** (what a port call
+is), **§5** (legs, and why one call can bill twice) and **§9** (the fee
+schedule). Those three are the model: everything else either feeds them or
+qualifies them. §1 is the design principle underneath all of it and is worth
+two minutes before the rest.
+
+**Shipping terms** — SWP, layberth, FGIS, TPC, dry bulk and the rest — are
+defined in the **glossary** at the end. It defines vocabulary only; the rules
+are in the numbered sections above it.
+
 ---
 
 ## 1. The spine: nothing is dropped, nothing is guessed
@@ -538,3 +548,45 @@ a figure here, but a reviewer should know they exist:
 If the MRTIS commit this package was built against changes before those
 land, re-export rather than assuming these figures still hold — see
 `SESSION_LOG.md`.
+
+---
+
+## Glossary
+
+Everything above is written for a FileMaker developer rather than a Python
+one, but it still assumes the shipping vocabulary the source data is built
+out of. This section supplies it.
+
+**This section defines words, not rules.** Nothing here overrides or adds to
+anything above. Where a term carries a *specific* meaning in this data rather
+than its ordinary industry one, the section that gives it that meaning is
+linked, and that section — not this one — is the authority.
+
+| Term | What it means here |
+|---|---|
+| **AIS** | Automatic Identification System — the transponder every commercial vessel broadcasts position and identity from. The source feed's positions and drafts are derived from it, which is why §3 has to collapse geofence noise and why §4 treats draft as a tie-breaker rather than a decider. |
+| **Agency / agent** | The shore-side firm that handles a vessel's business while it is in port — pilots, berths, customs, crew. The party the agency fee in §9 is charged by, and the subject of the reporting in `reports/`. |
+| **Anchorage** | A designated area where a vessel anchors and waits, typically for a berth. Time here is `waiting_hours` only when it precedes the leg's first berth arrival (§7). |
+| **Berth** | One place a vessel can lie alongside. Several berths can belong to one **facility** — §3 treats the facility as the unit, so shifting between two berths of the same elevator is not a second call. |
+| **Capesize / Kamsarmax** | Size classes of dry-bulk carrier (Capesize is too large for the Suez or Panama canals; Kamsarmax is sized for the port of Kamsar). They appear in §9.2 only as examples of real bulkers the Zone Report sometimes fails to type, which the ships register can still identify. |
+| **Draft** | How deep the hull sits below the waterline, in feet here. A vessel that loads gets deeper and one that discharges gets lighter, which is the signal §4 uses as its third-ranked evidence. |
+| **Draft survey** | Working out cargo weight from the change in draft. It needs **TPC**, which is why the `tpc = 0` placeholder matters (MRTIS `OPEN_QUESTIONS.md` §11.3, listed in §10): a survey run against a zero silently produces nonsense. |
+| **Dry bulk** | Unpackaged bulk cargo — grain, ore, coal — and the vessels built to carry it. The category R5 prices off (§9.3), defined there as MRTIS's canonical `vessel_type = 'Bulk'`. |
+| **DWT (deadweight tonnage)** | The total weight a vessel can carry — cargo, fuel, stores, crew. From the ships register, not the feed. |
+| **Facility** | One commercial operation on the river (a grain elevator, a refinery dock, a container terminal), which may run several berths. The unit a berth stop is counted against (§3). |
+| **FGIS** | The USDA's Federal Grain Inspection Service, which issues official certificates against grain loadings. Those certificates are the only cargo evidence in this data that comes from outside the vessel-movement feed, which is why §4 ranks them second and §8 sources `cargo` and `estimated_tons` from them. (MRTIS `docs/BUILD.md`.) |
+| **Geofence** | A virtual boundary drawn around a zone. A vessel crossing one generates an event — and overlapping or badly-drawn boundaries generate false ones, which is what `is_geofence_artifact` flags (§3). |
+| **IMO number** | A permanent 7-digit identifier issued by the International Maritime Organization. It stays with the hull for life, through renaming, reflagging and resale — which is why it is the stable vessel key here and `vessel_key` is not. The last digit is a check digit, so a corrupted number can be detected; §9.2 rules that a failed check digit still bills, because it is a typo on a real ship. |
+| **Layberth** | A berth where a vessel lies *without working cargo* — laid up, waiting on repair, or simply parked. MRTIS's zone dictionary marks these `ops = Layberth` ("no cargo ever takes place"). Non-commercial throughout: it never resolves an activity to anything but `No Cargo` (§4), never opens a leg boundary (§5), never bills (§5), and its hours are held apart from `berth_hours` (§7). |
+| **Leg** | This project's billing unit. Defined in §5 — a run of berth stops sharing one activity, plus the waiting time leading up to them. |
+| **Pilot sheet** | The river pilot's record of a movement. A source of agent and timing data, and the origin of the outbound-agent artefact §6 corrects and the open anchorage records §7 works around. |
+| **Pilot station** | Where a river pilot boards or leaves a vessel. At **SWP** it is the point a port call opens and closes (§2). |
+| **Port call** | The whole visit, SWP entry to SWP exit. Defined in §2. |
+| **Ro-Ro** | Roll-on/roll-off — cargo driven on and off on its own wheels rather than lifted. Its own fee tier under R2 (§9.3). |
+| **Ships register** | A reference dataset of vessel particulars (`ship_type`, `ship_type_group`, `dwt`, `tpc`), matched to the feed by IMO. Distinct from the Zone Report and more finely typed than it — §9.3 turns on exactly that distinction. |
+| **Split call** | One port call that did two different cargo jobs — classically discharge, then load, without leaving the river. Two legs, so two fees. Defined in §5; it is the case the whole leg model exists for. |
+| **Statement of Fact (SOF)** | The signed, chronological record of what happened during a port call, kept by the agent and master. Not a source in this pipeline, but the ground truth §5's *Ultra Leopard* case was confirmed against. |
+| **SWP (Southwest Pass)** | The main deep-draft entrance from the Gulf into the Mississippi. Crossing it inbound opens a port call and crossing it outbound closes one (§2), which is what "SWP-to-SWP" means wherever it appears. |
+| **Topping off** | Finishing a load at a second berth after part-loading at a first. §5's reason two consecutive `Load` stops are one leg and not two. |
+| **TPC** | Tonnes per centimetre immersion — how many tonnes it takes to change a vessel's draft by one centimetre. The conversion factor in a draft survey. Read the caution on `tpc = 0` in §10 before using it. |
+| **Zone Report** | The raw source feed this whole package derives from: a vessel-movement export recording each vessel's crossings into and out of named river zones, with the agent, draft and action of the moment. Everything in §1's "spine" is one row of it. |

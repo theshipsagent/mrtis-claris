@@ -6,6 +6,8 @@ Built read-only from MRTIS at commit `2738601c9a87ff7be264f9c10cb1e1a618ef3436`.
 python3 export/build_review_package.py --sample
 ```
 
+**Going straight to FileMaker? Read [`IMPORT_GUIDE.md`](IMPORT_GUIDE.md) instead** -- which files to import and in what order, how the three tables join, and a checksum table for confirming the import landed. This page is about what the cut *is*: what came, what deliberately did not, and which of its numbers are subtotals.
+
 ## Open it first
 
 The six data files are gzipped. On macOS, double-click each in Finder, or
@@ -30,8 +32,8 @@ through git at all.
 
 A committable subset of the full export, sized so it travels through the
 repo rather than by side channel. It exists so a Claris/FileMaker reviewer
-can import real rows, wire up the relationships and run a report on day one,
-without waiting on a 644 MB transfer.
+can import real rows, wire up the relationships and run a report on day one
+(see [`IMPORT_GUIDE.md`](IMPORT_GUIDE.md)), without waiting on a 644 MB transfer.
 
 **Scope: calendar year 2025 (the most recent complete year in the data)** -- selected on `PORT_CALL.call_start`, and selected
 on the **call**, never on the leg or the event.

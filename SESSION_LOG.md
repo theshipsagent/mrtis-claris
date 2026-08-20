@@ -1,5 +1,147 @@
 # mrtis-claris session log
 
+## 2026-08-20 (session 6) — The reviewer readiness pass
+
+**MRTIS commit unchanged at `2738601c9a87ff7be264f9c10cb1e1a618ef3436`** — the
+same commit sessions 3, 4 and 5 built against, verified at open and again at
+close. Read-only throughout. MRTIS's working tree ends the session as it
+started: same commit, same five untracked `sample_port_calls*.csv` files
+(timestamped 17:19–17:24 on 2026-08-19, before this repo existed), and
+`mrtis.duckdb`'s mtime still 2026-08-19 22:59.
+
+Session 5 closed the delivery question and left no build work queued — the next
+move was a priority call, and William chose the readiness pass before the
+handoff. Objective: read the reviewer-facing docs cold, as a Claris developer
+with no MRTIS context would, and fix what assumes knowledge they will not have.
+
+### What the cold read found
+
+The package was correct and complete, and still had two holes that only show up
+when you stop being the person who built it:
+
+1. **Nothing told the reviewer how to import it.** `SAMPLE_README.md` promised
+   they could "import real rows, wire up the relationships and run a report on
+   day one" and then never said which of the two formats to use, in what order,
+   or which fields join to which. The package's stated purpose is to be
+   imported, and the one page a reviewer would open first was silent on the act
+   itself.
+2. **The rules doc assumed the shipping vocabulary.** `BUSINESS_RULES.md` is
+   written for a FileMaker developer rather than a Python one, which was the
+   right axis — but it still spends SWP, layberth, FGIS, TPC, AIS, DWT, dry
+   bulk, Ro-Ro, Capesize, pilot sheet, Statement of Fact and topping off
+   without defining any of them. A Claris developer has no reason to arrive
+   knowing that vocabulary, and §4's evidence ladder is unreadable without it.
+
+### What shipped
+
+**`IMPORT_GUIDE.md`, written by the export script into both modes.** Not a
+sample-only document: the full 644 MB export never had a guide of any kind, and
+it needs one more, since it is handed over as a bare directory. Sections:
+which format and why (`.xml` — FMPXMLRESULT carries field names *and* types in
+its `<METADATA>`, so FileMaker creates the fields; CSV means mapping 115 fields
+by hand), parent-first import order, the FileMaker steps, what to check as the
+rows land, the relationship map, and a checksum table.
+
+**The relationship map is asserted, not described.** A new
+`check_relationships()` runs in **both** modes before anything is written and
+raises rather than publishing a map that has drifted: all three primary keys
+unique, no orphans in either direction, and — the non-obvious one a reviewer
+would otherwise have to discover — an event is *either* fully placed (call and
+leg) *or* fully unplaced (neither), never one without the other. That last
+fact is what makes the `PORT_CALL → PORT_CALL_EVENT` shortcut relationship
+safe to offer, and it had never been stated anywhere.
+
+**The checksum table is the practical part.** Row counts, distinct-key count,
+commercial/fee-bearing counts, both fee sums and the `call_start` range, all
+derived from the rows actually written. The load-bearing line is that
+`SUM(PORT_CALL_LEG::agency_fee)` must equal `SUM(PORT_CALL::agency_fee_total)`
+— the same money counted from the legs and from the roll-up, so if they agree
+after import the parent-child link survived the trip. A silently truncated
+import otherwise looks exactly like real data.
+
+Worth recording as an independent confirmation: the full-mode guide derives
+$272,660,000, 40,245 chargeable legs and 40,028 commercial calls straight from
+the frames being written — matching `figures.py` and `BUSINESS_RULES.md` §9
+exactly, by a different code path.
+
+**A glossary on `BUSINESS_RULES.md`**, 26 terms, each tied back to the section
+that actually uses it — why AIS noise is why §3 has to collapse berth events,
+why the IMO check digit is why §9.2 still bills a corrupted ID, why `tpc = 0`
+matters only because a draft survey divides by it. Plus a short "where to
+start" note up top: §2, §5, §9 are the model, §1 is the principle underneath.
+
+### Decided
+
+- **The glossary is unnumbered, deliberately.** It was drafted as "§11" and
+  that was wrong: the doc already cites MRTIS's `OPEN_QUESTIONS.md` §11.2 and
+  §11.3 as bare `§11.x`, so a §11 here would make those read as its
+  subsections. It is now "## Glossary", and its two upstream references are
+  written out in full. Caught by checking every `§` reference in the new text
+  resolved to a real section of this doc — one did not.
+- **The glossary says explicitly that it defines words, not rules**, and that
+  the linked section is the authority wherever a term has a specific meaning
+  here. CLAUDE.md's directive 1 makes MRTIS the oracle for every rule; a
+  glossary sitting in the same file as the rules could quietly become a second
+  source of them, so it disclaims that in its own opening.
+- **Doc references are mode-aware.** The sample ships inside the repo, so it
+  links `../docs/BUSINESS_RULES.md`. The full export may arrive as a bare
+  directory with no repo around it, so there the guide names the file instead
+  of linking to it, and tells the reviewer to check `MRTIS_COMMIT.txt` against
+  the commit the docs record if the figures disagree.
+- **The FileMaker steps are labelled as unverified, in a callout, in both
+  modes.** They come from the file format and FileMaker's documented behaviour,
+  not from an import this repo has watched run. Session 5 recorded that gap
+  honestly in the log; it now says so on the page the reviewer is actually
+  holding, and asks them to report back on exactly that. Turning the one
+  unverifiable claim into an explicit question for the reviewer is the most
+  useful thing this session did for the handoff.
+
+### Verified
+
+- **Both modes rebuild clean**, relationship assertions passing on the full
+  40,170 / 41,804 / 290,305 as well as on the sample.
+- **Determinism holds.** Two consecutive `--sample` builds byte-identical.
+- **The committed data did not move.** Only four files differ in the working
+  tree — the two docs, the export script, and the new guide. All six `.gz` data
+  files are untouched, which is the ordering work from session 5 doing its job.
+- **The full export's `DATA_DICTIONARY.csv` and `ROW_COUNT_RECONCILIATION.md`
+  are byte-identical** to before this change. No figure moved anywhere.
+- **Guardrails green.** `figures.py` reports 0 fee-attribution mismatches
+  across 40,245 chargeable legs; charts reproduce; all three reports pass their
+  assertions ($272,660,000 / $270,875,500 with 409 unattributed legs /
+  $15,095,000).
+- **Every relative link in the four touched docs resolves** — checked
+  programmatically, 0 broken.
+
+### Open
+
+Unchanged, and none of it blocking the handoff:
+
+- **Nobody has imported the sample into Claris yet.** Still the one thing this
+  repo cannot verify for itself. The difference after this session is that the
+  guide now tells the reviewer exactly what should happen and asks them to say
+  if it does not — so the first round of feedback should settle it.
+- **MRTIS §13** (General Cargo berths discharge-only, buoy sequencing) — ruled
+  upstream, not built. Would move the split/leg baseline the fee figures sit on.
+- **§11.3 `tpc = 0`** — deferred upstream; the fix belongs in `Ships_Register`.
+- **The SWP-to-SWP KPI framework** — still parked, needs its own design session.
+
+### Next session
+
+The package is now as ready as it can get without a reviewer in the loop.
+
+1. **Hand it over.** Nothing further is required first.
+2. **Work the reviewer's questions** when they come — and specifically capture
+   whether the FMPXMLRESULT import behaved as `IMPORT_GUIDE.md` describes, then
+   correct the guide from what actually happened and drop the unverified
+   callout.
+3. **Or pick up the parked SWP-to-SWP KPI framework**, which still needs its
+   own design session.
+
+Standing entry conditions unchanged: re-check MRTIS's commit before trusting any
+figure here, and if it has moved, re-run `figures.py` and both export modes
+before quoting anything.
+
 ## 2026-08-20 (session 5) — The delivery question, closed
 
 **MRTIS commit unchanged at `2738601c9a87ff7be264f9c10cb1e1a618ef3436`** — the

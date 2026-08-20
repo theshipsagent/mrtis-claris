@@ -39,9 +39,9 @@ stops at "here is proof this works, packaged for review."
 ## Deliverables
 
 Built in session 1, re-exported in session 3, re-derived end-to-end in
-session 4 (all 2026-08-19), and made deliverable in session 5 (2026-08-20) —
-see `SESSION_LOG.md` for the full write-up and the MRTIS commit this was built
-against.
+session 4 (all 2026-08-19), made deliverable in session 5 and made
+reviewer-ready in session 6 (both 2026-08-20) — see `SESSION_LOG.md` for the
+full write-up and the MRTIS commit this was built against.
 
 > **Every published figure is derived, not hand-keyed.**
 > [`figures.py`](figures.py) re-derives every count, percentage and dollar
@@ -63,7 +63,10 @@ against.
    assembly and fee-tier rules, written for a FileMaker developer, not a
    Python one, every rule cited to its MRTIS source. Current as of the
    post-rebuild rules (first-working-berth R5, layberth as non-commercial
-   time, lay-up flagging, unresolved-outranks-`No Cargo`).
+   time, lay-up flagging, unresolved-outranks-`No Cargo`). Closes with a
+   glossary of the shipping vocabulary the rules are written in — SWP,
+   layberth, FGIS, TPC, dry bulk — since a Claris developer has no reason to
+   arrive knowing it.
 3. ✅ Sample charts demonstrating the data — [`charts/`](charts/) (fee by
    vessel type, split-call rate, calls by vessel type, §12 fee-tier impact).
 4. ✅ Sample canned reports demonstrating reporting capability —
@@ -85,13 +88,24 @@ sessions. It now ships two ways, from the one script:
 | Size | 4.2 MB gzipped (83 MB expanded) | 644 MB, gitignored |
 | For | opening on day one: import, relationships, a report | completeness, edge cases, the unplaced-event stream |
 
+Both modes now write an **`IMPORT_GUIDE.md`** alongside the data: which of the
+two formats to import and in what order, the three-table relationship map
+(with the key uniqueness and no-orphan claims *asserted* by the build, not
+just described), what to check as the rows land, and a checksum table for
+confirming the import arrived whole. It is explicit that the FileMaker steps
+come from the file format and FileMaker's documentation rather than from an
+import this repo has watched run — that remains the one thing this package
+cannot verify for itself, and the guide asks the reviewer to report back on
+exactly it.
+
 **The sample is whole port calls only** — every selected call brings all of its
 legs and all of its events, and the build *asserts* that per call rather than
 assuming it. A truncated event stream would show a reviewer a broken version of
-the very assembly rules this package exists to demonstrate. Start at
-[`sample/SAMPLE_README.md`](sample/SAMPLE_README.md), which states exactly what
-the cut includes, what it deliberately excludes, and which of its numbers are
-subtotals rather than the published figures.
+the very assembly rules this package exists to demonstrate.
+[`sample/SAMPLE_README.md`](sample/SAMPLE_README.md) states exactly what the cut
+includes, what it deliberately excludes, and which of its numbers are subtotals
+rather than the published figures — read it to know what you are holding, and
+[`sample/IMPORT_GUIDE.md`](sample/IMPORT_GUIDE.md) to get it into FileMaker.
 
 Both modes emit rows in an explicit, total key order, so a rebuild against an
 unchanged MRTIS is byte-identical and the committed sample never churns.

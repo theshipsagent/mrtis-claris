@@ -413,6 +413,211 @@ def filter_to_sample(frames: dict, lo, hi) -> dict:
     return {"PORT_CALL": kept, "PORT_CALL_LEG": legs, "PORT_CALL_EVENT": events}
 
 
+def check_relationships(frames: dict) -> dict:
+    """Assert the relationship facts IMPORT_GUIDE.md is about to publish.
+
+    The guide tells a reviewer which fields to join on and promises there are
+    no orphans in either direction. That promise has to be checked against the
+    rows actually being shipped, in both modes -- a relationship map that goes
+    quietly stale is worse than none, because a reviewer builds their whole
+    FileMaker graph on it.
+
+    Returns the facts the guide quotes, so the prose and the assertions can
+    never drift apart: they come from the same pass.
+    """
+    calls, legs, events = frames["PORT_CALL"], frames["PORT_CALL_LEG"], frames["PORT_CALL_EVENT"]
+
+    for df, key, table in ((calls, "port_call_id", "PORT_CALL"),
+                           (legs, "leg_id", "PORT_CALL_LEG"),
+                           (events, "event_key", "PORT_CALL_EVENT")):
+        if not df[key].is_unique:
+            raise SystemExit(f"Relationship check: {table}.{key} is not unique; it cannot be the primary key.")
+
+    call_ids, leg_ids = set(calls["port_call_id"]), set(legs["leg_id"])
+    if not set(legs["port_call_id"]) <= call_ids:
+        raise SystemExit("Relationship check: a leg points at a port call that is not in this export.")
+    if not set(events["port_call_id"].dropna()) <= call_ids:
+        raise SystemExit("Relationship check: an event points at a port call that is not in this export.")
+    if not set(events["leg_id"].dropna()) <= leg_ids:
+        raise SystemExit("Relationship check: an event points at a leg that is not in this export.")
+
+    # An event is either fully placed (call AND leg) or fully unplaced (neither).
+    # There is no third state, and the guide says so -- so prove it here.
+    placed_call = events["port_call_id"].notna()
+    placed_leg = events["leg_id"].notna()
+    if not placed_call.equals(placed_leg):
+        n = int((placed_call != placed_leg).sum())
+        raise SystemExit(f"Relationship check: {n} event(s) have a port call but no leg, or a leg but no call.")
+
+    return {
+        "unplaced_events": int((~placed_call).sum()),
+        "max_legs_per_call": int(calls["leg_count"].max()),
+    }
+
+
+def write_import_guide(out: Path, frames: dict, specs: dict, rel: dict, commit: str,
+                       compress: bool, is_sample: bool) -> None:
+    """The page a reviewer opens before touching FileMaker.
+
+    Everything the package says about itself is derived; so is this. Row
+    counts, fee totals and field counts come from the frames being written,
+    and the relationship claims are asserted by check_relationships() in the
+    same run rather than described from memory.
+
+    The one thing here that is NOT derived is the FileMaker menu path, and it
+    is labelled as such -- this repo has never observed a Claris import, and
+    saying so is the point of the section.
+    """
+    calls, legs, events = frames["PORT_CALL"], frames["PORT_CALL_LEG"], frames["PORT_CALL_EVENT"]
+    ext = ".xml.gz" if compress else ".xml"
+    ts_fields = {name: sum(1 for _, t, _ in spec if t == "TIMESTAMP") for name, spec in specs.items()}
+    scope = "the sample" if is_sample else "the full export"
+    rules = ("[`docs/BUSINESS_RULES.md`](../docs/BUSINESS_RULES.md)" if is_sample
+             else "`docs/BUSINESS_RULES.md`")
+
+    lines = [
+        "# Importing this export into Claris / FileMaker", "",
+        f"Built read-only from MRTIS at commit `{commit}`. Every number on this page is "
+        f"derived from the rows in this directory, so it describes {scope} you are "
+        "holding and not some other build.", "",
+        "## Which files to import", "",
+        "Each table ships in two formats, same rows in both:", "",
+        f"- **`*{ext}` -- FMPXMLRESULT.** FileMaker's own XML grammar. Its `<METADATA>` "
+        "block names every field and its type, so FileMaker can create the fields for "
+        "you. **Prefer these.**",
+        f"- **`*{'.csv.gz' if compress else '.csv'}` -- plain CSV.** The same rows with a header row. Use these only if "
+        "XML import is unavailable to you: you map every field by hand, and everything "
+        "arrives as text until you set the field types yourself.", "",
+    ]
+    if compress:
+        lines += [
+            "Expand them first (`gunzip -k *.gz` in this directory) -- gzip is transport "
+            "only, and FileMaker reads the expanded file.", "",
+        ]
+    lines += [
+        "## Import parent tables first", "",
+        "1. `PORT_CALL`",
+        "2. `PORT_CALL_LEG`",
+        "3. `PORT_CALL_EVENT`", "",
+        "Nothing enforces this at import time -- each file is independent. It matters "
+        "because it lets you build the relationship graph as you go, without a key "
+        "pointing at a table that does not exist yet.", "",
+        "## The steps", "",
+        "1. Create a new empty file, or open a scratch one.",
+        "2. **File -> Import Records -> XML Data Source...**",
+        f"3. Choose the file option and select `PORT_CALL{ext.replace('.gz', '')}`. Leave the XSLT "
+        "stylesheet option **off** -- FMPXMLRESULT is FileMaker's native grammar and "
+        "needs no transform.",
+        "4. In the import dialog, set the target to **New Table**. The fields and their "
+        "types come from the XML's `<METADATA>` block.",
+        "5. Repeat for the other two tables, in the order above.", "",
+        "Importing the CSVs instead: tick **\"Don't import first record (contains field "
+        "names)\"** -- row 1 is the header.", "",
+        "> **This section is written from the file format and FileMaker's documented "
+        "behaviour, not from an import we have watched run.** Nobody on this side has "
+        "put these files through Claris. The XML is well-formed FMPXMLRESULT and every "
+        "file parses, but *well-formed* and *imports cleanly* are different claims and "
+        "only one of them is proven here. If steps 2-4 do not behave as described, that "
+        "is the single most useful thing you can send back.", "",
+        "## What to check as it lands", "",
+        f"- **Timestamps.** {ts_fields['PORT_CALL']} fields on `PORT_CALL`, "
+        f"{ts_fields['PORT_CALL_LEG']} on `PORT_CALL_LEG` and {ts_fields['PORT_CALL_EVENT']} on "
+        "`PORT_CALL_EVENT` are declared `TIMESTAMP`. Values are written `yyyy-MM-dd "
+        "HH:mm:ss`, and the XML's `<DATABASE>` element declares "
+        "`DATEFORMAT=\"yyyy-MM-dd\"` / `TIMEFORMAT=\"HH:mm:ss\"` to match. Confirm they "
+        "arrive as timestamps and not as text -- this is the likeliest thing to go "
+        "wrong and the easiest to miss.",
+        "- **The `is_*` flags are numbers, not booleans.** `1` / `0`, typed `NUMBER`.",
+        "- **Empty means empty.** MRTIS leaves a value NULL wherever no evidence "
+        "supports it, rather than guessing -- see " + rules + " section 1. "
+        "Those arrive as empty fields. Do not auto-enter `0` into them: a blank "
+        "`activity` means \"nothing could say\", which is not the same as `No Cargo`.",
+        "- **Do not key anything on `vessel_key`.** It is assigned by row position at "
+        "MRTIS build time and changes on every rebuild. `port_call_id`, `leg_id` and "
+        "`imo` are content-derived and stable. (Also flagged in `DATA_DICTIONARY.csv`.)", "",
+        "## How the three tables relate", "",
+        "| Parent | Field | Child | Field | Cardinality |",
+        "|---|---|---|---|---|",
+        f"| `PORT_CALL` | `port_call_id` | `PORT_CALL_LEG` | `port_call_id` | 1 : 1-{rel['max_legs_per_call']} |",
+        "| `PORT_CALL_LEG` | `leg_id` | `PORT_CALL_EVENT` | `leg_id` | 1 : many |",
+        "| `PORT_CALL` | `port_call_id` | `PORT_CALL_EVENT` | `port_call_id` | 1 : many (shortcut) |",
+        "",
+        "The third relationship is a convenience -- it lets a call-level layout reach "
+        "its whole event stream without going through legs. It is redundant, not "
+        "contradictory: an event's `port_call_id` always agrees with its leg's.", "",
+        "Facts this build **asserts** before writing the files, so the map above cannot "
+        "quietly go stale:", "",
+        f"- `PORT_CALL.port_call_id` ({len(calls):,} rows), `PORT_CALL_LEG.leg_id` "
+        f"({len(legs):,}) and `PORT_CALL_EVENT.event_key` ({len(events):,}) are each unique. "
+        "They are the primary keys.",
+        "- No orphans in either direction: every leg resolves to a call, and every "
+        "placed event resolves to both a call and a leg.",
+        "- An event is **either** fully placed (it has a call *and* a leg) **or** fully "
+        "unplaced (it has neither). There is no third state, so `leg_id` being empty "
+        "always means `port_call_id` is empty too.",
+        f"- `leg_id` is `port_call_id` + `-L` + `leg_seq` (e.g. `{legs['leg_id'].iloc[0]}`), so the "
+        "child key is derivable from the parent key and the sequence number.", "",
+    ]
+    if rel["unplaced_events"]:
+        lines += [
+            f"This export carries **{rel['unplaced_events']:,} unplaced events** -- rows with no "
+            "`port_call_id` and no `leg_id`, kept on the record with an "
+            "`unassigned_reason` rather than dropped. They will not join to anything, "
+            "and that is correct. Filter on `port_call_id` being non-empty for any "
+            "call-level report.", "",
+        ]
+    else:
+        lines += [
+            "This export carries **no unplaced events** -- it is whole port calls only, "
+            "so every event here joins. (The full export carries events belonging to no "
+            "call at all; see `SAMPLE_README.md`.)", "",
+        ]
+
+    fee_leg = legs["agency_fee"].sum()
+    fee_call = calls["agency_fee_total"].sum()
+    lines += [
+        "## Check the import landed", "",
+        "Run these against the imported tables before you trust anything you build on "
+        "them. They take two minutes and they catch a silently truncated import, which "
+        "otherwise looks exactly like real data.", "",
+        "| Check | Expected |", "|---|---:|",
+        f"| Records in `PORT_CALL` | {len(calls):,} |",
+        f"| Records in `PORT_CALL_LEG` | {len(legs):,} |",
+        f"| Records in `PORT_CALL_EVENT` | {len(events):,} |",
+        f"| Distinct `PORT_CALL::port_call_id` | {calls['port_call_id'].nunique():,} (equal to its record count -- the key is unique) |",
+        f"| Calls with `is_commercial_call = 1` | {int(calls['is_commercial_call'].sum()):,} |",
+        f"| Calls carrying a fee (`agency_fee_total` not empty) | {int(calls['agency_fee_total'].notna().sum()):,} |",
+        f"| Chargeable legs (`agency_fee` not empty) | {int(legs['agency_fee'].notna().sum()):,} |",
+        f"| Sum of `PORT_CALL_LEG::agency_fee` | ${fee_leg:,.0f} |",
+        f"| Sum of `PORT_CALL::agency_fee_total` | ${fee_call:,.0f} |",
+        f"| Earliest `PORT_CALL::call_start` | {calls['call_start'].min():%Y-%m-%d %H:%M} |",
+        f"| Latest `PORT_CALL::call_start` | {calls['call_start'].max():%Y-%m-%d %H:%M} |",
+        "",
+        "**The two fee sums must match each other.** They are the same money counted "
+        "two ways -- once from the legs, once from the roll-up already stored on the "
+        "call. If they agree after import, the parent-child link survived the trip, "
+        "which is the thing most worth knowing on day one.", "",
+        "That figure is the **billable** basis. `PORT_CALL_EVENT::agency_fee` is a "
+        "different, deliberately frozen per-departure basis that sums to something "
+        "larger and is not what bills -- " + rules + " section 9.1 explains "
+        "why both exist. Do not report it as revenue.", "",
+    ]
+    if is_sample:
+        lines += [
+            "> Every figure on this page is a subtotal of this sample, not the "
+            "package's published figure. See `SAMPLE_README.md`.", "",
+        ]
+    else:
+        lines += [
+            "These are the package's published figures, not a subtotal -- they should "
+            "agree line for line with `docs/FIGURES.md` and with section 9 of "
+            "`docs/BUSINESS_RULES.md` in the mrtis-claris repo. If they do not, the "
+            "export and the docs were built against different MRTIS commits; check "
+            "`MRTIS_COMMIT.txt` in this directory against the one the docs record.", "",
+        ]
+    (out / "IMPORT_GUIDE.md").write_text("\n".join(lines) + "\n")
+
+
 def write_sample_readme(out: Path, frames: dict, full: dict, window, commit: str,
                         compress: bool, expanded_bytes: int) -> None:
     """The one page a reviewer reads before importing the sample.
@@ -432,6 +637,11 @@ def write_sample_readme(out: Path, frames: dict, full: dict, window, commit: str
         "```",
         "python3 export/build_review_package.py --sample",
         "```", "",
+        "**Going straight to FileMaker? Read [`IMPORT_GUIDE.md`](IMPORT_GUIDE.md) "
+        "instead** -- which files to import and in what order, how the three tables "
+        "join, and a checksum table for confirming the import landed. This page is "
+        "about what the cut *is*: what came, what deliberately did not, and which of "
+        "its numbers are subtotals.", "",
     ]
     if compress:
         lines += [
@@ -456,8 +666,8 @@ def write_sample_readme(out: Path, frames: dict, full: dict, window, commit: str
         "## What this is", "",
         "A committable subset of the full export, sized so it travels through the",
         "repo rather than by side channel. It exists so a Claris/FileMaker reviewer",
-        "can import real rows, wire up the relationships and run a report on day one,",
-        "without waiting on a 644 MB transfer.", "",
+        "can import real rows, wire up the relationships and run a report on day one",
+        "(see [`IMPORT_GUIDE.md`](IMPORT_GUIDE.md)), without waiting on a 644 MB transfer.", "",
         f"**Scope: {window_desc}** -- selected on `PORT_CALL.call_start`, and selected",
         "on the **call**, never on the leg or the event.", "",
         "## The one rule that matters", "",
@@ -573,6 +783,10 @@ def main() -> int:
         print(f"  {len(frames['PORT_CALL']):,} of {full['counts']['PORT_CALL']:,} port calls, "
               f"whole, with all their legs and events -- integrity checks passed")
 
+    # Asserted in both modes: the guide publishes a relationship map, and a map
+    # that drifts from the rows is worse than no map at all.
+    rel = check_relationships(frames)
+
     args.out.mkdir(parents=True, exist_ok=True)
     expanded_bytes = 0  # pre-gzip total, so the sample guide can derive its own size claim
 
@@ -672,6 +886,9 @@ def main() -> int:
         ]
     (args.out / "ROW_COUNT_RECONCILIATION.md").write_text("\n".join(recon_lines) + "\n")
     print(f"Reconciliation -> {args.out}/ROW_COUNT_RECONCILIATION.md")
+
+    write_import_guide(args.out, frames, specs, rel, commit, compress, args.sample)
+    print(f"Import guide -> {args.out}/IMPORT_GUIDE.md")
 
     if args.sample:
         write_sample_readme(args.out, frames, full, window, commit, compress, expanded_bytes)
