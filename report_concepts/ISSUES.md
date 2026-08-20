@@ -1875,6 +1875,52 @@ by about 1%.
 **Status** OPEN — needs William on two points: whether `Pt Celeste Anch` is
 included, and confirmation that the 2-4 ft band stays excluded.
 
+---
+
+### I-24 · Pending MRTIS edits from William's read-through — queued, not applied
+
+**Status** OPEN — all require an MRTIS session; `CLAUDE.md`'s read-only directive
+is in force, so each needs a fresh recorded suspension.
+
+#### 24.1 Add `Randy Anderson` to the vessel exclusion list
+
+**William, 2026-08-20:** *"add to excluded list Randy Anderson 6665000."*
+
+| | |
+|---|---|
+| Vessel | `Randy Anderson`, IMO **6665000** |
+| Present in data | **11 events**, October 2025 only |
+| Port calls | **0** |
+| Fee attributed | **$0** |
+
+Target file: `MRTIS/dredge_exclusions_user_v1.csv`, which currently holds **9
+rows** with `exclude_as_dredge = Y` (`Mack B`, `Allisonk`, `Texas Star`,
+`Allins K`, `Dodge Island`, `Keeneland`, `Ginny Lab`, `Kennington`,
+`Randy Martin`). Note the existing `Randy Martin` (IMO 10024346) is a **different
+vessel** — this is an addition, not a correction.
+
+Row to add: `Randy Anderson,6665000,TRUE,11,Y`
+
+**Effect when built:** 11 events filtered at ingest. No call, leg or fee figure
+moves, since the vessel produces none today. `build_db.py` reports per-vessel
+drop counts, so the removal stays visible rather than silent
+(`OPEN_QUESTIONS.md` §2).
+
+#### 24.2 Confirmed examples requiring no new rule
+
+Recorded so the worked cases are not lost:
+
+| Vessel | IMO | What it demonstrates | Already covered by |
+|---|---|---|---|
+| `Schwyz` | 9905605 | Tanker lightering at Grandview — AMA Anch then Grandview Mid, 38 → 27 ft, Norton Lilly | **I-15**, classified `LIGHTERING_GAVE_CARGO` |
+| `Pelagiani` | 9282613 | Berth present, rest of call broken — LDC Port Allen, 19 → 33 ft, $10,500, `Exit` but no `Enter` | **I-21**, ruled |
+| `Orfeas` | 9358917 | Same — MPLX Garyville, $3,500, no crossings at all | **I-21**, ruled |
+| `Balsa 92` | 9616060 | Same — 110 Buoys, 19 → 23 ft, spurious `Exit` then upriver activity | **I-21**, ruled |
+| `Betty` | 9522881 | Duplicate `Enter` 10 minutes apart creating a phantom call | **I-22**, needs a window |
+| `Bow Sky` | 9215268 | Tanker lightering, 39 → 31 ft, Capes | **I-15**, classified |
+| `Champion Pomer` | 9455739 | Tanker taking cargo at anchor, 24 → 39 ft | **I-15**, classified |
+| `Scarlet Cardinal` | 9544059 | 2 ft *lighter* at Davant, Blue Water — **excluded** from the Davant rule | **I-23**, documented exclusion |
+
 ## Closed
 
 - **I-1** — **fixed** in MRTIS `56ad9f5` (§15.1). 445 legs corrected; nothing else in the database moved.
