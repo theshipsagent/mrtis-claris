@@ -169,13 +169,70 @@ Newly open, and small:
   can verify for them — worth stating plainly rather than implying it was
   tested.
 
+### Session 5 close (2026-08-20)
+
+Three commits, all pushed to `origin/main`, working tree clean and level:
+
+- `78d9e27` — the `--sample` mode, the explicit `ORDER BY`, and the sample itself.
+- `fe73533` — the disclosure ruling on publishing row-level data.
+- `edba7e4` — the derived `tpc = 0` rate (a follow-up, prompted by a question
+  about §11.3 after the push, not by a planned task).
+
+**MRTIS untouched, verified at close as well as at open.** Still
+`2738601c9a87ff7be264f9c10cb1e1a618ef3436`; its working tree carries only the
+same five `sample_port_calls*.csv` files it had on entry, timestamped 17:19–17:24
+on 2026-08-19 — before this repo existed — and `mrtis.duckdb`'s mtime is
+2026-08-19 22:59, earlier than this session's first command. Every connection
+was opened `read_only=True`.
+
+**Everything in the repo reproduces from its script.** Re-running the full set
+at close produced no diff at all: `sample/` rebuilds byte-identically to what is
+committed, and `figures.py`, `charts/build_charts.py` and
+`reports/build_reports.py` all reproduce their outputs exactly — the chart PNGs
+included. `figures.py` still reports 0 fee-attribution mismatches across 40,245
+chargeable legs, and all three reports pass their assertions.
+
+**What changed in the package's character.** For four sessions this was a
+correct package that could not be delivered. It is now a correct package that
+travels: a reviewer clones the repo and has 5,483 real port calls, whole, with a
+guide that states what the cut is and what it is not. The full 644 MB export is
+unchanged and still available on request.
+
 ### Next session
 
-The package is now deliverable end to end, which retires the thing that was
-blocking it. The natural next move is William's call rather than an obvious
-technical one: either **hand the sample to the Claris reviewer and work their
-questions**, or **pick up the parked KPI design session**. No further build
-work is required to send it.
+No build work is required to send this — the next move is William's call, not a
+technical one:
+
+1. **Hand the sample to the Claris reviewer and work their questions.** The
+   obvious next step, and the one everything so far was for. The first thing it
+   would settle is the one thing this package still cannot self-verify: that
+   FileMaker actually parses the FMPXMLRESULT. Well-formed is proven; imported is
+   not.
+2. **Pick up the parked SWP-to-SWP KPI framework**, which needs its own design
+   session.
+
+Whichever comes first, the standing entry conditions are unchanged: re-check
+MRTIS's commit before trusting any figure here, and if it has moved, re-run
+`figures.py` and both export modes before quoting anything.
+
+Still open upstream and not blocking either path: **MRTIS §13** (ruled, unbuilt
+— would move the split/leg baseline these fee figures sit on) and **§11.3
+`tpc = 0`** (deferred by William to a later triage; the fix belongs in
+`Ships_Register`, whose register file stores the literal zeros).
+
+### How to reproduce this build
+
+```
+python3 -m venv .venv && .venv/bin/pip install duckdb pandas matplotlib
+.venv/bin/python3 export/build_review_package.py           # full, 644 MB, gitignored
+.venv/bin/python3 export/build_review_package.py --sample  # committed, 4.2 MB
+.venv/bin/python3 figures.py
+.venv/bin/python3 charts/build_charts.py
+.venv/bin/python3 reports/build_reports.py
+```
+
+All of them open MRTIS's `mrtis.duckdb` `read_only=True` and write only inside
+this repo.
 
 ## 2026-08-19 (session 4) — Clearing the stale figures: one derivation, and the audit backlog
 
