@@ -24,7 +24,7 @@ PORT_CALL,anchorage_stop_count,NUMBER,Count of anchorage stops across the whole 
 PORT_CALL,event_count,NUMBER,Total raw events (port_call_event rows) belonging to this call.,0.0,2
 PORT_CALL,entry_draft_ft,NUMBER,Draft in feet at the SWP entry crossing. NULL if no Enter event was recorded.,0.2,14
 PORT_CALL,exit_draft_ft,NUMBER,Draft in feet at the SWP exit crossing. NULL if no Exit event was recorded.,0.7,14
-PORT_CALL,agency,TEXT,Canonical agency for the call -- the inbound agency (the one that brought the vessel in).,1.6,HOST
+PORT_CALL,agency,TEXT,"Call-level agency: a SINGLE pick for the whole call. NOT THE COLUMN FOR REVENUE-BY-AGENT REPORTING -- use PORT_CALL_LEG::agency instead. A split call can be worked by two agencies; 91 calls carry more than one across their legs, and using this column instead of the leg one mis-attributes $939,000 of fee to the wrong agent (not lost from the total -- credited to whoever won the pick). See docs/BUSINESS_RULES.md section 6.",1.6,HOST
 PORT_CALL,agency_fee_total,NUMBER,BILLABLE FIGURE. Sum of this call's legs' agency_fee (one fee per leg that reached a berth). See docs/BUSINESS_RULES.md section 9.,6.5,10500.0
 PORT_CALL,agency_fee_departures_total,NUMBER,Comparison-only figure: what this call would total under the old per-departure-charges-every-sailing basis. Not the billing figure.,7.8,10500.0
 PORT_CALL,fgis_record_count,NUMBER,Count of FGIS grain certificates tied to this call.,0.0,0
@@ -55,9 +55,9 @@ PORT_CALL_LEG,inter_berth_idle_hours,NUMBER,Dwell between the leg's berth arriva
 PORT_CALL_LEG,outbound_idle_hours,NUMBER,"Dwell after the leg's last sailing -- the vessel departing, not waiting on a dock.",0.0,0.0
 PORT_CALL_LEG,berth_hours,NUMBER,"Hours alongside doing real, non-layberth cargo work. Layberth dwell is reported separately in layberth_hours, so a 'days alongside' or berth-productivity figure is never inflated by a repair-yard stay.",0.0,0.0
 PORT_CALL_LEG,layberth_hours,NUMBER,"Hours alongside a layberth (lay-up/repair wharf) on this leg -- real elapsed time, but not cargo work, so it is held here rather than folded into berth_hours. 0 for a leg with no layberth stop.",0.0,0.0
-PORT_CALL_LEG,agency,TEXT,Canonical agency for this leg (the inbound agency of this leg specifically).,1.5,HOST
+PORT_CALL_LEG,agency,TEXT,"THE COLUMN TO USE FOR REVENUE-BY-AGENT REPORTING. The inbound agency of this leg specifically -- the agency that brought the vessel in owns the leg (docs/BUSINESS_RULES.md section 6). Prefer this over PORT_CALL::agency, which is a single call-level pick.",1.5,HOST
 PORT_CALL_LEG,agency_source,TEXT,Where the leg's agency was determined from: 'inbound' / 'leg' / 'call' / 'none'.,0.0,none
-PORT_CALL_LEG,agent_changed_in_leg,NUMBER,1 if the source data showed more than one distinct agency inside this leg.,0.0,0.0
+PORT_CALL_LEG,agent_changed_in_leg,NUMBER,"1 if the source data showed more than one distinct agency inside this leg. MATERIAL: 3,233 chargeable legs (8.03%) carrying $29,495,250 (10.82% of the billable total) are flagged here. The fee still goes wholly to the inbound agency by rule, so a by-agent revenue report is not a clean division of the book -- about $1 in $9 is attributed to an agent where another agency was also involved. Ordinary on a chartered voyage: owner's agent inbound, charterer's agent on the outbound load. See docs/BUSINESS_RULES.md section 6.",0.0,0.0
 PORT_CALL_LEG,cargo_group,TEXT,"From FGIS ('Grain'), else the zone dictionary's typical cargo group for the first berth.",33.8,Coal/Petcoke
 PORT_CALL_LEG,cargo,TEXT,"FGIS grain/grain class, where certified.",73.4,SOYBEANS
 PORT_CALL_LEG,cargo_source,TEXT,'fgis' / 'dictionary' / blank.,33.8,dictionary

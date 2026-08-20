@@ -147,6 +147,37 @@ keep building reports and batch the fixes, because `build_db.py` reassigns
 surrogate keys and drops the downstream layers, so every rebuild forces a full
 revalidation of the review package. One batched fix is one rebuild.
 
+### Closing addendum — the three in-repo disclosures, done before push
+
+Asked whether to fix before pushing, the recommendation was: push the known-good
+state first, because the MRTIS fixes force a rebuild that would disturb every
+figure in the review package. But three of the ten findings are **disclosures
+that belong to the reviewer's package, not to MRTIS**, and those were done first.
+
+- **I-4** — `DATA_DICTIONARY.csv` now warns off `PORT_CALL::agency` explicitly
+  ("NOT THE COLUMN FOR REVENUE-BY-AGENT REPORTING"), names
+  `PORT_CALL_LEG::agency` as the one to use, and quantifies the $939,000 at
+  stake. `docs/BUSINESS_RULES.md` §6 gained the same warning.
+- **I-5** — §6 now states the magnitude alongside the rule: **3,233 chargeable
+  legs (8.03%) carrying $29,495,250 — 10.82% of the billable total** — are legs
+  where the agent changed mid-leg. About $1 in $9 of agency revenue is
+  attributed to an agent where another agency was also involved. Also surfaced
+  on `agent_changed_in_leg` in the data dictionary.
+- **I-8** — §5 now publishes the split rate at all three denominators (4.06% of
+  all calls / 7.55% of bulk calls / **31.33% of bulk discharge calls**) and says
+  plainly that a rate quoted without its denominator is a different number here,
+  not a small imprecision.
+
+**All three figures are derived, not hand-keyed.** `figures.py` gained
+`agency_grain`, `agent_changed` and `bulk_turnover` derivations, and
+`docs/FIGURES.md` two new sections. The package's own discipline applied to its
+own disclosures.
+
+**Verified after the change:** `figures.py` still reports **0 attribution
+mismatches across 40,245 chargeable legs**, and the only file to move under
+`sample/` was `DATA_DICTIONARY.csv` — three field descriptions. **No sample data
+row changed**, no chart moved, no report figure moved.
+
 ### Next session
 
 Two candidates, both scoped this session and neither started:
@@ -326,6 +357,37 @@ figures still match MRTIS.
 What moved is the parked work: the KPI question now has measured ground under it
 and a decision order, and the reports have a scope ruling that says what they
 are for. Both were previously carried in conversation rather than in the repo.
+
+### Closing addendum — the three in-repo disclosures, done before push
+
+Asked whether to fix before pushing, the recommendation was: push the known-good
+state first, because the MRTIS fixes force a rebuild that would disturb every
+figure in the review package. But three of the ten findings are **disclosures
+that belong to the reviewer's package, not to MRTIS**, and those were done first.
+
+- **I-4** — `DATA_DICTIONARY.csv` now warns off `PORT_CALL::agency` explicitly
+  ("NOT THE COLUMN FOR REVENUE-BY-AGENT REPORTING"), names
+  `PORT_CALL_LEG::agency` as the one to use, and quantifies the $939,000 at
+  stake. `docs/BUSINESS_RULES.md` §6 gained the same warning.
+- **I-5** — §6 now states the magnitude alongside the rule: **3,233 chargeable
+  legs (8.03%) carrying $29,495,250 — 10.82% of the billable total** — are legs
+  where the agent changed mid-leg. About $1 in $9 of agency revenue is
+  attributed to an agent where another agency was also involved. Also surfaced
+  on `agent_changed_in_leg` in the data dictionary.
+- **I-8** — §5 now publishes the split rate at all three denominators (4.06% of
+  all calls / 7.55% of bulk calls / **31.33% of bulk discharge calls**) and says
+  plainly that a rate quoted without its denominator is a different number here,
+  not a small imprecision.
+
+**All three figures are derived, not hand-keyed.** `figures.py` gained
+`agency_grain`, `agent_changed` and `bulk_turnover` derivations, and
+`docs/FIGURES.md` two new sections. The package's own discipline applied to its
+own disclosures.
+
+**Verified after the change:** `figures.py` still reports **0 attribution
+mismatches across 40,245 chargeable legs**, and the only file to move under
+`sample/` was `DATA_DICTIONARY.csv` — three field descriptions. **No sample data
+row changed**, no chart moved, no report figure moved.
 
 ### Next session
 
@@ -510,6 +572,37 @@ arrived whole, and what the words mean. The one claim the package cannot prove
 about itself is now printed on the page rather than buried in a log, phrased as
 a question to the reviewer. Nothing about the data changed; everything about
 receiving it did.
+
+### Closing addendum — the three in-repo disclosures, done before push
+
+Asked whether to fix before pushing, the recommendation was: push the known-good
+state first, because the MRTIS fixes force a rebuild that would disturb every
+figure in the review package. But three of the ten findings are **disclosures
+that belong to the reviewer's package, not to MRTIS**, and those were done first.
+
+- **I-4** — `DATA_DICTIONARY.csv` now warns off `PORT_CALL::agency` explicitly
+  ("NOT THE COLUMN FOR REVENUE-BY-AGENT REPORTING"), names
+  `PORT_CALL_LEG::agency` as the one to use, and quantifies the $939,000 at
+  stake. `docs/BUSINESS_RULES.md` §6 gained the same warning.
+- **I-5** — §6 now states the magnitude alongside the rule: **3,233 chargeable
+  legs (8.03%) carrying $29,495,250 — 10.82% of the billable total** — are legs
+  where the agent changed mid-leg. About $1 in $9 of agency revenue is
+  attributed to an agent where another agency was also involved. Also surfaced
+  on `agent_changed_in_leg` in the data dictionary.
+- **I-8** — §5 now publishes the split rate at all three denominators (4.06% of
+  all calls / 7.55% of bulk calls / **31.33% of bulk discharge calls**) and says
+  plainly that a rate quoted without its denominator is a different number here,
+  not a small imprecision.
+
+**All three figures are derived, not hand-keyed.** `figures.py` gained
+`agency_grain`, `agent_changed` and `bulk_turnover` derivations, and
+`docs/FIGURES.md` two new sections. The package's own discipline applied to its
+own disclosures.
+
+**Verified after the change:** `figures.py` still reports **0 attribution
+mismatches across 40,245 chargeable legs**, and the only file to move under
+`sample/` was `DATA_DICTIONARY.csv` — three field descriptions. **No sample data
+row changed**, no chart moved, no report figure moved.
 
 ### Next session
 
@@ -724,6 +817,37 @@ correct package that could not be delivered. It is now a correct package that
 travels: a reviewer clones the repo and has 5,483 real port calls, whole, with a
 guide that states what the cut is and what it is not. The full 644 MB export is
 unchanged and still available on request.
+
+### Closing addendum — the three in-repo disclosures, done before push
+
+Asked whether to fix before pushing, the recommendation was: push the known-good
+state first, because the MRTIS fixes force a rebuild that would disturb every
+figure in the review package. But three of the ten findings are **disclosures
+that belong to the reviewer's package, not to MRTIS**, and those were done first.
+
+- **I-4** — `DATA_DICTIONARY.csv` now warns off `PORT_CALL::agency` explicitly
+  ("NOT THE COLUMN FOR REVENUE-BY-AGENT REPORTING"), names
+  `PORT_CALL_LEG::agency` as the one to use, and quantifies the $939,000 at
+  stake. `docs/BUSINESS_RULES.md` §6 gained the same warning.
+- **I-5** — §6 now states the magnitude alongside the rule: **3,233 chargeable
+  legs (8.03%) carrying $29,495,250 — 10.82% of the billable total** — are legs
+  where the agent changed mid-leg. About $1 in $9 of agency revenue is
+  attributed to an agent where another agency was also involved. Also surfaced
+  on `agent_changed_in_leg` in the data dictionary.
+- **I-8** — §5 now publishes the split rate at all three denominators (4.06% of
+  all calls / 7.55% of bulk calls / **31.33% of bulk discharge calls**) and says
+  plainly that a rate quoted without its denominator is a different number here,
+  not a small imprecision.
+
+**All three figures are derived, not hand-keyed.** `figures.py` gained
+`agency_grain`, `agent_changed` and `bulk_turnover` derivations, and
+`docs/FIGURES.md` two new sections. The package's own discipline applied to its
+own disclosures.
+
+**Verified after the change:** `figures.py` still reports **0 attribution
+mismatches across 40,245 chargeable legs**, and the only file to move under
+`sample/` was `DATA_DICTIONARY.csv` — three field descriptions. **No sample data
+row changed**, no chart moved, no report figure moved.
 
 ### Next session
 
@@ -1146,6 +1270,37 @@ call (`docs/SESSION_LOG.md`, same date: "the fee figures are modeled/
 estimated and not sensitive") — that call was about the MRTIS repo itself,
 this is the same judgment extended to the derived package. Now public:
 `github.com/theshipsagent/mrtis-claris`.
+
+### Closing addendum — the three in-repo disclosures, done before push
+
+Asked whether to fix before pushing, the recommendation was: push the known-good
+state first, because the MRTIS fixes force a rebuild that would disturb every
+figure in the review package. But three of the ten findings are **disclosures
+that belong to the reviewer's package, not to MRTIS**, and those were done first.
+
+- **I-4** — `DATA_DICTIONARY.csv` now warns off `PORT_CALL::agency` explicitly
+  ("NOT THE COLUMN FOR REVENUE-BY-AGENT REPORTING"), names
+  `PORT_CALL_LEG::agency` as the one to use, and quantifies the $939,000 at
+  stake. `docs/BUSINESS_RULES.md` §6 gained the same warning.
+- **I-5** — §6 now states the magnitude alongside the rule: **3,233 chargeable
+  legs (8.03%) carrying $29,495,250 — 10.82% of the billable total** — are legs
+  where the agent changed mid-leg. About $1 in $9 of agency revenue is
+  attributed to an agent where another agency was also involved. Also surfaced
+  on `agent_changed_in_leg` in the data dictionary.
+- **I-8** — §5 now publishes the split rate at all three denominators (4.06% of
+  all calls / 7.55% of bulk calls / **31.33% of bulk discharge calls**) and says
+  plainly that a rate quoted without its denominator is a different number here,
+  not a small imprecision.
+
+**All three figures are derived, not hand-keyed.** `figures.py` gained
+`agency_grain`, `agent_changed` and `bulk_turnover` derivations, and
+`docs/FIGURES.md` two new sections. The package's own discipline applied to its
+own disclosures.
+
+**Verified after the change:** `figures.py` still reports **0 attribution
+mismatches across 40,245 chargeable legs**, and the only file to move under
+`sample/` was `DATA_DICTIONARY.csv` — three field descriptions. **No sample data
+row changed**, no chart moved, no report figure moved.
 
 ### Next session: independent audit, not a build session
 

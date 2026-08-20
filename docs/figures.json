@@ -125,6 +125,25 @@
     "fee": 1784500.0,
     "reported_total": 270875500.0
   },
+  "agency_grain": {
+    "calls_with_multiple_agencies": 91,
+    "legs_disagreeing_with_call": 91,
+    "fee_at_risk": 939000.0
+  },
+  "agent_changed": {
+    "legs": 3233,
+    "fee": 29495250.0,
+    "pct_of_chargeable_legs": 8.03,
+    "pct_of_fee": 10.82
+  },
+  "bulk_turnover": {
+    "bulk_calls": 21565,
+    "bulk_split_calls": 1628,
+    "bulk_discharge_calls": 5197,
+    "discharge_and_load_calls": 1628,
+    "pct_of_all_bulk_calls": 7.55,
+    "pct_of_bulk_discharge_calls": 31.33
+  },
   "fee_rules": {
     "by_rule": {
       "BASE": {

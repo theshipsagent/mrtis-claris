@@ -84,3 +84,26 @@ Resolved by real evidence: **82.79%** of 41,804 legs.
 | Chargeable legs with no register row | 12 ($63,000) |
 | — of those, reached by the canonical fallback | 0 |
 
+## Agency attribution — disclosures for anyone reporting by agent
+
+Agency exists at two grains and §6 rules that the **leg** grain is the correct one. These figures are published so the cost of reaching for the other column, or of reading a by-agent report as a clean division of the book, is a known quantity rather than a discovery.
+
+| Figure | Value |
+|---|---:|
+| Port calls whose legs carry more than one agency | 91 |
+| Legs whose agency differs from their call-level `port_call.agency` | 91 |
+| — fee mis-attributed if `port_call.agency` is used instead | $939,000 |
+| Chargeable legs where the agent changed mid-leg | 3,233 (8.03%) |
+| — fee on those legs | $29,495,250 (10.82% of the billable total) |
+
+## Bulk turnover — one behaviour, three denominators
+
+Discharge-then-load within a single port call. The rate depends entirely on what it is divided by, so all three denominators are published together and no figure travels without one.
+
+| Denominator | Rate |
+|---|---:|
+| Of **all** bulk port calls (21,565) | 7.55% |
+| Of bulk calls that **discharge** (5,197) | **31.33%** |
+
+1,628 bulk calls both discharge and load. The second rate is the one that matches trade experience (William, 2026-08-20: 24-35%); the first is the same fact and looks like a different one.
+

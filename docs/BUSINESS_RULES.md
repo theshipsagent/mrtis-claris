@@ -215,6 +215,23 @@ are excluded by design — William: *"reduced as the tankers, gas, other,
 cruise, container and reefer can be ignored."* **1,632 calls (4.06%) are
 split calls.**
 
+**Read that 4.06% with its denominator attached.** A split call *is* a
+discharge-then-load turnover, and the rate it appears to run at changes by more
+than four times depending on what it is divided by — all three of these describe
+the same 1,628 bulk calls:
+
+| Denominator | Rate |
+|---|---:|
+| All 40,170 port calls | 4.06% |
+| All 21,565 **bulk** calls | 7.55% |
+| The 5,197 bulk calls that **discharge** | **31.33%** |
+
+The last is the operationally meaningful one, and it is the one that matches
+trade experience — William, 2026-08-20: *"from experience 24-35% bulk ships turn
+over in the river from discharge to load."* A rate quoted without its denominator
+is not a small imprecision here; it is a different number. (Derived in
+`docs/FIGURES.md`; see `report_concepts/ISSUES.md` I-8.)
+
 ### `No Cargo` (layberth) is special — two separate rulings
 
 William, 2026-08-19 (`OPEN_QUESTIONS.md` §8), ruled on this in two distinct
@@ -250,6 +267,37 @@ Two non-destructive transformations sit on top of the raw `Agent` field:
      Reverting the sailing to the inbound agency corrects this — and because
      it's applied per leg, a genuine split call still correctly keeps two
      different agencies, one per leg. (`PORT_CALL_SPEC.md` §5.)
+
+### Two things to know before reporting revenue by agent
+
+**1. Use the leg grain. `port_call.agency` is not it.** Agency exists on the
+port call *and* on the leg, and the call-level column is the more obvious one to
+reach for. It is a single pick for a call that may have been worked by two
+agencies: **91 port calls carry more than one agency across their legs**, and the
+**91 legs** that disagree with their own call-level value hold **$939,000** of
+fee. Report off `port_call.agency` and that $939,000 is credited to the wrong
+agent — not lost from the total, just attributed to whoever won the pick. Use
+`port_call_leg.agency`, or `port_call_event.agency_leg` at event grain.
+
+**2. A by-agent report is not a clean division of the book.** The agency on a leg
+is the **inbound** agency, and it keeps the whole fee even where the agent changed
+during the leg. That is the ruled behaviour, not a defect — but its scale is
+material and belongs stated rather than discovered:
+
+| | Chargeable legs | Fee |
+|---|---:|---:|
+| Agent stable through the leg | 37,012 | $243,164,750 |
+| **Agent changed mid-leg** (`agent_changed_in_leg`) | **3,233 (8.03%)** | **$29,495,250 (10.82%)** |
+
+So roughly **one dollar in nine** of agency revenue is attributed to an agent
+where at least one other agency was also involved in that leg. The commercial
+reason is ordinary: on a chartered voyage the owner's agent handles the inbound
+and the charterer's agent takes over for the outbound load (William, 2026-08-20),
+which is why the effect is a dry-bulk one — it is essentially absent from
+container and cruise traffic, where one operator handles the whole call.
+
+Both figures are derived in `docs/FIGURES.md`, never hand-keyed. See
+`report_concepts/ISSUES.md` I-4 and I-5.
 
 ---
 

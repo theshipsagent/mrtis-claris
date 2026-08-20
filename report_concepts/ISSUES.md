@@ -229,6 +229,11 @@ still keeps the whole fee, per `docs/BUSINESS_RULES.md` §6.
 | False | 38,541 | $243,164,750 |
 | **True** | **3,263 (7.8%)** | **$29,495,250 (10.8%)** |
 
+Over **chargeable** legs only — the denominator `docs/FIGURES.md` publishes,
+since a non-chargeable leg carries no revenue to attribute: **3,233 of 40,245
+(8.03%)**, same $29,495,250, **10.82%** of the billable total. Both are correct;
+they are stated together here because I-8 is exactly this failure mode.
+
 | `agency_source` | Legs | Fee |
 |---|---:|---:|
 | `inbound` | 41,170 | $270,217,250 |

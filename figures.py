@@ -310,6 +310,56 @@ def derive(con) -> dict:
         "reported_total": float(leg_basis) - float(no_agency_fee or 0.0),
     }
 
+    # --- Agency attribution: the disclosures a reporting user needs ---------
+    # Session 8 (report_concepts/ISSUES.md I-4, I-5). Agency exists at two
+    # grains, and the leg grain is the ruled one (§6). The call-grain column is
+    # the more obvious one to reach for, so the size of choosing wrong is
+    # published rather than left to be discovered.
+    ag_calls, ag_legs, ag_fee = one("""
+        select (select count(*) from (select port_call_id from port_call_leg
+                where coalesce(agency,'') <> '' group by 1
+                having count(distinct agency) > 1)),
+               (select count(*) from port_call_leg l join port_call c using (port_call_id)
+                where coalesce(l.agency,'') <> '' and coalesce(c.agency,'') <> ''
+                  and l.agency <> c.agency),
+               (select sum(l.agency_fee) from port_call_leg l join port_call c using (port_call_id)
+                where coalesce(l.agency,'') <> '' and coalesce(c.agency,'') <> ''
+                  and l.agency <> c.agency)""")
+    f["agency_grain"] = {
+        "calls_with_multiple_agencies": ag_calls,
+        "legs_disagreeing_with_call": ag_legs,
+        "fee_at_risk": float(ag_fee or 0.0),
+    }
+
+    ch_legs, ch_fee = one("""
+        select count(*), sum(agency_fee) from port_call_leg
+        where agent_changed_in_leg and agency_fee is not null""")
+    f["agent_changed"] = {
+        "legs": ch_legs, "fee": float(ch_fee or 0.0),
+        "pct_of_chargeable_legs": round(100 * ch_legs / chargeable, 2),
+        "pct_of_fee": round(100 * float(ch_fee or 0.0) / float(leg_basis), 2),
+    }
+
+    # --- Turnover: the same truth at three denominators (I-8) ---------------
+    bulk_calls, bulk_split, bulk_disch, bulk_disch_and_load = one("""
+        select (select count(*) from port_call where vessel_type = 'Bulk'),
+               (select count(*) from port_call where vessel_type = 'Bulk' and is_split),
+               (select count(*) from (select l.port_call_id from port_call_leg l
+                  join port_call c using (port_call_id) where c.vessel_type = 'Bulk'
+                  group by 1 having count(*) filter (where l.activity = 'Discharge') > 0)),
+               (select count(*) from (select l.port_call_id from port_call_leg l
+                  join port_call c using (port_call_id) where c.vessel_type = 'Bulk'
+                  group by 1 having count(*) filter (where l.activity = 'Discharge') > 0
+                     and count(*) filter (where l.activity = 'Load') > 0))""")
+    f["bulk_turnover"] = {
+        "bulk_calls": bulk_calls,
+        "bulk_split_calls": bulk_split,
+        "bulk_discharge_calls": bulk_disch,
+        "discharge_and_load_calls": bulk_disch_and_load,
+        "pct_of_all_bulk_calls": round(100 * bulk_disch_and_load / bulk_calls, 2),
+        "pct_of_bulk_discharge_calls": round(100 * bulk_disch_and_load / bulk_disch, 2),
+    }
+
     f["fee_rules"] = fee_rules(con)
     return f
 
@@ -400,6 +450,31 @@ def write_markdown(f: dict, path: Path) -> None:
         f"| Base-tier precedence counterexamples (A4) | {f['base_tier_counterexamples']['legs']} legs ({_money(f['base_tier_counterexamples']['fee'])}) |",
         f"| Chargeable legs with no register row | {f['canonical_fallback']['legs_without_register_row']} ({_money(f['canonical_fallback']['fee'])}) |",
         f"| — of those, reached by the canonical fallback | {f['canonical_fallback']['reached_by_a_rule']} |",
+        "",
+        "## Agency attribution — disclosures for anyone reporting by agent", "",
+        "Agency exists at two grains and §6 rules that the **leg** grain is the "
+        "correct one. These figures are published so the cost of reaching for the "
+        "other column, or of reading a by-agent report as a clean division of the "
+        "book, is a known quantity rather than a discovery.", "",
+        "| Figure | Value |", "|---|---:|",
+        f"| Port calls whose legs carry more than one agency | {f['agency_grain']['calls_with_multiple_agencies']:,} |",
+        f"| Legs whose agency differs from their call-level `port_call.agency` | {f['agency_grain']['legs_disagreeing_with_call']:,} |",
+        f"| — fee mis-attributed if `port_call.agency` is used instead | {_money(f['agency_grain']['fee_at_risk'])} |",
+        f"| Chargeable legs where the agent changed mid-leg | {f['agent_changed']['legs']:,} ({f['agent_changed']['pct_of_chargeable_legs']}%) |",
+        f"| — fee on those legs | {_money(f['agent_changed']['fee'])} ({f['agent_changed']['pct_of_fee']}% of the billable total) |",
+        "",
+        "## Bulk turnover — one behaviour, three denominators", "",
+        "Discharge-then-load within a single port call. The rate depends entirely "
+        "on what it is divided by, so all three denominators are published together "
+        "and no figure travels without one.", "",
+        "| Denominator | Rate |", "|---|---:|",
+        f"| Of **all** bulk port calls ({f['bulk_turnover']['bulk_calls']:,}) | {f['bulk_turnover']['pct_of_all_bulk_calls']}% |",
+        f"| Of bulk calls that **discharge** ({f['bulk_turnover']['bulk_discharge_calls']:,}) | **{f['bulk_turnover']['pct_of_bulk_discharge_calls']}%** |",
+        "",
+        f"{f['bulk_turnover']['discharge_and_load_calls']:,} bulk calls both discharge "
+        "and load. The second rate is the one that matches trade experience "
+        "(William, 2026-08-20: 24-35%); the first is the same fact and looks like a "
+        "different one.",
         "",
     ]
     path.write_text("\n".join(L) + "\n")
