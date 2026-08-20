@@ -127,6 +127,15 @@ sequence, which is the order a reviewer wants anyway.
 - **Unplaced events are excluded and disclosed.** 16,969 events belong to no
   call, so a whole-calls cut structurally cannot carry them; the README says a
   reviewer assessing completeness handling should ask for the full export.
+- **The sample goes to the public repo — William's explicit ruling.** Raised
+  before pushing, because it is a real step up in disclosure: the repo already
+  published agency-level aggregates (Norton Lilly, $41,243,000 and so on), but
+  `sample/` publishes 5,483 *individual* port calls, each naming the vessel,
+  IMO, agency, berth and its own fee — commercially readable at the row level.
+  Options put to him were public push, code-only with the sample transferred
+  directly, flipping the repo private, or holding. He chose **push to the
+  public repo**. Worth re-raising only if the scope of what is published
+  changes again, not for a routine re-export of the same cut.
 
 ### Open
 
