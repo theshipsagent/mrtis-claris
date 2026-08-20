@@ -1701,11 +1701,34 @@ that previously did not exist will exist and will be incomplete by construction.
 That is the ruling working as intended — William has explicitly accepted a broken
 KPI clock for these in exchange for correct counts and revenue.
 
+**Three worked examples, one failure mode.** William supplied `Balsa 92`
+(9616060, 110 Buoys), `Orfeas` (9358917, MPLX Garyville) and `Pelagiani`
+(9282613, LDC Port Allen — anchored at Baton Rouge Gen Anch, loaded 19 → 33 ft,
+carried $10,500, and **has an `Exit` but no `Enter`**). All three are the same
+bug.
+
+**And it is singular: every one of the 311 runs is missing the `Enter`.** Not one
+is missing only the `Exit`.
+
+| Shape | Runs | Fee | Median span |
+|---|---:|---:|---:|
+| **Has `Exit`, no `Enter`** | **268** | $2,534,000 | 88 h |
+| Has neither crossing | 43 | $301,000 | 51 h |
+| Has `Enter` | **0** | — | — |
+
+So the defect is: **the entry event is dropped, the call never opens, and
+everything until the next `Enter` is discarded.**
+
 **Proposed implementation.** In `build_port_calls.py`'s assembly: where a berth
-stop occurs with no open call, open one; close it at the next `Exit` or at the
-last event before a long gap. Flag those calls so the KPI layer can exclude them
-— `call_status` already carries `open_end`, and a distinct status such as
-`no_crossing` would be clearer.
+stop occurs with no open call, open one at the first event of that run. Closing
+is mostly free — **268 of 311 close naturally at their own `Exit`**; the
+remaining 43 need a fallback, closing at the last event before a gap (a 7-day
+gap is what this analysis used to separate runs, and it produced no ambiguous
+cases).
+
+Flag the resulting calls so the KPI layer can exclude them: `call_status`
+already carries `open_end`, but a distinct value such as **`no_crossing`** would
+be clearer and would let `is_complete` keep its current meaning.
 
 **Status** RULED — needs an MRTIS session to build. `CLAUDE.md`'s read-only
 directive is back in force, so this requires a fresh, explicitly recorded
