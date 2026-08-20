@@ -1,5 +1,130 @@
 # mrtis-claris session log
 
+## 2026-08-20 (session 7) — The SWP-to-SWP KPI design brief
+
+**MRTIS commit unchanged at `2738601c9a87ff7be264f9c10cb1e1a618ef3436`** — the
+same commit sessions 3-6 built against, verified at open and again at close.
+Read-only throughout; every connection opened `read_only=True`. MRTIS's working
+tree ends the session as it started: same commit, same five untracked
+`sample_port_calls*.csv` files (17:19-17:24 on 2026-08-19, before this repo
+existed), `mrtis.duckdb` mtime still 2026-08-19 22:59.
+
+Session 6 left the package as ready as it can get without a reviewer in the
+loop, and named two next moves: hand it over, or pick up the parked SWP-to-SWP
+KPI framework. Handover is William's action; the KPI framework is a design
+conversation with him, not a build task. So the objective was the part that can
+be advanced without him in the room: **prepare that conversation** — read what
+MRTIS already stores, measure it, and write up the decisions it forces.
+
+### What shipped
+
+**[`docs/KPI_DESIGN_BRIEF.md`](docs/KPI_DESIGN_BRIEF.md)** — eight decisions,
+each with options, measured impact and a recommendation where the choice is
+technical rather than commercial. It takes no rulings and defines no KPI, and
+says so in its opening: a KPI definition is a business rule, and CLAUDE.md's
+directive 1 makes that William's, not this repo's.
+
+**[`kpi/kpi_baseline.py`](kpi/kpi_baseline.py) →
+[`docs/KPI_BASELINE.md`](docs/KPI_BASELINE.md)** — the derivation behind it. A
+design brief carrying hand-keyed numbers is precisely the defect session 4
+removed from this package, so the brief quotes and the script derives.
+`--check-brief` re-derives and asserts the eleven load-bearing figures the brief
+quotes still appear in it, so a rebuilt MRTIS reports the brief as stale rather
+than letting it rot quietly.
+
+### The finding that shapes the framework: the clock does not close
+
+The five leg time buckets do not add up to the elapsed time they partition.
+
+| | Hours |
+|---|---:|
+| Elapsed leg time | 7,232,805 |
+| Sum of the five stored buckets | 5,736,739 |
+| **Unattributed** | **1,496,066 — 20.7%** |
+
+Not a bug: dwell is recorded only where the feed records a *stop*, and transit
+and SWP-crossing rows carry no dwell at all, so a vessel underway between two
+stops is in no bucket. It sits in two places — **573,877** hours between leg
+start and first berth arrival, **547,466** between last sailing and leg end —
+and legs that never reached a berth are 67.9% unattributed.
+
+It matters because it collides with the ruling the framework rests on. William,
+2026-08-19: *"as long as time [is] accounted for, otherwise they need no
+acknowledgement either by fee or count."* Today one hour in five between the SWP
+crossings is in no named bucket, so any KPI built on the current columns either
+ignores it or absorbs it into a denominator. That became Q1, and everything else
+in the brief inherits its answer.
+
+### Decided (shape only — no business rules were ruled)
+
+- **The KPI derivation is deliberately NOT part of `figures.py`.** `figures.py`
+  derives what the package *publishes*, and its fee self-check guards the
+  deliverable. Nothing in the KPI work ships to the Claris reviewer, so keeping
+  the two apart means a question still in flight can never destabilise a figure
+  the reviewer is already holding. Same reasoning in reverse for the README
+  entry: filed under "design work in progress", not in the deliverables list.
+- **Two structural facts are asserted, not assumed.** The script raises unless
+  legs tile the call exactly (leg 1 at `call_start`, last leg at `call_end`, all
+  40,170) and no vessel is ever in two calls at once. Both are load-bearing for
+  the brief — the first makes every time question reduce to a leg question, the
+  second makes a vessel-level sequence well-defined — so a rebuild that broke
+  either should fail loudly rather than quietly change what a KPI means.
+- **The sequence question is left genuinely open.** *"The seq order of
+  SWP-to-SWP KPI calcs"* has two readings — within a call (already built) and
+  across calls per vessel (not built). The data supports the second well
+  (30,069 calls have a predecessor, zero overlaps, median gap 105 days), but
+  what it is *for* is William's to say, so the brief asks rather than assumes.
+- **One technical trap flagged as a recommendation, not a question.** A
+  vessel-level sequence must key on `dim_vessel.natural_key`, never on
+  `vessel_key` — `OPEN_QUESTIONS.md` §10 records that `vessel_key` is row
+  position in each rebuild, so a sequence keyed on it would silently renumber.
+
+### Verified
+
+- **MRTIS untouched** — commit, working tree and database mtime identical at
+  close to open.
+- **Deterministic** — two consecutive runs of `kpi/kpi_baseline.py` produce a
+  byte-identical `KPI_BASELINE.md`.
+- **Every quoted figure re-derives** — `--check-brief` passes on all eleven.
+- **Cross-checked against the package's own published figures** where they
+  overlap: 1,632 split calls (4.06%), 38,288 fee-bearing calls, 142 lay-up calls
+  holding 23,390 hours / 975 vessel-days — all match `FIGURES.md` and
+  `PORT_CALL_SPEC.md` §4 exactly, by a different code path.
+- **Every relative link in the two new docs resolves** — 0 broken.
+- **The review package did not move.** No file under `sample/`, `charts/`,
+  `reports/`, `export/` or `docs/FIGURES.md` was touched.
+
+### Open
+
+Unchanged from session 6, plus the brief's own eight questions, none of which
+block the handover:
+
+- **Nobody has imported the sample into Claris yet** — still the one thing this
+  repo cannot verify for itself.
+- **The eight KPI decisions** await William. Q1 (what happens to the
+  unattributed 20.7%) is the load-bearing one; Q3 would also close
+  `OPEN_QUESTIONS.md` §14's open scope question as a side effect.
+- **MRTIS §13**, **§11.3 `tpc = 0`** — ruled/deferred upstream, still unbuilt.
+
+### Next session
+
+1. **Run the KPI conversation with William**, in the brief's order: Q1 first,
+   then Q2-Q4. Those four are definitions, cost nothing to decide, and unblock
+   the rest.
+2. **Then prototype a KPI report here**, read-only against the current columns —
+   the brief's §7 notes everything except Q1's residual column is computable
+   without MRTIS being unparked, so the definitions can be made concrete before
+   any upstream build.
+3. **Or work the reviewer's questions** if the handover has happened by then —
+   that still takes precedence, and specifically whether the FMPXMLRESULT import
+   behaved as `IMPORT_GUIDE.md` describes.
+
+Standing entry conditions unchanged: re-check MRTIS's commit before trusting any
+figure here, and if it has moved, re-run `figures.py`, `kpi/kpi_baseline.py` and
+both export modes before quoting anything.
+
+---
+
 ## 2026-08-20 (session 6) — The reviewer readiness pass
 
 **MRTIS commit unchanged at `2738601c9a87ff7be264f9c10cb1e1a618ef3436`** — the
