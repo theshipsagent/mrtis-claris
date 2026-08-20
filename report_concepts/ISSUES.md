@@ -1921,6 +1921,69 @@ Recorded so the worked cases are not lost:
 | `Champion Pomer` | 9455739 | Tanker taking cargo at anchor, 24 → 39 ft | **I-15**, classified |
 | `Scarlet Cardinal` | 9544059 | 2 ft *lighter* at Davant, Blue Water — **excluded** from the Davant rule | **I-23**, documented exclusion |
 
+---
+
+### I-25 · Zone-based lightering rule: Grandview / Kenner Bend / St Rose, tanker, no berth — `gap`
+
+**Raised** 2026-08-20 by William: *"just consider any tanker that went to
+grandview and or kenner bend/st rose anchors and no other berth as tankship
+lightering."*
+
+**This is a second, independent test for lightering** — by *location* rather than
+by draft. It catches calls the draft rule (I-15) misses, because a lightering
+call with missing or flat AIS draft has no draft evidence to trigger on.
+
+**The zones:**
+
+| Zone | Mile | Events |
+|---|---:|---:|
+| `Lwr Kenner Bend Anch` | 114 | 7,304 |
+| `Upr Kenner Bend Anch` | 115 | 4,661 |
+| `Grandview Lwr Anch` | 147 | 1,052 |
+| `Grandview Mid Anch` | 147 | 2,007 |
+| `Grandview Upr Anch` | 148 | 2,842 |
+
+*(St Rose resolves to berths — `IMTT St Rose` 1–14 and `Vulcan St Rose Mooring`,
+miles 116–119 — not anchorages, so it is **not** included in the anchorage rule.
+Flagged for William below.)*
+
+**Tanker (register-clean), no berth anywhere in the call, touched one of those
+anchorages: 117 calls, 92 vessels.** Draft evidence on them:
+
+| | Calls | Median move |
+|---|---:|---:|
+| Took cargo (up) | 51 | 12 ft |
+| Gave cargo (down) | 47 | 7 ft |
+| **Flat (≤1 ft)** | **17** | 0 ft |
+| **No draft pair** | **2** | — |
+
+**98 of 117 (84%) already show cargo-sized draft movement**, which is strong
+independent corroboration of the rule — the location test and the draft test
+agree on the overwhelming majority.
+
+**What the zone rule adds: 19 calls.** Those are the ones with **flat or missing
+draft** that the I-15 draft rule cannot see. That is the whole value of adding a
+location test alongside a draft test — it recovers the cases where AIS draft
+failed.
+
+| | Calls |
+|---|---:|
+| Caught by the I-15 draft rule (all anchorages) | 245 |
+| **Added by this zone rule** | **+19** |
+| Combined | **264** |
+
+**One point needs William before implementing.** He named *"kenner bend/st rose"*
+together, but **St Rose is a berth complex, not an anchorage** — `IMTT St Rose`
+2/4/8/14 and `Vulcan St Rose Mooring` are recorded as berth stops at miles
+116–119, adjacent to the Kenner Bend anchorages at 114–115. A call reaching an
+IMTT St Rose berth is **not** a no-berth call and would never enter this rule. So
+either he means the Kenner Bend anchorages that sit off St Rose (already
+included), or he is pointing at a separate St Rose zone-overlap issue of the same
+kind as I-20/I-23. **Not assumed either way.**
+
+**Status** OPEN — rule stated and quantified; needs William's answer on St Rose
+before it is implemented in the exports.
+
 ## Closed
 
 - **I-1** — **fixed** in MRTIS `56ad9f5` (§15.1). 445 legs corrected; nothing else in the database moved.
