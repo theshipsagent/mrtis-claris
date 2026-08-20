@@ -9,7 +9,7 @@ in the brief can be argued from numbers rather than from impressions.
 The package's *published* figures live in [`FIGURES.md`](FIGURES.md),
 derived separately by `figures.py`.
 
-MRTIS commit: `0c4ed0cf8f8f1cc208665ca499c64568b27ea42b`
+MRTIS commit: `95ff34b274a52e77bfb99feca8d8169c0304571f`
 
 ---
 
@@ -17,50 +17,50 @@ MRTIS commit: `0c4ed0cf8f8f1cc208665ca499c64568b27ea42b`
 
 | | Count |
 |---|---:|
-| Port calls | 40,170 |
-| — commercial | 40,028 |
-| — lay-up (flagged, non-commercial) | 142 |
-| — complete (both SWP crossings seen) | 39,691 |
-| — open-ended (one crossing missing) | 479 |
-| — **commercial AND complete** (the safe duration population) | **39,549** |
-| Split calls | 1,632 |
-| Legs | 41,804 |
-| Distinct vessels | 10,101 |
+| Port calls | 40,355 |
+| — commercial | 40,208 |
+| — lay-up (flagged, non-commercial) | 147 |
+| — complete (both SWP crossings seen) | 39,690 |
+| — open-ended (one crossing missing) | 376 |
+| — **commercial AND complete** (the safe duration population) | **39,548** |
+| Split calls | 1,647 |
+| Legs | 42,005 |
+| Distinct vessels | 10,141 |
 
 Window: `2019-01-01 09:57:00` → `2026-07-31 23:19:00`.
 
 ## 2. The clock does not close
 
 Legs tile the call exactly — leg 1 starts at `call_start` and the last leg
-ends at `call_end`, verified on all 40,170 calls — so call-level time
+ends at `call_end`, verified on all 40,355 calls — so call-level time
 accounting is entirely a question about the five leg buckets.
 
 | | Hours |
 |---|---:|
-| Elapsed leg time (`leg_hours`) | 7,232,805 |
-| Sum of the five stored buckets | 5,736,739 |
-| **Unattributed remainder** | **1,496,066** |
-| Remainder as a share of elapsed time | **20.7%** |
-| Median remainder per leg | 23.1 |
-| Legs where the buckets exceed elapsed time | 62 |
+| Elapsed leg time (`leg_hours`) | 7,277,503 |
+| Sum of the five stored buckets | 5,763,783 |
+| **Unattributed remainder** | **1,513,720** |
+| Remainder as a share of elapsed time | **20.8%** |
+| Median remainder per leg | 23.0 |
+| Legs where the buckets exceed elapsed time | 63 |
 
 ### The five buckets, as stored
 
 | Bucket | Hours |
 |---|---:|
-| `waiting_hours` | 2,470,459 |
-| `inter_berth_idle_hours` | 308,627 |
-| `outbound_idle_hours` | 195,837 |
-| `berth_hours` | 2,716,075 |
-| `layberth_hours` | 45,742 |
+| `waiting_hours` | 2,473,295 |
+| `inter_berth_idle_hours` | 311,046 |
+| `outbound_idle_hours` | 198,422 |
+| `berth_hours` | 2,734,705 |
+| `layberth_hours` | 46,316 |
 
 ### Why: dwell exists only where the feed records a stop
 
 | Event class | Events | Dwell hours |
 |---|---:|---:|
-| anchorage | 96,630 | 2,980,446 |
-| berth stop | 96,845 | 2,761,816 |
-| transit / SWP crossing | 79,861 | 0 |
+| anchorage | 96,964 | 2,988,286 |
+| berth stop | 97,528 | 2,781,020 |
+| transit / SWP crossing | 80,026 | 0 |
 
 A vessel underway between two recorded stops is in no bucket at all.
 
@@ -68,22 +68,22 @@ A vessel underway between two recorded stops is in no bucket at all.
 
 | Leg shape | Legs | Elapsed hours | Unattributed | Share |
 |---|---:|---:|---:|---:|
-| worked a berth | 40,247 | 7,017,743 | 1,361,856 | 19.4% |
-| never reached a berth | 1,418 | 191,995 | 130,430 | 67.9% |
-| layberth stops only | 139 | 23,068 | 3,780 | 16.4% |
+| worked a berth | 40,547 | 7,061,032 | 1,378,430 | 19.5% |
+| never reached a berth | 1,315 | 192,002 | 130,437 | 67.9% |
+| layberth stops only | 143 | 24,469 | 4,852 | 19.8% |
 
 ### The two open stretches, on legs that worked a berth
 
-Measured across 39,914 legs with both a recorded berth arrival and departure.
+Measured across 40,211 legs with both a recorded berth arrival and departure.
 
 | Stretch | Elapsed | Classified | Unclassified |
 |---|---:|---:|---:|
-| Leg start → first berth arrival | 3,016,809 | 2,442,932 (`waiting_hours`) | **573,877** |
-| Last sailing → leg end | 681,742 | 134,276 (`outbound_idle_hours`) | **547,466** |
+| Leg start → first berth arrival | 3,019,952 | 2,445,768 (`waiting_hours`) | **574,184** |
+| Last sailing → leg end | 694,928 | 136,861 (`outbound_idle_hours`) | **558,067** |
 
 ## 3. Candidate headline KPIs, measured as they stand today
 
-On the 39,549 commercial, complete calls:
+On the 39,548 commercial, complete calls:
 
 | | Median | p90 |
 |---|---:|---:|
@@ -96,7 +96,7 @@ On the 39,549 commercial, complete calls:
 
 | Vessel type | Calls | Median hours | p90 hours |
 |---|---:|---:|---:|
-| Bulk | 21,166 | 182.8 | 429.2 |
+| Bulk | 21,165 | 182.8 | 429.2 |
 | Tanker | 13,007 | 111.7 | 234.0 |
 | Container | 3,117 | 38.0 | 51.3 |
 | Passenger | 1,009 | 26.3 | 28.5 |
@@ -107,38 +107,40 @@ On the 39,549 commercial, complete calls:
 
 | | |
 |---|---:|
-| Distinct vessels | 10,101 |
-| Calls with an earlier call by the same vessel in-window | 30,069 |
-| Vessels seen exactly once | 2,956 |
-| Median gap, previous SWP exit → next SWP entry (hours) | 2,526.1 |
-| p90 gap (hours) | 18,064.2 |
+| Distinct vessels | 10,141 |
+| Calls with an earlier call by the same vessel in-window | 30,214 |
+| Vessels seen exactly once | 2,975 |
+| Median gap, previous SWP exit → next SWP entry (hours) | 2,545.0 |
+| p90 gap (hours) | 18,133.6 |
 | Overlapping calls for one vessel | 0 |
 
 ## 5. Traps a KPI framework has to rule on
 
 | | Count |
 |---|---:|
-| Legs with `leg_hours <= 0` | 135 |
-| Legs with negative `berth_hours` | 8 |
-| Complete calls shorter than one hour | 3 |
+| Legs with `leg_hours <= 0` | 36 |
+| Legs with negative `berth_hours` | 10 |
+| Complete calls shorter than one hour | 2 |
 | Hours sitting on open-ended (truncated) calls | 220,485 |
-| Calls starting in the first month of the window | 558 |
+| Calls starting in the first month of the window | 659 |
 | Calls starting in the last month of the window | 518 |
-| Legs with no recorded berth arrival | 1,415 |
-| Legs whose activity never resolved | 7,193 |
-| Legs mixing layberth and working stops | 238 |
+| Legs with no recorded berth arrival | 1,311 |
+| Legs whose activity never resolved | 7,153 |
+| Legs mixing layberth and working stops | 240 |
 
 | Events outside any call | Count |
 |---|---:|
-| `no_open_call` | 10,521 |
-| `before_first_entry` | 6,448 |
+| `no_open_call` | 10,129 |
+| `before_first_entry` | 5,542 |
+| `duplicate_entry` | 103 |
+| `impossible_transit` | 2 |
 
 ## 6. Denominators available for rate KPIs
 
 | | |
 |---|---:|
-| Commercial legs | 41,662 |
-| — with an estimated tonnage (FGIS grain match) | 10,545 (25.3%) |
+| Commercial legs | 41,858 |
+| — with an estimated tonnage (FGIS grain match) | 10,640 (25.4%) |
 | — with an actual tonnage | 0 |
 | Distinct berth facilities | 114 |
 

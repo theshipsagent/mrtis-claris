@@ -1,6 +1,6 @@
 # Sample review package
 
-Built read-only from MRTIS at commit `0c4ed0cf8f8f1cc208665ca499c64568b27ea42b`. Rebuild with:
+Built read-only from MRTIS at commit `95ff34b274a52e77bfb99feca8d8169c0304571f`. Rebuild with:
 
 ```
 python3 export/build_review_package.py --sample
@@ -61,22 +61,22 @@ past the 2025-12-31 end of the window. That is correct, not a leak.
 
 | Table | Rows here | Rows in full export |
 |---|---:|---:|
-| PORT_CALL | 5,483 | 40,170 |
-| PORT_CALL_LEG | 5,679 | 41,804 |
-| PORT_CALL_EVENT | 35,703 | 290,305 |
+| PORT_CALL | 5,471 | 40,355 |
+| PORT_CALL_LEG | 5,667 | 42,005 |
+| PORT_CALL_EVENT | 35,709 | 290,294 |
 
 Enough of each to exercise the interesting cases:
 
 - 196 split calls (calls with more than one leg)
 - 2 non-commercial (lay-up) calls, flagged not deleted
-- 7 vessel types, 3,043 distinct vessels
-- 5,591 of 5,679 legs carry an agency
+- 7 vessel types, 3,045 distinct vessels
+- 5,579 of 5,667 legs carry an agency
 - 83 legs with a flagged activity conflict
 
 ## What is deliberately not in it
 
 - **Every other year.** The full export covers 2019-01-01 to 2026-07-31; this is one year of it.
-- **Unplaced events.** The full export carries 16,969 events that
+- **Unplaced events.** The full export carries 15,776 events that
   belong to no port call at all (`unassigned_reason` = `before_first_entry` or
   `no_open_call`). They have no call, so a whole-calls cut cannot include them.
   A reviewer assessing completeness handling should ask for the full export.

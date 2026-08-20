@@ -1,6 +1,6 @@
 # Issues log — what building the concept reports exposed
 
-Opened 2026-08-20 (session 8). MRTIS commit `2738601c9a87ff7be264f9c10cb1e1a618ef3436` at the time of finding; fixes built at `0c4ed0c`.
+Opened 2026-08-20 (session 8). MRTIS commit `2738601c9a87ff7be264f9c10cb1e1a618ef3436` at the time of finding; fixes built at `95ff34b`.
 
 Every entry is something the reporting exercise **found**, not something it
 fixed. Nothing in this log has been acted on — that is deliberate, and is the
@@ -228,7 +228,7 @@ over-claiming, or (b) introduce a `cargo_subgroup` distinguishing certified grai
 from by-product where evidence allows. Needs William's ruling; both are cheap.
 
 **RULED AND BUILT — William, 2026-08-20:** *"mgmt is grain and by products, add
-cargo_subgroup."* Built at MRTIS `0c4ed0c` (`OPEN_QUESTIONS.md` §15.6).
+cargo_subgroup."* Built at MRTIS `95ff34b` (`OPEN_QUESTIONS.md` §15.6).
 
 **The design point worth keeping.** The obvious implementation — "no FGIS
 certificate at a grain berth means by-product" — would have been wrong, because
@@ -539,7 +539,7 @@ monotonic one. (c) is the one worth doing first.
 ---
 
 **(c) `tpc = 0` — INVESTIGATED AND RESOLVED, 2026-08-20.** MRTIS commit
-`0c4ed0c` (`OPEN_QUESTIONS.md` §15.7, which also closes the long-deferred §11.3).
+`95ff34b` (`OPEN_QUESTIONS.md` §15.7, which also closes the long-deferred §11.3).
 
 **Ruled by William:** *"if is there we can populate as available, if becomes a
 larger effort to fix, am ok dropping it."*
@@ -742,7 +742,7 @@ was false, through no fault of the code here, and nobody had tested it across an
 actual MRTIS rebuild — only across re-runs of the export against an unchanged
 database, which could never have caught it.
 
-**FIXED — MRTIS commit `0c4ed0c`, 2026-08-20** (`OPEN_QUESTIONS.md` §15.5).
+**FIXED — MRTIS commit `95ff34b`, 2026-08-20** (`OPEN_QUESTIONS.md` §15.5).
 `ORDER BY` added to all three aggregates, with a comment recording that it is
 load-bearing rather than cosmetic — exactly the kind of clause a later tidy-up
 deletes as noise.
@@ -2031,7 +2031,7 @@ implement in the exports alongside the I-15 draft rule.
 - **I-1** — **fixed** in MRTIS `56ad9f5` (§15.1). 445 legs corrected; nothing else in the database moved.
 - **I-7** — ruled A by William 2026-08-20; the build was already correct, $3,492,500 does not move (§15.3).
 - **I-10** — **built** in MRTIS `56ad9f5` (§15.2), behaviour-preserving: 0 legs changed fee.
-- **I-11** — **fixed** in MRTIS `0c4ed0c` (§15.5). Found while verifying I-1; the build was non-deterministic and the package's byte-identical guarantee was false. Now verified end-to-end across a real rebuild.
+- **I-11** — **fixed** in MRTIS `95ff34b` (§15.5). Found while verifying I-1; the build was non-deterministic and the package's byte-identical guarantee was false. Now verified end-to-end across a real rebuild.
 
 ### Closing ruling — William, 2026-08-20
 

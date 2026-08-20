@@ -5,7 +5,7 @@ Every number this package publishes, re-derived live from MRTIS's database.
 `charts/` and `reports/` all read from this same derivation, so a figure
 cannot go stale in one place and stay current in another.
 
-MRTIS commit: `0c4ed0cf8f8f1cc208665ca499c64568b27ea42b`
+MRTIS commit: `95ff34b274a52e77bfb99feca8d8169c0304571f`
 
 ---
 
@@ -13,41 +13,41 @@ MRTIS commit: `0c4ed0cf8f8f1cc208665ca499c64568b27ea42b`
 
 | | Count |
 |---|---:|
-| Port calls | 40,170 |
-| — commercial | 40,028 |
-| — lay-up (flagged, excluded from commercial counts) | 142 |
-| Complete calls (both ends seen) | 39,691 (98.81%) |
-| Split calls | 1,632 (4.06%) |
-| Legs | 41,804 |
-| — chargeable | 40,245 |
-| Events | 290,305 |
+| Port calls | 40,355 |
+| — commercial | 40,208 |
+| — lay-up (flagged, excluded from commercial counts) | 147 |
+| Complete calls (both ends seen) | 39,690 (98.35%) |
+| Split calls | 1,647 (4.08%) |
+| Legs | 42,005 |
+| — chargeable | 40,540 |
+| Events | 290,294 |
 
 ## The two fee bases
 
 | Basis | Total |
 |---|---:|
-| **Per-leg (billable, the ruled figure)** | **$272,660,000** |
+| **Per-leg (billable, the ruled figure)** | **$274,869,500** |
 | Per-departure, event level (frozen comparison) | $349,527,500 |
-| Per-departure, rolled up to `port_call` | $346,692,500 |
-| — gap between the two per-departure roll-ups | $2,835,000 |
+| Per-departure, rolled up to `port_call` | $349,527,500 |
+| — gap between the two per-departure roll-ups | $0 |
 
-The gap is exactly the fee on **360 departure events that never landed in a port call** — `before_first_entry` 240 events, $1,925,000; `no_open_call` 120 events, $910,000. The event-level figure includes them; the call roll-up structurally cannot.
+The gap is exactly the fee on **0 departure events that never landed in a port call** — . The event-level figure includes them; the call roll-up structurally cannot.
 
-Per-departure over-bills the billable basis by **$76,867,500 (28.2%)**.
+Per-departure over-bills the billable basis by **$74,658,000 (27.2%)**.
 
-Under per-departure counting, **7,197 of 38,288 fee-bearing calls (18.8%)** were charged 2–10 times (17.9% of all 40,170 calls).
+Under per-departure counting, **7,256 of 38,568 fee-bearing calls (18.8%)** were charged 2–10 times (18.0% of all 40,355 calls).
 
 ## Fee schedule: rule-by-rule
 
 | Rule | Chargeable legs | Old 2-tier | Bills now | Change |
 |---|---:|---:|---:|---:|
-| R1 Passenger/Cruise | 1,043 | $3,650,500 | $2,607,500 | -$1,043,000 |
+| R1 Passenger/Cruise | 1,044 | $3,654,000 | $2,610,000 | -$1,044,000 |
 | R2 Ro-Ro / Vehicles Carrier / Gen-Cargo w. Ro-Ro | 2 | $21,000 | $2,000 | -$19,000 |
-| R3 Container (Fully Cellular) | 3,128 | $10,948,000 | $2,346,000 | -$8,602,000 |
-| R4 Refrigerated Cargo Ship | 40 | $140,000 | $200,000 | $60,000 |
-| R5 Bulk @ General Cargo berth | 3,019 | $31,699,500 | $15,095,000 | -$16,604,500 |
-| Base tiers ($10,500 / $3,500) | 33,013 | $252,409,500 | $252,409,500 | $0 |
-| **Total** | **40,245** | **$298,868,500** | **$272,660,000** | **-$26,208,500 (-8.77%)** |
+| R3 Container (Fully Cellular) | 3,142 | $10,997,000 | $2,356,500 | -$8,640,500 |
+| R4 Refrigerated Cargo Ship | 41 | $143,500 | $205,000 | $61,500 |
+| R5 Bulk @ General Cargo berth | 3,045 | $31,972,500 | $15,225,000 | -$16,747,500 |
+| Base tiers ($10,500 / $3,500) | 33,266 | $254,471,000 | $254,471,000 | $0 |
+| **Total** | **40,540** | **$301,259,000** | **$274,869,500** | **-$26,389,500 (-8.76%)** |
 
 Attribution self-check: **0 legs** where this package's rule attribution disagrees with the fee MRTIS actually stored.
 
@@ -55,35 +55,35 @@ Attribution self-check: **0 legs** where this package's rule attribution disagre
 
 | Method | Legs | % of all legs |
 |---|---:|---:|
-| draft_delta | 19,290 | 46.14% |
-| dictionary | 14,990 | 35.86% |
-| unresolved | 5,778 | 13.82% |
-| no_berth_stop | 1,415 | 3.38% |
-| fgis | 331 | 0.79% |
+| draft_delta | 19,393 | 46.17% |
+| dictionary | 15,124 | 36.01% |
+| unresolved | 5,842 | 13.91% |
+| no_berth_stop | 1,311 | 3.12% |
+| fgis | 335 | 0.8% |
 
-Resolved by real evidence: **82.79%** of 41,804 legs.
+Resolved by real evidence: **82.97%** of 42,005 legs.
 
 | `activity` | Legs | Fee |
 |---|---:|---:|
-| Load | 25,557 | $193,660,750 |
-| Discharge | 8,912 | $57,508,250 |
-| (unresolved) | 7,193 | $21,491,000 |
-| No Cargo | 142 | — |
+| Load | 25,741 | $195,265,750 |
+| Discharge | 8,964 | $57,842,750 |
+| (unresolved) | 7,153 | $21,761,000 |
+| No Cargo | 147 | — |
 
 ## Other published figures
 
 | Figure | Value |
 |---|---:|
-| Geofence artifacts, % of all berth events | 5.23% (5,102 / 97,528) |
+| Geofence artifacts, % of all berth events | 5.27% (5,139 / 97,528) |
 | Geofence artifacts, % of *placed* berth events | 5.27% |
-| Layberth hours (now separate from `berth_hours`) | 45,741.57 |
-| Legs carrying layberth time | 377 |
-| `tpc` supplied and usable | 36,010 calls (89.64%) |
-| `tpc` not supplied (NULL — never 0) | 4,160 calls (10.36%) |
+| Layberth hours (now separate from `berth_hours`) | 46,315.50 |
+| Legs carrying layberth time | 383 |
+| `tpc` supplied and usable | 36,181 calls (89.66%) |
+| `tpc` not supplied (NULL — never 0) | 4,174 calls (10.34%) |
 | `tpc = 0` placeholders remaining | 0 — MRTIS §15.7 replaced them with NULL |
-| Chargeable legs with no agency (omitted from the by-agent report) | 409 ($1,784,500) |
+| Chargeable legs with no agency (omitted from the by-agent report) | 415 ($1,809,750) |
 | Base-tier precedence counterexamples (A4) | 3 legs ($10,500) |
-| Chargeable legs with no register row | 12 ($63,000) |
+| Chargeable legs with no register row | 14 ($70,000) |
 | — of those, reached by the canonical fallback | 0 |
 
 ## Agency attribution — disclosures for anyone reporting by agent
@@ -92,11 +92,11 @@ Agency exists at two grains and §6 rules that the **leg** grain is the correct 
 
 | Figure | Value |
 |---|---:|
-| Port calls whose legs carry more than one agency | 91 |
-| Legs whose agency differs from their call-level `port_call.agency` | 91 |
-| — fee mis-attributed if `port_call.agency` is used instead | $939,000 |
-| Chargeable legs where the agent changed mid-leg | 3,233 (8.03%) |
-| — fee on those legs | $29,495,250 (10.82% of the billable total) |
+| Port calls whose legs carry more than one agency | 92 |
+| Legs whose agency differs from their call-level `port_call.agency` | 92 |
+| — fee mis-attributed if `port_call.agency` is used instead | $949,500 |
+| Chargeable legs where the agent changed mid-leg | 3,272 (8.07%) |
+| — fee on those legs | $29,857,750 (10.86% of the billable total) |
 
 ## Bulk turnover — one behaviour, three denominators
 
@@ -104,8 +104,8 @@ Discharge-then-load within a single port call. The rate depends entirely on what
 
 | Denominator | Rate |
 |---|---:|
-| Of **all** bulk port calls (21,565) | 7.55% |
-| Of bulk calls that **discharge** (5,197) | **31.33%** |
+| Of **all** bulk port calls (21,685) | 7.58% |
+| Of bulk calls that **discharge** (5,228) | **31.43%** |
 
-1,628 bulk calls both discharge and load. The second rate is the one that matches trade experience (William, 2026-08-20: 24-35%); the first is the same fact and looks like a different one.
+1,643 bulk calls both discharge and load. The second rate is the one that matches trade experience (William, 2026-08-20: 24-35%); the first is the same fact and looks like a different one.
 

@@ -1,6 +1,6 @@
 # Importing this export into Claris / FileMaker
 
-Built read-only from MRTIS at commit `0c4ed0cf8f8f1cc208665ca499c64568b27ea42b`. Every number on this page is derived from the rows in this directory, so it describes the sample you are holding and not some other build.
+Built read-only from MRTIS at commit `95ff34b274a52e77bfb99feca8d8169c0304571f`. Every number on this page is derived from the rows in this directory, so it describes the sample you are holding and not some other build.
 
 ## Which files to import
 
@@ -50,7 +50,7 @@ The third relationship is a convenience -- it lets a call-level layout reach its
 
 Facts this build **asserts** before writing the files, so the map above cannot quietly go stale:
 
-- `PORT_CALL.port_call_id` (5,483 rows), `PORT_CALL_LEG.leg_id` (5,679) and `PORT_CALL_EVENT.event_key` (35,703) are each unique. They are the primary keys.
+- `PORT_CALL.port_call_id` (5,471 rows), `PORT_CALL_LEG.leg_id` (5,667) and `PORT_CALL_EVENT.event_key` (35,709) are each unique. They are the primary keys.
 - No orphans in either direction: every leg resolves to a call, and every placed event resolves to both a call and a leg.
 - An event is **either** fully placed (it has a call *and* a leg) **or** fully unplaced (it has neither). There is no third state, so `leg_id` being empty always means `port_call_id` is empty too.
 - `leg_id` is `port_call_id` + `-L` + `leg_seq` (e.g. `1012919-202501270659-L1`), so the child key is derivable from the parent key and the sequence number.
@@ -63,15 +63,15 @@ Run these against the imported tables before you trust anything you build on the
 
 | Check | Expected |
 |---|---:|
-| Records in `PORT_CALL` | 5,483 |
-| Records in `PORT_CALL_LEG` | 5,679 |
-| Records in `PORT_CALL_EVENT` | 35,703 |
-| Distinct `PORT_CALL::port_call_id` | 5,483 (equal to its record count -- the key is unique) |
-| Calls with `is_commercial_call = 1` | 5,481 |
-| Calls carrying a fee (`agency_fee_total` not empty) | 5,125 |
-| Chargeable legs (`agency_fee` not empty) | 5,321 |
-| Sum of `PORT_CALL_LEG::agency_fee` | $36,544,500 |
-| Sum of `PORT_CALL::agency_fee_total` | $36,544,500 |
+| Records in `PORT_CALL` | 5,471 |
+| Records in `PORT_CALL_LEG` | 5,667 |
+| Records in `PORT_CALL_EVENT` | 35,709 |
+| Distinct `PORT_CALL::port_call_id` | 5,471 (equal to its record count -- the key is unique) |
+| Calls with `is_commercial_call = 1` | 5,469 |
+| Calls carrying a fee (`agency_fee_total` not empty) | 5,133 |
+| Chargeable legs (`agency_fee` not empty) | 5,329 |
+| Sum of `PORT_CALL_LEG::agency_fee` | $36,610,500 |
+| Sum of `PORT_CALL::agency_fee_total` | $36,610,500 |
 | Earliest `PORT_CALL::call_start` | 2025-01-01 01:06 |
 | Latest `PORT_CALL::call_start` | 2025-12-31 23:53 |
 

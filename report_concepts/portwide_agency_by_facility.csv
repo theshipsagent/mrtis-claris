@@ -13,9 +13,10 @@ agency,facility,legs,chargeable_legs,revenue
 "(no agency)","MPLX Mt Airy",5,5,17500
 "(no agency)","ADM Reserve",1,1,10500
 "(no agency)","ARTCO Destrehan Buoys",1,1,10500
+"(no agency)","Cargill Westwego",1,1,10500
 "(no agency)","Zen-Noh",1,1,10500
 "(no agency)","AST Chalmette Slip",2,2,10000
-"(no agency)","Julia St",2,2,7000
+"(no agency)","Julia St",4,2,7000
 "(no agency)","MPLX Garyville",2,2,7000
 "(no agency)","Shell Norco",2,2,7000
 "(no agency)","Valero St Charles",2,2,7000
@@ -36,9 +37,10 @@ agency,facility,legs,chargeable_legs,revenue
 "(no agency)","Total Carville",1,1,3500
 "(no agency)","Valero Meraux",1,1,3500
 "(no agency)","Napoleon Ave",1,1,750
-"(no agency)","(never berthed)",63,0,0
+"(no agency)","(never berthed)",62,0,0
 "(no agency)","Buck Kreihs",2,0,0
-"Bertel","IMTT St Rose",245,245,857500
+"(no agency)","Erato St",2,0,0
+"Bertel","IMTT St Rose",246,246,861000
 "Bertel","KMI Harvey",73,73,255500
 "Bertel","PCS Nitrogen",54,54,189000
 "Bertel","Cargill Molasses",49,49,171500
@@ -75,7 +77,7 @@ agency,facility,legs,chargeable_legs,revenue
 "Bertel","DRAX",1,1,3500
 "Bertel","Genesis Baton Rouge",1,1,3500
 "Bertel","Vulcan St Rose Mooring",1,1,3500
-"Bertel","(never berthed)",20,0,0
+"Bertel","(never berthed)",17,0,0
 "Biehl","KM IMT Myrtle Grove",19,19,199500
 "Biehl","UBT Davant",19,19,199500
 "Biehl","Avondale Global Gateway",39,39,195000
@@ -103,7 +105,7 @@ agency,facility,legs,chargeable_legs,revenue
 "Biehl","CFI Donaldsonville",1,1,3500
 "Biehl","Dow Missouri",1,1,3500
 "Biehl","(never berthed)",22,0,0
-"Blue Water","Zen-Noh",332,332,3486000
+"Blue Water","Zen-Noh",333,333,3496500
 "Blue Water","CHS Myrtle Grove",124,124,1302000
 "Blue Water","Cargill Westwego",60,60,630000
 "Blue Water","Cargill Reserve",58,58,609000
@@ -111,10 +113,10 @@ agency,facility,legs,chargeable_legs,revenue
 "Blue Water","ADM AMA",52,52,546000
 "Blue Water","LDC Port Allen",45,45,472500
 "Blue Water","Bunge Destrehan",42,42,441000
-"Blue Water","Cooper Darrow",40,40,420000
+"Blue Water","Cooper Darrow",41,41,430500
 "Blue Water","ADM Reserve",29,29,304500
+"Blue Water","ARTCO Destrehan Buoys",26,26,273000
 "Blue Water","ADM Destrehan",25,25,262500
-"Blue Water","ARTCO Destrehan Buoys",25,25,262500
 "Blue Water","Cooper Dockside",25,25,262500
 "Blue Water","Mile 110 Buoys",24,24,252000
 "Blue Water","AST Meraux Buoys",23,23,241500
@@ -134,7 +136,7 @@ agency,facility,legs,chargeable_legs,revenue
 "Blue Water","Blackwater Westwego",1,1,3500
 "Blue Water","Cargill Molasses",1,1,3500
 "Blue Water","MPLX Mt Airy",1,1,3500
-"Blue Water","(never berthed)",21,0,0
+"Blue Water","(never berthed)",16,0,0
 "Capes","Cooper Darrow",17,17,178500
 "Capes","Reserve Buoys",12,12,126000
 "Capes","ABT Burnside",9,9,94500
@@ -168,8 +170,8 @@ agency,facility,legs,chargeable_legs,revenue
 "Capes","Genesis Baton Rouge",1,1,3500
 "Capes","IMTT Gretna",1,1,3500
 "Capes","Stolthaven",1,1,3500
-"Capes","(never berthed)",4,0,0
-"Celtic","Crosstex Energy",112,112,392000
+"Capes","(never berthed)",3,0,0
+"Celtic","Crosstex Energy",113,113,395500
 "Celtic","Reserve Buoys",30,30,315000
 "Celtic","AST Meraux Buoys",25,25,262500
 "Celtic","AST St James",13,13,136500
@@ -204,7 +206,7 @@ agency,facility,legs,chargeable_legs,revenue
 "Fillette Green","AST Chalmette Buoys",2,2,21000
 "Fillette Green","AST Meraux Buoys",2,2,21000
 "Fillette Green","Convent Marine Terminal",2,2,21000
-"Fillette Green","AST Chalmette Slip",3,3,15000
+"Fillette Green","AST Chalmette Slip",4,4,20000
 "Fillette Green","CHS Myrtle Grove",1,1,10500
 "Fillette Green","Cooper Dockside",1,1,10500
 "Fillette Green","Mile 112 Buoys",1,1,10500
@@ -248,7 +250,7 @@ agency,facility,legs,chargeable_legs,revenue
 "GAC","Shintech",1,1,3500
 "GAC","Stolthaven",1,1,3500
 "GAC","Total Carville",1,1,3500
-"GAC","(never berthed)",148,0,0
+"GAC","(never berthed)",144,0,0
 "General Maritime","PCS Nitrogen",40,40,413000
 "General Maritime","LDC Port Allen",38,38,399000
 "General Maritime","AST St James",32,32,336000
@@ -296,14 +298,14 @@ agency,facility,legs,chargeable_legs,revenue
 "General Maritime","Occidental Convent",1,1,3500
 "General Maritime","Shell Norco",1,1,3500
 "General Maritime","Valero Meraux",1,1,3500
-"General Maritime","(never berthed)",9,0,0
+"General Maritime","(never berthed)",7,0,0
 "General Steamship","Nashville Ave",120,120,600000
-"General Steamship","ARTCO Destrehan Buoys",49,49,514500
+"General Steamship","ARTCO Destrehan Buoys",50,50,525000
 "General Steamship","KM IMT Myrtle Grove",47,47,493500
 "General Steamship","Mile 110 Buoys",36,36,378000
 "General Steamship","CHS Myrtle Grove",30,30,315000
 "General Steamship","UBT Davant",29,29,304500
-"General Steamship","LDC Port Allen",25,25,262500
+"General Steamship","LDC Port Allen",26,26,273000
 "General Steamship","Zen-Noh",25,25,262500
 "General Steamship","Reserve Buoys",23,23,241500
 "General Steamship","Cooper Darrow",15,15,157500
@@ -349,7 +351,7 @@ agency,facility,legs,chargeable_legs,revenue
 "General Steamship","Dow Missouri",1,1,3500
 "General Steamship","KMI St Gabriel",1,1,3500
 "General Steamship","Willow Glen",1,1,3500
-"General Steamship","(never berthed)",51,0,0
+"General Steamship","(never berthed)",50,0,0
 "Gulf Harbor","MPLX Garyville",43,43,150500
 "Gulf Harbor","Exxon Baton Rouge",23,23,80500
 "Gulf Harbor","Valero St Charles",23,23,80500
@@ -377,7 +379,7 @@ agency,facility,legs,chargeable_legs,revenue
 "Gulf Harbor","Genesis Baton Rouge",2,2,7000
 "Gulf Harbor","MPLX Mt Airy",2,2,7000
 "Gulf Harbor","Vulcan St Rose Mooring",1,1,3500
-"Gulf Harbor","(never berthed)",4,0,0
+"Gulf Harbor","(never berthed)",2,0,0
 "Gulf Inland","Noranda Alumina",126,126,1323000
 "Gulf Inland","AST St James",47,47,493500
 "Gulf Inland","Valero St Charles",136,136,476000
@@ -398,9 +400,9 @@ agency,facility,legs,chargeable_legs,revenue
 "Gulf Inland","ADM AMA",6,6,63000
 "Gulf Inland","ADM Destrehan",5,5,52500
 "Gulf Inland","Bunge Destrehan",5,5,52500
+"Gulf Inland","AST Chalmette Slip",9,9,45000
 "Gulf Inland","CII Rain Chalmette",4,4,42000
 "Gulf Inland","Convent Marine Terminal",4,4,42000
-"Gulf Inland","AST Chalmette Slip",8,8,40000
 "Gulf Inland","ARTCO Buoys",3,3,31500
 "Gulf Inland","UBT Davant",3,3,31500
 "Gulf Inland","AST Globalplex",5,5,25000
@@ -430,18 +432,18 @@ agency,facility,legs,chargeable_legs,revenue
 "Gulf Inland","PBF Chalmette",1,1,3500
 "Gulf Inland","Plains St James",1,1,3500
 "Gulf Inland","Willow Glen",1,1,3500
-"Gulf Inland","(never berthed)",13,0,0
+"Gulf Inland","(never berthed)",12,0,0
 "HOST","Convent Marine Terminal",256,256,2688000
-"HOST","UBT Davant",223,223,2341500
+"HOST","UBT Davant",224,224,2352000
 "HOST","ABT Burnside",86,86,903000
 "HOST","AST St James",80,80,840000
 "HOST","DRAX",66,66,693000
 "HOST","MGMT",58,58,609000
 "HOST","Cooper Darrow",57,57,598500
 "HOST","AST Meraux Buoys",48,48,504000
-"HOST","AST Chalmette Slip",96,96,480000
+"HOST","AST Chalmette Slip",97,97,485000
 "HOST","Reserve Buoys",43,43,451500
-"HOST","MPLX Garyville",125,125,437500
+"HOST","MPLX Garyville",126,126,441000
 "HOST","Cooper Dockside",39,39,409500
 "HOST","ARTCO Destrehan Buoys",31,31,325500
 "HOST","AST Chalmette Buoys",29,29,304500
@@ -488,7 +490,7 @@ agency,facility,legs,chargeable_legs,revenue
 "HOST","Plains St James",2,2,7000
 "HOST","Nashville Ave",1,1,5000
 "HOST","Cornerstone",1,1,3500
-"HOST","(never berthed)",79,0,0
+"HOST","(never berthed)",70,0,0
 "HOST","Poland St",1,0,0
 "Inchcape","Exxon Baton Rouge",240,240,840000
 "Inchcape","Stolthaven",83,83,290500
@@ -580,7 +582,7 @@ agency,facility,legs,chargeable_legs,revenue
 "Lott","MPLX Garyville",19,19,66500
 "Lott","Genesis Baton Rouge",4,4,14000
 "Lott","Baton Rouge General Cargo",1,1,3500
-"Lott","(never berthed)",2,0,0
+"Lott","(never berthed)",1,0,0
 "Maritime Endeavors","Valero St Charles",18,18,63000
 "Maritime Endeavors","Plains St James",10,10,35000
 "Maritime Endeavors","CHS Myrtle Grove",3,3,31500
@@ -603,13 +605,13 @@ agency,facility,legs,chargeable_legs,revenue
 "Maritime Endeavors","Nashville Ave",1,1,5000
 "Maritime Endeavors","LBC Sunshine",1,1,3500
 "Maritime Endeavors","Stolthaven",1,1,3500
-"Maritime Endeavors","(never berthed)",3,0,0
+"Maritime Endeavors","(never berthed)",1,0,0
 "Mentz","KM IMT Myrtle Grove",25,25,262500
 "Mentz","Reserve Buoys",2,2,21000
 "Mentz","UBT Davant",2,2,21000
 "Mentz","Convent Marine Terminal",1,1,10500
 "Moran Shipping","AST St James",28,28,294000
-"Moran Shipping","Shell Norco",60,60,210000
+"Moran Shipping","Shell Norco",61,61,213500
 "Moran Shipping","IMTT St Rose",59,59,206500
 "Moran Shipping","Valero St Charles",49,49,171500
 "Moran Shipping","Plains St James",48,48,168000
@@ -647,7 +649,7 @@ agency,facility,legs,chargeable_legs,revenue
 "Moran Shipping","P66 Alliance",1,1,3500
 "Moran Shipping","Total Carville",1,1,3500
 "Moran Shipping","Willow Glen",1,1,3500
-"Moran Shipping","(never berthed)",7,0,0
+"Moran Shipping","(never berthed)",6,0,0
 "Navigo","UBT Davant",31,31,325500
 "Navigo","ABT Burnside",15,15,157500
 "Navigo","KM IMT Myrtle Grove",3,3,31500
@@ -675,10 +677,9 @@ agency,facility,legs,chargeable_legs,revenue
 "Newship","Convent Marine Terminal",1,1,10500
 "Newship","Louisiana Ave",1,1,5000
 "Newship","KMI Harvey",1,1,3500
-"Newship","(never berthed)",6,0,0
+"Newship","(never berthed)",4,0,0
 "NolaPort","Erato St",369,369,922500
 "NolaPort","Julia St",81,81,202500
-"NolaPort","(never berthed)",1,0,0
 "NordSud","AST Chalmette Slip",129,129,645000
 "NordSud","Nucor Steel",52,52,546000
 "NordSud","Avondale Global Gateway",28,28,140000
@@ -710,9 +711,9 @@ agency,facility,legs,chargeable_legs,revenue
 "NordSud","Valero Meraux",1,1,3500
 "NordSud","(never berthed)",2,0,0
 "NordSud","Buck Kreihs",1,0,0
-"Norton Lilly","ADM Destrehan",363,363,3811500
+"Norton Lilly","ADM Destrehan",365,365,3832500
 "Norton Lilly","ADM AMA",336,336,3528000
-"Norton Lilly","ADM Reserve",225,225,2362500
+"Norton Lilly","ADM Reserve",226,226,2373000
 "Norton Lilly","Mile 110 Buoys",113,113,1186500
 "Norton Lilly","AST St James",108,108,1134000
 "Norton Lilly","Nashville Ave",920,920,949250
@@ -771,7 +772,7 @@ agency,facility,legs,chargeable_legs,revenue
 "Norton Lilly","Genesis Baton Rouge",1,1,3500
 "Norton Lilly","Julia St",1,1,3500
 "Norton Lilly","KM IMT Myrtle Grove",1,1,3500
-"Norton Lilly","(never berthed)",161,0,0
+"Norton Lilly","(never berthed)",152,0,0
 "Norton Lilly","Alabo St",1,0,0
 "Norton Lilly","Perry Street",1,0,0
 "Nova","Cargill Reserve",216,216,2268000
@@ -802,6 +803,7 @@ agency,facility,legs,chargeable_legs,revenue
 "Riley-Sherman","DRAX",2,2,7000
 "Riley-Sherman","IMTT St Rose",2,2,7000
 "Riley-Sherman","MPLX Garyville",2,2,7000
+"Riley-Sherman","Sugarland St James",2,2,7000
 "Riley-Sherman","Americas Styrenics",1,1,3500
 "Riley-Sherman","Baton Rouge General Cargo",1,1,3500
 "Riley-Sherman","Ergon St James",1,1,3500
@@ -810,7 +812,6 @@ agency,facility,legs,chargeable_legs,revenue
 "Riley-Sherman","Magellan Marrero",1,1,3500
 "Riley-Sherman","Plains St James",1,1,3500
 "Riley-Sherman","Shell Norco",1,1,3500
-"Riley-Sherman","Sugarland St James",1,1,3500
 "Riley-Sherman","Vulcan St Rose Mooring",1,1,3500
 "Riley-Sherman","(never berthed)",2,0,0
 "Riverbend","MPLX Garyville",23,23,80500
@@ -851,11 +852,11 @@ agency,facility,legs,chargeable_legs,revenue
 "Southport","Cooper Darrow",280,280,2940000
 "Southport","Bunge Destrehan",222,222,2331000
 "Southport","Cargill Westwego",100,100,1050000
-"Southport","CHS Myrtle Grove",90,90,945000
+"Southport","CHS Myrtle Grove",91,91,955500
 "Southport","Cargill Reserve",90,90,945000
 "Southport","AST Meraux Buoys",88,88,924000
 "Southport","LDC Port Allen",70,70,735000
-"Southport","ADM AMA",68,68,714000
+"Southport","ADM AMA",69,69,724500
 "Southport","MGMT",63,63,661500
 "Southport","ADM Destrehan",41,41,430500
 "Southport","ADM Reserve",34,34,357000
@@ -903,16 +904,16 @@ agency,facility,legs,chargeable_legs,revenue
 "Southport","KMI St Gabriel",1,1,3500
 "Southport","MPLX Mt Airy",1,1,3500
 "Southport","PCS Nitrogen",1,1,3500
-"Southport","(never berthed)",26,0,0
+"Southport","(never berthed)",21,0,0
 "Tricon","ARTCO Destrehan Buoys",61,61,640500
 "Tricon","AST Chalmette Buoys",48,48,504000
-"Tricon","Mile 110 Buoys",44,44,462000
-"Tricon","CFI Donaldsonville",127,127,444500
+"Tricon","Mile 110 Buoys",45,45,472500
+"Tricon","CFI Donaldsonville",128,128,448000
 "Tricon","AST Meraux Buoys",36,36,378000
 "Tricon","AST Arabi Dolphins",26,26,273000
 "Tricon","ARTCO Buoys",22,22,231000
 "Tricon","1st Street",44,44,220000
-"Tricon","AST Chalmette Slip",35,35,175000
+"Tricon","AST Chalmette Slip",37,37,185000
 "Tricon","Cooper Darrow",12,12,126000
 "Tricon","AST Globalplex",25,25,125000
 "Tricon","7th Street",24,24,120000
@@ -946,7 +947,7 @@ agency,facility,legs,chargeable_legs,revenue
 "Tricon","Nashville Ave",2,2,10000
 "Tricon","KMI Harvey",2,2,7000
 "Tricon","IMTT Gretna",1,1,3500
-"Tricon","(never berthed)",6,0,0
+"Tricon","(never berthed)",4,0,0
 "Valhalla","IMTT St Rose",35,35,122500
 "Valhalla","AST Chalmette Buoys",7,7,73500
 "Valhalla","7th Street",12,12,60000
@@ -965,7 +966,7 @@ agency,facility,legs,chargeable_legs,revenue
 "Valhalla","(never berthed)",1,0,0
 "Valhalla","Alabo St",1,0,0
 "VertomCory","Crosstex Energy",123,123,430500
-"VertomCory","P66 Alliance",31,31,108500
+"VertomCory","P66 Alliance",32,32,112000
 "VertomCory","Shell Norco",8,8,28000
 "VertomCory","CFI Donaldsonville",5,5,17500
 "VertomCory","Avondale Global Gateway",1,1,5000

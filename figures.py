@@ -207,7 +207,8 @@ def derive(con) -> dict:
         # discloses it rather than silently publishing one of the two numbers.
         "per_departure_gap": float(dep_event) - float(dep_rollup),
         "unassigned_fee_events": unassigned_n,
-        "unassigned_fee": float(unassigned_fee),
+        "unassigned_fee": float(unassigned_fee or 0.0),  # NULL once I-21 lands:
+        # no fee-bearing event is left outside a call, so the sum has no rows.
         "over_bill_abs": float(dep_event) - float(leg_basis),
         "over_bill_pct": round(100 * (float(dep_event) - float(leg_basis)) / float(leg_basis), 1),
     }

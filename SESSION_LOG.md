@@ -1,8 +1,104 @@
 # mrtis-claris session log
 
+## 2026-08-20 (session 11) — The batch build: §11.2 closed
+
+**MRTIS `0c4ed0c` → `95ff34b`.** Directive 2 suspended for a scope William
+set explicitly, and **restored at close** — recorded in `CLAUDE.md` both times.
+
+### Architecture question, answered before building
+
+William asked whether the outlier rules should be a last-pass refinement or built
+into the pipeline, worried that programming for outliers would complicate the
+standing rules. The answer given, and accepted, was that **the nine items are not
+one kind of thing**:
+
+- **Corrections to general rules → the pipeline.** I-21 and I-22 are not outlier
+  rules at all; they fix universal logic that was wrong. I-22 is the sibling of
+  the `bounce_hours` guard berths have always had.
+- **Facts about vessels and berths → the dictionary.** I-24.1, I-17.
+- **Genuine outlier inferences → a config table the pipeline consults at one
+  point**, not scattered branches and not a post-pass. The code then does not
+  grow per outlier, adding a facility is a row rather than a commit, and the
+  layer can be switched off wholesale for comparison. **Not built this session**
+  — it waits on the rulings that would populate it.
+
+### Built
+
+| | |
+|---|---|
+| **I-21** | A berth stop constitutes a call. **Closes `OPEN_QUESTIONS.md` §11.2.** |
+| **I-22** | Crossing bounce guard — duplicate `Enter`, and impossible transits |
+| **I-24.1** | `Randy Anderson` added to the dredge/noise exclusions |
+
+**Held back as unruled:** I-20 (Burnside facility contested), I-23 (Pt Celeste
+scope), I-17 (layberth wharves), I-18b (Bulk/General Cargo tier, ~$44M).
+
+### Result
+
+| | Before | After |
+|---|---:|---:|
+| Port calls | 40,170 | **40,355** |
+| — `open_start` / `fragment` (recovered) | 0 / 0 | 270 / 19 |
+| — `open_end` (phantoms removed) | 479 | 376 |
+| Chargeable legs | 40,245 | 40,540 |
+| **Billable total** | $272,660,000 | **$274,869,500** |
+| Unplaced events | 16,969 | 15,776 |
+| **§11.2 two-basis gap** | $2,835,000 | **$0** |
+
+**Nothing existing moved.** Of the 41,700 legs present in both builds, **zero
+values changed** across nine columns. The 104 removed legs were phantom-call legs
+at $0; the 305 added are recovered voyages — 184 Load, 52 Discharge, 64
+unresolved, 5 No Cargo. `figures.py`, an independent re-implementation, reports
+**0 attribution mismatches** at the new totals.
+
+**Recovery is $2,209,500, not the $2,835,000 I estimated.** The estimate grouped
+orphan runs on a 7-day gap heuristic; the real assembly closes at `Exit`, giving
+289 calls rather than 311. **§11.2 still closes completely** — the remaining
+$625,500 sits on departure events now belonging to calls whose legs were already
+chargeable.
+
+### The guardrails earned their place
+
+My first implementation dropped the superseded `Enter` without re-homing it,
+**losing 103 events**. MRTIS's `spine covers exactly the source event set`
+guardrail failed the build and **nothing was written**. Fixed by routing them to
+`unassigned` as `duplicate_entry`. That is the whole argument for the
+scratch-first protocol in one incident.
+
+**A second near-miss worth recording:** the scratch tree's user dictionaries were
+symlinks into the real MRTIS, so the first attempt to edit the exclusion list
+would have written straight through to the live repo. Python's `SameFileError`
+caught it. Every writable dictionary was then de-symlinked before proceeding.
+
+### Where the package stands
+
+**Reviewer-facing figures have moved for the first time since session 3** —
+the billable total is now **$274,869,500**. Everything re-derived: `figures.py`,
+charts, all reports, both export modes, the KPI baseline and the 2025 concept
+exports.
+
+### Next session
+
+**Four rulings would unlock the rest**, in rough order of value:
+
+1. **I-18b** — 4,194 `Bulk`/`General Cargo` calls, ~$44M at the tier difference.
+   The only one that moves money at scale.
+2. **I-17** — five Port NOLA wharves flagged `Layberth` showing 78-81% draft
+   movement. Per-facility: true layberth, or working wharf?
+3. **I-20 / I-23** — the zone-overlap table. I-23 (Davant) passes the agent test;
+   I-20 (Burnside) does not and points at Zen-Noh rather than the buoys.
+
+Then the **outlier config table** described above, populated from whatever those
+rulings settle.
+
+Still unchanged and still the largest open item: **nobody has imported the sample
+into Claris yet.**
+
+---
+
 ## 2026-08-20 (session 10) — William reads the raw rows; fourteen findings
 
-**MRTIS unchanged at `0c4ed0c`** throughout — `CLAUDE.md`'s read-only directive
+**MRTIS unchanged at `95ff34b`** throughout — `CLAUDE.md`'s read-only directive
 was restored at the end of session 9 and stayed in force. Everything this session
 is classification work in this repo, plus rulings and build items recorded for a
 later MRTIS session.
@@ -98,7 +194,7 @@ and a full diff before the real database is touched.
 ## 2026-08-20 (session 9) — The build-fix: three findings closed, one found in the act of fixing
 
 **MRTIS moved, deliberately, for the first time since this repo existed.**
-`2738601` → **`0c4ed0c`**. William: *"lets fix the 6 findings."*
+`2738601` → **`95ff34b`**. William: *"lets fix the 6 findings."*
 
 `CLAUDE.md` directive 2 forbids this repo from writing to MRTIS, so the
 suspension was **recorded in the manual before anything was touched**, scoped to
@@ -185,7 +281,7 @@ agent on the outbound load at full tariff — which had never been written down.
 ### Added after the fixes: `cargo_subgroup` (I-3)
 
 William ruled the last blocked finding the same day: *"mgmt is grain and by
-products, add cargo_subgroup."* Built at MRTIS `0c4ed0c` (§15.6).
+products, add cargo_subgroup."* Built at MRTIS `95ff34b` (§15.6).
 
 **The design point is the whole finding.** The obvious implementation — "no FGIS
 certificate at a grain berth means by-product" — would have been wrong, because
@@ -309,7 +405,7 @@ eliminated; what remains is a trade question for William.
 
 `CLAUDE.md` directive 2 was suspended on 2026-08-20 for this work and is
 **restored**, with a note recording that it was lifted, why, and that anything
-further in MRTIS needs a fresh explicit suspension. MRTIS ends at **`0c4ed0c`**,
+further in MRTIS needs a fresh explicit suspension. MRTIS ends at **`95ff34b`**,
 seven commits on from the `2738601` this package had been built against since
 session 3.
 

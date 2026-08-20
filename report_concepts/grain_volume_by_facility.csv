@@ -1,12 +1,12 @@
 facility,facility_type,loadings,distinct_vessels,fgis_matched_loadings,fgis_coverage_pct,tons_fgis_matched,tons_per_matched_loading,agency_fee
-"Zen-Noh",Elevator,834,699,831,99.6,43685012,52569,8757000
-"ADM AMA",Elevator,588,490,558,94.9,21336549,38238,6167000
-"ADM Destrehan",Elevator,523,427,460,88.0,11804877,25663,5484500
+"Zen-Noh",Elevator,835,699,832,99.6,43734065,52565,8767500
+"ADM AMA",Elevator,589,491,559,94.9,21350847,38195,6177500
+"ADM Destrehan",Elevator,525,429,462,88.0,11853166,25656,5505500
 "Cargill Reserve",Elevator,487,420,465,95.5,20676682,44466,5106500
-"Cargill Westwego",Elevator,383,353,380,99.2,19996519,52622,4021500
-"CHS Myrtle Grove",Elevator,362,324,362,100.0,13564880,37472,3801000
-"ADM Reserve",Elevator,342,319,341,99.7,19384677,56847,3591000
+"Cargill Westwego",Elevator,384,354,381,99.2,20029118,52570,4032000
+"CHS Myrtle Grove",Elevator,363,325,363,100.0,13600530,37467,3811500
+"ADM Reserve",Elevator,343,320,342,99.7,19452942,56880,3601500
 "Bunge Destrehan",Elevator,306,278,262,85.6,10738785,40988,3213000
-"LDC Port Allen",Elevator,227,202,226,99.6,10114606,44755,2383500
+"LDC Port Allen",Elevator,228,203,227,99.6,10146108,44697,2394000
 "MGMT",Mid-Stream,144,130,58,40.3,1449141,24985,1512000
 "ARTCO Destrehan Buoys",Mid-Stream,58,58,58,100.0,2617426,45128,609000

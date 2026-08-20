@@ -1,6 +1,6 @@
 # Addendum — `ARTCO Destrehan Buoys`: a defect found, ruled, and fixed
 
-MRTIS commit `0c4ed0c` · window **2023-08-01 → 2026-07-31** · these legs are **excluded from G1 and G2**
+MRTIS commit `95ff34b` · window **2023-08-01 → 2026-07-31** · these legs are **excluded from G1 and G2**
 
 **This page records a closed loop.** The grain reports found a defect, William ruled on it, and MRTIS has since been corrected — so this addendum is now a record of what was wrong rather than a warning about what still is.
 
@@ -22,11 +22,11 @@ G1 and G2 admit ARTCO legs **only on FGIS evidence**, which was the right policy
 
 | Measure | Value |
 |---|---:|
-| Loadings excluded | 176 |
-| Distinct vessels | 169 |
+| Loadings excluded | 178 |
+| Distinct vessels | 170 |
 | Tonnes | none — no certificate, so no tonnage exists for them |
-| Chargeable legs | 176 |
-| Agency fee not counted in G2 | $1,841,000 |
+| Chargeable legs | 178 |
+| Agency fee not counted in G2 | $1,862,000 |
 
 > **Their fee and berth activity were never in question** — only the cargo label was, and it is now correct. They appear in full in the port-wide report `portwide_by_facility.md`, which counts every leg regardless of cargo.
 

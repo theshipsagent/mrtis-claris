@@ -4,6 +4,7 @@ agency,facility,loadings,agency_fee
 "(no agency)","ADM Reserve",1,10500
 "(no agency)","CHS Myrtle Grove",3,31500
 "(no agency)","Cargill Reserve",2,21000
+"(no agency)","Cargill Westwego",1,10500
 "(no agency)","Zen-Noh",1,10500
 "Bertel","Cargill Reserve",1,3500
 "Biehl","ADM AMA",1,10500
@@ -18,7 +19,7 @@ agency,facility,loadings,agency_fee
 "Blue Water","Cargill Westwego",60,630000
 "Blue Water","LDC Port Allen",45,472500
 "Blue Water","MGMT",8,84000
-"Blue Water","Zen-Noh",332,3486000
+"Blue Water","Zen-Noh",333,3496500
 "Capes","ADM AMA",2,21000
 "Capes","CHS Myrtle Grove",2,21000
 "Capes","Cargill Reserve",2,21000
@@ -51,7 +52,7 @@ agency,facility,loadings,agency_fee
 "General Steamship","CHS Myrtle Grove",30,315000
 "General Steamship","Cargill Reserve",14,147000
 "General Steamship","Cargill Westwego",12,126000
-"General Steamship","LDC Port Allen",25,262500
+"General Steamship","LDC Port Allen",26,273000
 "General Steamship","MGMT",1,10500
 "General Steamship","Zen-Noh",25,262500
 "Gulf Harbor","ADM Destrehan",1,10500
@@ -106,8 +107,8 @@ agency,facility,loadings,agency_fee
 "NordSud","MGMT",3,31500
 "NordSud","Zen-Noh",2,21000
 "Norton Lilly","ADM AMA",336,3528000
-"Norton Lilly","ADM Destrehan",363,3811500
-"Norton Lilly","ADM Reserve",225,2362500
+"Norton Lilly","ADM Destrehan",365,3832500
+"Norton Lilly","ADM Reserve",226,2373000
 "Norton Lilly","ARTCO Destrehan Buoys",14,147000
 "Norton Lilly","Bunge Destrehan",5,52500
 "Norton Lilly","CHS Myrtle Grove",15,157500
@@ -130,11 +131,11 @@ agency,facility,loadings,agency_fee
 "Riverside","Cargill Reserve",1,10500
 "Riverside","LDC Port Allen",2,21000
 "Riverside","Zen-Noh",2,21000
-"Southport","ADM AMA",68,714000
+"Southport","ADM AMA",69,724500
 "Southport","ADM Destrehan",41,430500
 "Southport","ADM Reserve",34,357000
 "Southport","Bunge Destrehan",222,2331000
-"Southport","CHS Myrtle Grove",90,945000
+"Southport","CHS Myrtle Grove",91,955500
 "Southport","Cargill Reserve",90,945000
 "Southport","Cargill Westwego",100,1050000
 "Southport","LDC Port Allen",70,735000

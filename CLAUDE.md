@@ -36,7 +36,15 @@ only: proof and evidence, not a native FileMaker build.
    proceed on the recommendation rather than opening a long clarifying
    round. Stop and ask only when a business-rule fact (not a technical
    choice) is genuinely unknown and MRTIS's docs don't answer it.
-   > **Suspended once, 2026-08-20, and restored the same day.** William
+   > **Suspended twice on 2026-08-20, and restored both times.** The second was
+   > the batch build of the three findings William ruled from his read-through of
+   > the raw event rows — I-21, I-22, I-24.1 — which closed
+   > `OPEN_QUESTIONS.md` §11.2. MRTIS ends at `95ff34b`. Four findings
+   > there remain unruled
+   > (I-20, I-23, I-17, I-18b) and each needs a fresh suspension recorded here
+   > before any of them is built.
+   >
+   > **Suspended first on 2026-08-20, and restored the same day.** William
    > directed that the reporting exercise's findings be fixed in MRTIS
    > (*"lets fix the 6 findings"*), so this directive was lifted for that work
    > and that work only, under MRTIS's own standing practice: scratch-copy

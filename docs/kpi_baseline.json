@@ -1,90 +1,90 @@
 {
-  "mrtis_commit": "0c4ed0cf8f8f1cc208665ca499c64568b27ea42b",
+  "mrtis_commit": "95ff34b274a52e77bfb99feca8d8169c0304571f",
   "population": {
-    "calls": 40170,
-    "commercial": 40028,
-    "layup": 142,
-    "complete": 39691,
-    "open_end": 479,
-    "commercial_complete": 39549,
-    "split": 1632,
-    "vessels": 10101,
+    "calls": 40355,
+    "commercial": 40208,
+    "layup": 147,
+    "complete": 39690,
+    "open_end": 376,
+    "commercial_complete": 39548,
+    "split": 1647,
+    "vessels": 10141,
     "window_start": "2019-01-01 09:57:00",
     "window_end": "2026-07-31 23:19:00",
-    "legs": 41804
+    "legs": 42005
   },
   "tiling": {
-    "leg1_at_call_start": 40170,
-    "leg1_count": 40170,
-    "lastleg_at_call_end": 40170,
-    "lastleg_count": 40170
+    "leg1_at_call_start": 40355,
+    "leg1_count": 40355,
+    "lastleg_at_call_end": 40355,
+    "lastleg_count": 40355
   },
   "accounting": {
-    "leg_hours": 7232805.0,
-    "bucketed_hours": 5736739.0,
-    "unattributed_hours": 1496066.0,
-    "unattributed_pct": 20.7,
-    "p50_unattributed": 23.1,
-    "legs_over_attributed": 62
+    "leg_hours": 7277503.0,
+    "bucketed_hours": 5763783.0,
+    "unattributed_hours": 1513720.0,
+    "unattributed_pct": 20.8,
+    "p50_unattributed": 23.0,
+    "legs_over_attributed": 63
   },
   "buckets": {
-    "waiting_hours": 2470459.0,
-    "inter_berth_idle_hours": 308627.0,
-    "outbound_idle_hours": 195837.0,
-    "berth_hours": 2716075.0,
-    "layberth_hours": 45742.0
+    "waiting_hours": 2473295.0,
+    "inter_berth_idle_hours": 311046.0,
+    "outbound_idle_hours": 198422.0,
+    "berth_hours": 2734705.0,
+    "layberth_hours": 46316.0
   },
   "by_shape": [
     {
       "shape": "worked a berth",
-      "legs": 40247,
-      "leg_hours": 7017743.0,
-      "unattributed_hours": 1361856.0,
-      "unattributed_pct": 19.4
+      "legs": 40547,
+      "leg_hours": 7061032.0,
+      "unattributed_hours": 1378430.0,
+      "unattributed_pct": 19.5
     },
     {
       "shape": "never reached a berth",
-      "legs": 1418,
-      "leg_hours": 191995.0,
-      "unattributed_hours": 130430.0,
+      "legs": 1315,
+      "leg_hours": 192002.0,
+      "unattributed_hours": 130437.0,
       "unattributed_pct": 67.9
     },
     {
       "shape": "layberth stops only",
-      "legs": 139,
-      "leg_hours": 23068.0,
-      "unattributed_hours": 3780.0,
-      "unattributed_pct": 16.4
+      "legs": 143,
+      "leg_hours": 24469.0,
+      "unattributed_hours": 4852.0,
+      "unattributed_pct": 19.8
     }
   ],
   "stretches": {
-    "legs": 39914,
-    "approach_hours": 3016809.0,
-    "approach_waiting": 2442932.0,
-    "departure_hours": 681742.0,
-    "departure_idle": 134276.0,
-    "approach_unclassified": 573877,
-    "departure_unclassified": 547466
+    "legs": 40211,
+    "approach_hours": 3019952.0,
+    "approach_waiting": 2445768.0,
+    "departure_hours": 694928.0,
+    "departure_idle": 136861.0,
+    "approach_unclassified": 574184,
+    "departure_unclassified": 558067
   },
   "dwell_sources": [
     {
       "event_class": "anchorage",
-      "events": 96630,
-      "dwell_hours": 2980446.0
+      "events": 96964,
+      "dwell_hours": 2988286.0
     },
     {
       "event_class": "berth stop",
-      "events": 96845,
-      "dwell_hours": 2761816.0
+      "events": 97528,
+      "dwell_hours": 2781020.0
     },
     {
       "event_class": "transit / SWP crossing",
-      "events": 79861,
+      "events": 80026,
       "dwell_hours": 0.0
     }
   ],
   "headline": {
-    "calls": 39549,
+    "calls": 39548,
     "p50_call_hours": 131.5,
     "p90_call_hours": 352.8
   },
@@ -95,7 +95,7 @@
   "by_type": [
     {
       "vessel_type": "Bulk",
-      "calls": 21166,
+      "calls": 21165,
       "p50_hours": 182.8,
       "p90_hours": 429.2
     },
@@ -131,39 +131,47 @@
     }
   ],
   "sequence": {
-    "calls_with_predecessor": 30069,
-    "p50_gap_hours": 2526.1,
-    "p90_gap_hours": 18064.2,
+    "calls_with_predecessor": 30214,
+    "p50_gap_hours": 2545.0,
+    "p90_gap_hours": 18133.6,
     "overlapping_calls": 0,
-    "single_call_vessels": 2956,
-    "vessels": 10101
+    "single_call_vessels": 2975,
+    "vessels": 10141
   },
   "traps": {
-    "nonpositive_leg_hours": 135,
-    "negative_berth_hours": 8,
-    "calls_under_one_hour": 3,
+    "nonpositive_leg_hours": 36,
+    "negative_berth_hours": 10,
+    "calls_under_one_hour": 2,
     "open_end_hours": 220485.0,
-    "calls_in_first_month": 558,
+    "calls_in_first_month": 659,
     "calls_in_last_month": 518,
-    "legs_no_berth_arrival": 1415,
-    "legs_unresolved_activity": 7193,
-    "legs_mixed_layberth": 238
+    "legs_no_berth_arrival": 1311,
+    "legs_unresolved_activity": 7153,
+    "legs_mixed_layberth": 240
   },
   "unplaced": [
     {
       "unassigned_reason": "no_open_call",
-      "events": 10521
+      "events": 10129
     },
     {
       "unassigned_reason": "before_first_entry",
-      "events": 6448
+      "events": 5542
+    },
+    {
+      "unassigned_reason": "duplicate_entry",
+      "events": 103
+    },
+    {
+      "unassigned_reason": "impossible_transit",
+      "events": 2
     }
   ],
   "denominators": {
-    "commercial_legs": 41662,
-    "legs_with_estimated_tons": 10545,
+    "commercial_legs": 41858,
+    "legs_with_estimated_tons": 10640,
     "legs_with_actual_tons": 0,
-    "pct_with_tons": 25.3,
+    "pct_with_tons": 25.4,
     "berth_facilities": 114
   }
 }
