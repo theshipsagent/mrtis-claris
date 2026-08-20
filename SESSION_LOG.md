@@ -218,6 +218,45 @@ further in MRTIS needs a fresh explicit suspension. MRTIS ends at **`0c4ed0c`**,
 seven commits on from the `2738601` this package had been built against since
 session 3.
 
+### Tankers with no berth, and the reach that goes quiet (I-13, I-14)
+
+William asked how often tankers enter and leave without docking, and whether it
+might be one dock or an AIS gap. Three answers.
+
+**The count, once LNG hulls are stripped out.** The 2025 tanker figure reported
+earlier (102) was inflated by Venture Global carriers the feed types as
+`Tanker`. On register `ship_type`, true tankers run **32-49 no-berth calls a
+year, about 2% of tanker traffic**, with a 2021-22 episode that doubles it to
+100-108.
+
+**Two in five are a real gap; three in five are real behaviour.** Splitting on
+the interval between a call's last recorded event and its SWP exit: **161 calls
+(39%) left within 12 hours** — genuinely departed, no room for a missed berth —
+while **183 (44%) carry a 2-7 day unexplained gap**, which is room for an
+unrecorded berth visit.
+
+**Not one dock — one reach.** The gap-calls cluster on where the vessel was last
+seen, and three adjacent anchorages carry a 5-8x spike that then vanishes:
+
+| Last seen | 2019 | 2020 | 2021 | 2022 | 2023 | 2024 | 2025 | 2026 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| **AMA / Kenner Bend (miles 114-117)** | 2 | 3 | **16** | **17** | 1 | 1 | 9 | 4 |
+| Everywhere else combined | 7 | 7 | 35 | 24 | 14 | 12 | 14 | 17 |
+
+A three-mile stretch, a two-year window, then back to a single call a year. That
+is the shape of a coverage hole that got fixed. Logged as **I-13** — a question
+for the feed provider, not a code change.
+
+**And a reference entry that will save a future session from a mistake (I-14).**
+William: *"some berths are inactive or maybe get 1 call every year or 2, that is
+ok, as did not want to have a gap in the data capture, should traffic reappear."*
+LIT Violet is decommissioned and will be the port's new container terminal;
+Marlex ties up naval reserve vessels that may not move for years; several Port
+NOLA avenue-named docks rarely see traffic at all. **Low-traffic and dark
+facilities are deliberate**, a first or last appearance date is not evidence of a
+gap on its own, and removing those rows would create the very blind spot Venture
+Global demonstrates. Recorded so nobody tidies them away.
+
 ### Still open — the honest remainder
 
 "Fix the 6" was never 6 fixes. **All of them are now resolved** — four built, three explained as not-defects, one ruled with no change needed. What is left is not a fix at all:

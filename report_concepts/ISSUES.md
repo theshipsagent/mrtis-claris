@@ -877,6 +877,119 @@ attribution or redirects the search.
 **Status** OPEN — no code fix exists; needs a decision from William, plus the
 attribution question above.
 
+---
+
+### I-13 · Tankers entering and leaving with no berth — mostly real, but a coverage hole at miles 114-117 in 2021-22 — `gap` (source feed)
+
+**Severity** `gap` — no code fix; a question for the feed provider
+**Where** The Zone Report feed, AMA / Kenner Bend anchorage reach
+**Found** 2026-08-20, at William's direction: *"i am curious abiut tankers
+entering and exiting no faility docking, it could be a gap in ais coverage, how
+many ships / calls does this occure per year ? it could be one specifc dock"*
+
+**First, the count — with LNG hulls removed.** The 2025 tanker figure previously
+reported (102) was inflated by Venture Global LNG carriers the feed types as
+`Tanker`. Stripping them on register `ship_type`:
+
+| Year | Tanker calls | No berth | Rate | 2-event | Anchored | Vessels |
+|---|---:|---:|---:|---:|---:|---:|
+| 2019 | 1,949 | 32 | 1.6% | 7 | 24 | 31 |
+| 2020 | 1,756 | 44 | 2.5% | 7 | 34 | 37 |
+| **2021** | 1,656 | **108** | **6.5%** | 16 | 91 | 101 |
+| **2022** | 1,736 | **100** | **5.8%** | 16 | 84 | 98 |
+| 2023 | 1,662 | 44 | 2.6% | 6 | 35 | 42 |
+| 2024 | 1,678 | 46 | 2.7% | 12 | 34 | 41 |
+| 2025 | 1,600 | 46 | 2.9% | 13 | 33 | 38 |
+| 2026 | 998 | 49 | 4.9% | 24 | 35 | 46 |
+
+**So ~32-49 calls a year is the baseline**, roughly 2% of tanker traffic, with a
+**2021-22 episode that doubles it**.
+
+**Second, are they really unberthed?** Split by the gap between a call's last
+recorded event and its SWP exit:
+
+| | Calls | Reading |
+|---|---:|---|
+| Left within 12h of last event | **161 (39%)** | Genuinely departed — no room for a missed berth |
+| 12-48h gap | 66 (16%) | Ambiguous |
+| **2-7 day unexplained gap** | **183 (44%)** | **Room for an unrecorded berth visit** |
+
+So William's AIS hypothesis is right for roughly **two calls in five**, and wrong
+for the other two — a real share of these vessels simply anchored, waited on
+orders and were redirected without ever berthing.
+
+**Third — not one dock, but one *reach*.** Grouping the gap-calls by where the
+vessel was **last seen** before vanishing:
+
+| Last seen | 2019 | 2020 | **2021** | **2022** | 2023 | 2024 | 2025 | 2026 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| **AMA / Kenner Bend reach** | 2 | 3 | **16** | **17** | 1 | 1 | 9 | 4 |
+| Everywhere else combined | 7 | 7 | 35 | 24 | 14 | 12 | 14 | 17 |
+
+Three adjacent anchorages — **Lwr Kenner Bend (mile 114), Upr Kenner Bend (115),
+AMA (117)** — carry a **5-8x spike across 2021-22 and fall back to a single call
+a year in 2023-24.** A three-mile stretch, a two-year window, then clean. That is
+the shape of a coverage hole that was fixed, not of vessel behaviour.
+
+Checked and excluded: it is **not** one dock. The no-berth vessels' *other* calls
+berth in exactly the proportions all tankers do (IMTT St Rose, Valero St Charles,
+MPLX Garyville lead both lists), so no single facility's geofence is implicated
+at the vessel level.
+
+**Also checked, and benign:** 36 calls show ~0 duration. All are `open_end` with a
+single event — vessels seen entering and not seen leaving, running a steady 10-24
+a year across every year in the series. Window-edge behaviour, not a defect.
+
+**Effect on reports** Small and bounded. These calls carry no fee (correctly — no
+berth was reached), so at ~2% of tanker calls in normal years the understatement
+is minor. The 2021-22 episode is the exception, where up to 51 calls a year may
+represent unrecorded berth visits.
+
+**Proposed fix** None in code. A question for the feed provider: **was AIS or
+geofence coverage degraded in the AMA / Kenner Bend reach (miles 114-117) during
+2021-2022?** If so, that period's tanker figures are known-low by up to ~30 calls
+a year. Otherwise the effect is real vessel behaviour and nothing is missing.
+
+**Status** OPEN — informational; needs no decision unless William wants the feed
+provider asked.
+
+---
+
+### I-14 · Inactive and decommissioned berths are deliberate, not gaps — `reference`
+
+**Severity** `reference` — recorded so no future session mistakes this for a defect
+**Where** The zone dictionary, by design
+**Recorded** 2026-08-20 from William
+
+Several facilities in the dictionary carry almost no traffic, and several stop
+appearing entirely. **This is intentional and must not be "cleaned up".**
+
+**William, 2026-08-20:** *"some berths are inactive or maybe get 1 call every
+year or 2, that is ok, as did not want to have a gap in the data capture, should
+traffic reappear."*
+
+Named examples and their reasons:
+
+| Facility | Why it looks dead |
+|---|---|
+| **LIT Violet** (last seen 2025-03-04) | **Decommissioned** — the site of the port's new container terminal |
+| **Marlex** (2 events in 6 years) | Ties up **naval reserve vessels**, some of which do not move for years |
+| Port NOLA avenue/street docks (`Esplanade Ave`, `Gov Nicholls St`, `Alabo St`, `Henry Clay Ave`, …) | Rarely, if ever, receive traffic |
+
+**Consequences for this exercise**
+
+- A facility's **first or last appearance date is not evidence of a feed gap** on
+  its own. I-12's sweep is sound precisely because it tests the *shape of the
+  traffic ramp*, not the mere fact of a late arrival — a genuinely new terminal
+  ramping from zero produces no missing calls.
+- **A facility going dark is usually a closure, not a lost geofence.** Confirmed
+  independently for LIT Violet before William said so: its vessels' never-berthed
+  calls occur 109 *before* it went dark and 2 after.
+- **Low-traffic rows are not dictionary clutter.** Removing them would create the
+  very blind spot Venture Global demonstrates (I-12) if traffic returned.
+
+**Status** REFERENCE — no action, ever. Recorded to prevent a well-meaning tidy-up.
+
 ## Closed
 
 - **I-1** — **fixed** in MRTIS `56ad9f5` (§15.1). 445 legs corrected; nothing else in the database moved.
