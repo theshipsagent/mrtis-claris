@@ -131,6 +131,34 @@ that the data supports reporting at all. The consequences worth holding onto:
 **MRTIS stays parked**, confirmed by William the same day: the end goal is
 handover and integration into FileMaker, and that work lives in this repo.
 
+### Session 7 close (2026-08-20)
+
+Three commits, all pushed to `origin/main` (`6fc0276..45daae8`), working tree
+clean and level with origin.
+
+- `b1991cd` — the design brief, `kpi/kpi_baseline.py` and its baseline.
+- `1fde843` — this entry.
+- `45daae8` — the proof-of-concept ruling on the reports.
+
+**Everything in the repo still reproduces from its script.** A full re-run at
+close produced no diff at all: `figures.py`, `kpi/kpi_baseline.py`,
+`charts/build_charts.py`, `reports/build_reports.py` and
+`export/build_review_package.py --sample` all reproduce their outputs exactly,
+chart PNGs and the committed sample included. `figures.py` reports 0
+fee-attribution mismatches across 40,245 chargeable legs, all three reports pass
+their assertions, and `--check-brief` confirms the design brief's eleven quoted
+figures still match MRTIS.
+
+**MRTIS untouched, verified at close as well as at open.** Still
+`2738601c9a87ff7be264f9c10cb1e1a618ef3436`, the same five untracked
+`sample_port_calls*.csv` files it had on entry, and `mrtis.duckdb`'s mtime still
+2026-08-19 22:59 — earlier than this session's first command.
+
+**What changed in the package's character.** Nothing the reviewer holds moved.
+What moved is the parked work: the KPI question now has measured ground under it
+and a decision order, and the reports have a scope ruling that says what they
+are for. Both were previously carried in conversation rather than in the repo.
+
 ### Next session
 
 **Focused on building the reports**, on the proof-of-concept footing ruled
