@@ -1,5 +1,111 @@
 # mrtis-claris session log
 
+## 2026-08-19 (session 3) — Re-export against the rebuilt MRTIS
+
+**Re-exported against MRTIS commit `2738601c9a87ff7be264f9c10cb1e1a618ef3436`**
+("End-session ritual: CHANGELOG entry, README structure refresh, MRTIS
+parked"), up from `09e1cb63` — **four commits of MRTIS build work**, all of
+it landing on figures this package publishes. Read-only against MRTIS
+throughout; the database was opened `read_only=True` and nothing under
+`/Users/billy/Documents/MRTIS` was written.
+
+**Context: MRTIS is now parked.** William's direction closing that session —
+*"focus only on Claris FM moving ahead, can park the other version"* — so
+this repo is the active line of work from here, and MRTIS is a stable
+upstream that is not expected to move again soon. That makes this re-export
+a re-sync against a settled source rather than a moving one.
+
+### What moved upstream, and why every figure here had to change
+
+Four MRTIS commits (`e7ae299`, `22df777`, `578ed81`, `2738601`) implemented
+the five rulings recorded at the end of session 2 below, plus eight further
+rulings taken in the same conversation. The parts that reach this package:
+
+| Change (MRTIS section) | Effect here |
+|---|---|
+| R5 prices off the leg's first **working** berth (§12.3.3.1) | +$511,500 over 93 legs — **not** the +$440,000/80 legs session 2 predicted; see below |
+| Layberth out of `berth_stop_count`/`berth_hours`, into new `layberth_hours` (§8) | 45,742 hrs / 389 stops / 379 legs reallocated; **2 new columns** |
+| Pure lay-up calls flagged, not deleted (§8/§14) | **2 new columns** (`is_commercial_call`, `call_class`); 142 calls out of counts |
+| Unresolved outranks `No Cargo` for a leg's label (§11.1a) | 54 legs relabel; **0** legs now report `No Cargo` while billing |
+| R2 extended to `General Cargo Ship (with Ro-Ro facility)` (§12.3.2) | −$19,000 over 2 legs |
+| Fabricated `Egret` excluded at ingest (§7.5) | **131 fewer spine rows**; per-departure basis −$98,000 |
+
+**Session 2's own R5 estimate was wrong, and MRTIS caught it.** The handoff
+brief at the end of this log predicted "80 legs, +$440,000". That enumerated
+only 5 of the 14 `ops = Layberth` zones by name and silently omitted the five
+Violet Dock zones — despite the same write-up confirming all 14 carry
+`facility_type = General Cargo`. Re-derived in MRTIS from the rebuilt
+database: **107** chargeable Bulk legs have a layberth first stop, **93**
+revert to the $10,500 base tier (**+$511,500**), and 14 correctly stay at
+$5,000 against a genuine General Cargo working berth. Recorded here because
+it is this repo's estimate that was wrong, not MRTIS's.
+
+### Done
+
+1. **Added the four new columns' `*_DESC` entries** — `is_commercial_call`,
+   `call_class`, `layberth_hours` (on `PORT_CALL`) and `layberth_hours` (on
+   `PORT_CALL_LEG`). The export hard-failing without them was the script
+   behaving as designed (it refuses to ship an undocumented field), exactly
+   as session 2 predicted; it was not a bug and cost about a minute.
+2. **Rewrote the descriptions whose *meaning* changed** — more important than
+   the additions, because these would otherwise have shipped saying the
+   opposite of what the data now does: `berth_stop_count` and `berth_hours`
+   (both now exclude layberth), `first_berth_zone`/`first_berth_facility`/
+   `facility_type` (now the first **working** berth, and the field R5 prices
+   off), and `activity` (an unresolved stop now outranks `No Cargo`).
+3. **Fixed three audit findings that live in this script** (A5, A6), since
+   they were about to ship wrong a second time:
+   - `port_call_event.agency_fee` claimed "over-bills by roughly 17% (see
+     BUSINESS_RULES.md §9.1)" — a figure its own citation never supported.
+     Now states ~28% *and points at `ROW_COUNT_RECONCILIATION.md`*, which
+     re-derives both bases on every export, rather than hard-coding a fourth
+     number that will go stale again.
+   - `vessel_key` pointed at a `BUSINESS_RULES.md` discussion that does not
+     exist. Now carries the warning that actually matters to a FileMaker
+     developer: **it is positional and changes on every MRTIS rebuild — do
+     not key a file on it**; use `imo` or `port_call_id`/`leg_id`.
+   - `tpc` likewise. Now states plainly that `0` is a literal placeholder for
+     "not available" on ~10% of calls, not a measured value, and to filter
+     `tpc > 0` before any draft-survey maths.
+4. **Re-exported and verified.**
+
+### Verified — re-derived from the database, not read out of the script's own output
+
+| | Database | Exported CSV |
+|---|---:|---:|
+| `PORT_CALL` | 40,170 | 40,170 |
+| `PORT_CALL_LEG` | 41,804 | 41,804 |
+| `PORT_CALL_EVENT` | 290,305 | 290,305 |
+| Billable (leg basis) | $272,660,000 | $272,660,000 |
+| Per-departure (comparison) | $349,527,500 | $349,527,500 |
+| Commercial calls | 40,028 | 40,028 |
+| Lay-up calls | 142 | 142 |
+| `layberth_hours` total | 45,741.57 | 45,741.57 |
+
+All eight match exactly. Also confirmed: **115 fields** across the three
+tables (was 111); all three XML files parse **well-formed** under expat
+(including the 422 MB `PORT_CALL_EVENT.xml`), with `<ROW>` counts,
+`<COL>`-per-row, `DATABASE@RECORDS` and `RESULTSET@FOUND` all mutually
+consistent; booleans coerced to 1/0 with no `True`/`False` leaked; and **0**
+legs report `activity = 'No Cargo'` while carrying a fee — the contradiction
+audit #2 raised as A3 is gone from the exported data.
+
+### Open — the next unit of work, deliberately not started
+
+- **Charts and reports are now stale.** Both carry hard-coded figures from
+  the old build: `reports/build_reports.py` reconciles against $272,167,500
+  and "$15,560,000 / 3,112 legs" for R5, and `charts/build_charts.py`'s
+  chart 4 hard-codes the R5 pair (32,676,000 → 15,560,000). Every one of
+  those needs re-deriving, not just re-running. Chart 4 is also where audit
+  finding A10 sits (a comment claiming a verification the script does not
+  perform).
+- **Audit #2's A4-A14** are otherwise still open (A5 and A6 are now closed
+  by item 3 above; A3 is closed upstream by the §11.1a rebuild).
+- `docs/BUSINESS_RULES.md` has not been touched this session and still
+  describes the pre-rebuild rules throughout.
+- The repo was **1 commit ahead of `origin/main`** on entry (`fdf56b3`,
+  session 2's audit) — still unpushed.
+
 ## 2026-08-19 (session 1) — First build: business rules, export, charts, reports
 
 **Built against MRTIS commit `09e1cb633ee9dc86a0393956eb118c9c8d5bafb8`**
