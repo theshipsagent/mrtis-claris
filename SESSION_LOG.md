@@ -126,6 +126,44 @@ Unchanged, and none of it blocking the handoff:
 - **§11.3 `tpc = 0`** — deferred upstream; the fix belongs in `Ships_Register`.
 - **The SWP-to-SWP KPI framework** — still parked, needs its own design session.
 
+### Session 6 close (2026-08-20)
+
+One commit, pushed to `origin/main` (`af0ff50..8e7c8d4`), working tree clean
+and level with origin.
+
+- `8e7c8d4` — `IMPORT_GUIDE.md` in both export modes, the
+  `check_relationships()` assertions behind its relationship map, the glossary
+  and reading order on `BUSINESS_RULES.md`, and the README refresh.
+
+**The push was raised before it was made, and cleared.** It publishes
+documentation only — no additional rows, no change to what `sample/` discloses
+— so it sits inside the scope William already ruled on in session 5 rather
+than reopening it. Recorded because the ruling said re-raise only if the scope
+of what is published changes, and this is the first test of that line: it did
+not change, and the push went ahead on his instruction.
+
+**MRTIS untouched, verified at close as well as at open.** Still
+`2738601c9a87ff7be264f9c10cb1e1a618ef3436`; working tree carries only the same
+five `sample_port_calls*.csv` files it had on entry, timestamped 17:19–17:24 on
+2026-08-19 — before this repo existed — and `mrtis.duckdb`'s mtime is still
+2026-08-19 22:59, earlier than this session's first command. Every connection
+was opened `read_only=True`.
+
+**Everything in the repo still reproduces from its script.** Re-running the
+full set at close produced no diff at all: `figures.py`, `charts/build_charts.py`,
+`reports/build_reports.py` and `export/build_review_package.py --sample` all
+reproduce their outputs exactly, chart PNGs included. `figures.py` still reports
+0 fee-attribution mismatches across 40,245 chargeable legs, and all three
+reports pass their assertions.
+
+**What changed in the package's character.** Session 5 made a correct package
+travel. This session made it *land*: the reviewer now opens a directory that
+explains itself — how to import, what joins to what, how to prove the import
+arrived whole, and what the words mean. The one claim the package cannot prove
+about itself is now printed on the page rather than buried in a log, phrased as
+a question to the reviewer. Nothing about the data changed; everything about
+receiving it did.
+
 ### Next session
 
 The package is now as ready as it can get without a reviewer in the loop.
