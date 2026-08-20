@@ -1080,7 +1080,86 @@ the fee logic needs a concept it does not currently have — cargo work evidence
 by draft change at an anchorage rather than a berth stop — which is a real
 change to §9, not a tweak.
 
-**Status** OPEN — needs a business ruling from William.
+**REVISED 2026-08-20 — the figure above was tanker-only and is 5x too small.**
+Re-run across **all** vessel types, the population is **727 calls / 619 vessels**,
+not 298, and **bulk carriers dominate it**:
+
+| Type | Calls | Gave cargo | Took cargo | Median move | Tier | If billed |
+|---|---:|---:|---:|---:|---:|---:|
+| **Bulk** | **408** | 173 | 235 | 10.0ft | $10,500 | **$4,284,000** |
+| Tanker | 298 | 119 | 179 | 10.0ft | $3,500 | $1,043,000 |
+| Reefer | 18 | 0 | 18 | 5.0ft | $5,000 | $90,000 |
+| Container | 1 | 0 | 1 | 4.0ft | $750 | $750 |
+| **Total** | **727** | | | | | **$5,417,750** |
+
+The tanker half is lightering (I-15 above). **The bulk half is a different thing
+and became I-17.**
+
+**Status** OPEN — needs a business ruling from William. Scale is $5.42M, not
+$1.04M.
+
+---
+
+### I-17 · Five Port NOLA docks flagged `Layberth` show cargo-sized draft movement on ~80% of calls — `gap`
+
+**Severity** `gap` — a dictionary/ruling question MRTIS already flags and nobody has answered
+**Where** MRTIS `dictionaries/zone_facility.csv`, `ops = Layberth` rows
+**Found** 2026-08-20, tracing where the 408 bulk "worked at anchor" calls actually were
+
+Chasing the bulk half of I-15 led to zone names that are not anchorages at all —
+`Alabo St`, `Violet Dock 2`, `Violet Dock 5`. They show `berth_stop_count = 0`
+because their dictionary rows carry **`ops = Layberth`**, and layberth is
+non-commercial by ruling (`OPEN_QUESTIONS.md` §8): excluded from
+`berth_stop_count`, activity forced to `No Cargo`, no fee on the stop.
+
+**But the drafts move like cargo work:**
+
+| Layberth-flagged facility | Calls | Draft moved >1ft | Median move | Fee the calls carry |
+|---|---:|---:|---:|---:|
+| LIT Violet | 121 | **98 (81%)** | 5-8ft | $773,500 |
+| Buck Kreihs | 92 | **74 (80%)** | | $1,161,500 |
+| Alabo St | 77 | **60 (78%)** | 7ft | $591,000 |
+| Perry Street | 73 | **59 (81%)** | | $1,333,000 |
+| Poland St | 63 | **51 (81%)** | | $935,500 |
+| **Marlex** | **1** | **0 (0%)** | — | $7,000 |
+
+**`Marlex` is the control.** William, 2026-08-20: it *"ties up naval reserve
+vessels, some dont move for years."* It shows **0%** draft movement — which is
+what a true layberth looks like. The other five do not look like that.
+
+**MRTIS already flags the contradiction.** 81 legs at these zones carry
+`activity = 'No Cargo'`, `activity_method = 'dictionary'`,
+`activity_conflict_reason = 'draft'`. The pipeline is behaving exactly as
+designed — `build_port_calls.py` documents this case as "either AIS variance or a
+dictionary row that needs widening" — it has simply never been adjudicated.
+
+**Two readings, and only William can choose.**
+
+1. **The dictionary rows need widening.** These are working wharves that also
+   take layberth vessels, so `ops = Layberth` over-claims and real cargo work is
+   being classified `No Cargo` and left unbilled.
+2. **The draft movement is ballast, not cargo.** `Buck Kreihs` is a repair yard;
+   a vessel ballasting down for drydock or up to leave would move draft several
+   feet without any cargo changing hands. If that is what these are, the
+   dictionary is right and the conflict flag is doing its job by simply noting
+   AIS-versus-dictionary disagreement.
+
+Reading 2 is genuinely plausible for `Buck Kreihs` and possibly `LIT Violet`
+(decommissioned, per William). It is less obvious for `Perry Street`,
+`Poland St` and `Alabo St`, which are Port NOLA wharves.
+
+**Effect on reports** These calls are not fee-less overall — they carry
+$4.8M between them, because most berthed elsewhere in the same call. What is at
+stake is narrower: the layberth *stops* within those calls bill nothing and count
+as `No Cargo`, so per-facility activity at these five docks is understated.
+
+**Proposed fix** No code change. Per facility, William rules whether it is a true
+layberth or a working wharf; where it is a working wharf, `ops` is corrected in
+the zone dictionary and the build re-run. Note this is the **opposite** direction
+to I-1 (ARTCO), where a dictionary row over-claimed cargo — here a row may be
+over-claiming *idleness*.
+
+**Status** OPEN — needs a per-facility ruling from William.
 
 ---
 
