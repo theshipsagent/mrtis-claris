@@ -126,3 +126,617 @@ python3 -m venv .venv && .venv/bin/pip install duckdb pandas matplotlib
 
 All three scripts open MRTIS's `mrtis.duckdb` `read_only=True` and write only
 inside this repo.
+
+---
+
+## 2026-08-19 (session 2) — Independent audit. Nothing changed.
+
+**Audited against MRTIS commit `09e1cb633ee9dc86a0393956eb118c9c8d5bafb8`** —
+**unchanged** from session 1's recorded commit, so every session-1 figure was
+still fair to re-test as-is. `data/db/mrtis.duckdb` md5
+`cd91db791c85837712510b61b417456a`, mtime 2026-08-19 20:13:18, **byte-identical
+before and after this audit**; no `.wal` or other file appeared beside it. Five
+untracked `sample_port_calls*.csv` files sit in MRTIS's working tree; they
+predate this session and were not touched.
+
+Run in the spirit of MRTIS's own audits (`OPEN_QUESTIONS.md` §7, §11): read
+cold, re-derive from the database rather than trust the write-up, **report and
+do not fix**. Everything below that needs a decision is left for William. No
+file in this repo was modified except this log entry; `git status` was clean
+going in.
+
+Method: a throwaway venv outside the repo, `duckdb.connect(..., read_only=True)`,
+and — for the fee schedule — a **fresh re-implementation of the six rules from
+the prose in `docs/BUSINESS_RULES.md` §9**, deliberately not importing or
+reading `agency_fee_for()` first, so the check is against the written rule and
+not against the code that wrote the number.
+
+### What passed — re-derived exactly
+
+- **Row counts.** `port_call` 40,170 · `port_call_leg` 41,804 ·
+  `port_call_event` 290,436 (= `fact_zone_event`, so the spine rule holds).
+- **The headline fee figures, all three.** `SUM(port_call_leg.agency_fee)` =
+  **$272,167,500** over **40,245** chargeable legs;
+  `SUM(port_call.agency_fee_total)` = the same to the cent;
+  `SUM(port_call_event.agency_fee)` = `SUM(fact_zone_event.agency_fee)` =
+  **$349,625,500**, confirming the per-departure basis is genuinely frozen.
+- **The fee schedule itself.** Re-pricing all 41,804 legs from the written
+  rules gave **0 mismatches** against the 40,245 stored fees. Re-pricing the
+  same legs on the old two-tier schedule gave **$298,868,500**, so the movement
+  is **−$26,701,000 (−8.934%)** — §9.4's number.
+- **Rule by rule**, independently reproduced, exactly:
+
+  | Rule | Legs | Old 2-tier | Built | Change |
+  |---|---:|---:|---:|---:|
+  | R1 Passenger/Cruise | 1,043 | $3,650,500 | $2,607,500 | −$1,043,000 |
+  | R2 Ro-Ro / Vehicles | 0 | $0 | $0 | $0 |
+  | R3 Container (FC) | 3,128 | $10,948,000 | $2,346,000 | −$8,602,000 |
+  | R4 Refrigerated | 40 | $140,000 | $200,000 | +$60,000 |
+  | R5 Bulk @ Gen. Cargo | 3,112 | $32,676,000 | **$15,560,000** | −$17,116,000 |
+  | base tier | 32,922 | $251,454,000 | $251,454,000 | $0 |
+
+- **Every unbilled leg is explained.** 1,559 legs carry no fee: 1,415 never
+  reached a berth, 142 are pure lay-up (§8b), and **2** berthed and did
+  non-layberth work but have no usable identity — exactly the two legs
+  `OPEN_QUESTIONS.md` §11.4 already flags (`NONAME:RBNS ALAREEN-202012222142-L1`,
+  `NONAME:US GOV VESSEL-202204180655-L1`, ≤$21,000).
+- **The export is read-only and faithful.** `export/build_review_package.py`
+  opens the DB `read_only=True`, issues only `SELECT`/`information_schema`
+  reads, and writes solely inside this repo — confirmed by inspection and by
+  the unchanged checksum above. Column **set, order and type match the live
+  `information_schema`** for all 111 fields (28/36/47), across the CSV headers,
+  the XML `<METADATA>` and `DATA_DICTIONARY.csv`. All three XML files parse
+  **well-formed** (expat, including the 443 MB `PORT_CALL_EVENT.xml`);
+  `<ROW>` counts, `<COL>`-per-row, `DATABASE@RECORDS` and `RESULTSET@FOUND` are
+  all mutually consistent. No `True`/`False` leaked past the boolean→1/0
+  coercion, no sub-second timestamps, no control characters. A **full
+  value-by-value comparison of all 372,410 exported rows × 111 columns against
+  the live tables came back identical**.
+- **Charts and reports.** All four charts and all three reports re-derive
+  exactly, including every one of report 3's 17 R5 facility rows, report 2's
+  top-20 agencies and 37-agency count, and chart 4's four static rule pairs.
+- **Supporting rates.** `complete` 98.81% (doc: 98.8%) · split calls
+  1,632/40,170 = 4.06% (doc: 4.1%) · blank source agent 2.45% (doc: ~2.4%) ·
+  unplaced events 17,100 = 5.89% (MRTIS spec: 5.9%).
+
+### What did not pass
+
+Ordered by how much a reviewer's conclusion would move.
+
+**A1. `Gen` (general-cargo ships) sits inside `vessel_type = 'Bulk'`, and
+therefore inside R5 — and this package never says so.** MRTIS's
+`dictionaries/vessel_type.csv` maps `Gen` → `Bulk` (16,752 events). Re-derived
+from the leg's own events: of R5's **3,112 legs / $15,560,000**, **1,509 legs
+and $7,545,000 (48.5%) are vessels whose Zone Report Type is `Gen`**, not
+`Bulk` (1,467 genuinely `Bulk`, 126 blank, 10 `Lift`). A further **1,045 legs /
+$10,972,500** of `Gen` traffic bills at the $10,500 Bulk tier. So roughly
+**$18.5M of the $272.2M billable total turns on that one dictionary row.**
+`BUSINESS_RULES.md` §9.3 quotes William's *"any dry bulk vessel calling a
+general cargo facility type"* and defines dry bulk as `vessel_type = 'Bulk'`
+without disclosing that general-cargo ships are inside that set — so nearly
+half of R5 is general-cargo ships calling general-cargo berths. MRTIS logs this
+as still open (§7.4, *"it is stated nowhere and the report gives no way to see
+it"*). **Needs a ruling from William, not a code fix.**
+
+**A2. R5 is being priced off layberth berths.** 80 R5 legs / **$400,000** have a
+first berth that is one of the 14 `ops = Layberth` zones that also carry
+`facility_type = General Cargo` — Poland St (26), Perry Street (19), Buck Kreihs
+(18, a repair yard), Alabo St (16), Esplanade Ave (1). This is faithful to
+§12.3.3.1 as ruled ("first berth of the leg decides"), but it lands squarely on
+`OPEN_QUESTIONS.md` §11.1's open finding that a leg's first berth can be a
+layberth while the billed work happened at another berth. `BUSINESS_RULES.md`
+§9.3 states the first-berth rule with no caveat, and `reports/` presents those
+five repair/lay-up berths as General Cargo revenue drivers without comment.
+**Ruling needed: should a layberth first berth be allowed to set R5's amount?**
+
+**A3. §11.1's contradiction is live in the exported data and undisclosed.**
+`BUSINESS_RULES.md` §5 states §8b flatly — "a leg only bills if it did real,
+non-layberth cargo work somewhere". Re-derived: **54 legs report
+`activity = 'No Cargo'` and carry a fee anyway, totalling $281,750.** (MRTIS
+§11.1 quotes $413,000; that predates §12's re-tiering — the current figure is
+$281,750, which should be corrected in MRTIS too.) Nothing in `docs/`,
+`charts/` or `reports/` mentions it. A reviewer who filters
+`activity = 'No Cargo'` in the exported data will find billed legs the rules
+document says cannot exist.
+
+**A4. `docs/BUSINESS_RULES.md` §9.2 misstates the base-tier precedence.** It
+gives the $10,500 tier as "Bulk (canonical vessel type, **or** register
+`ship_type_group` starting `Bulk Carrier`)". In `agency_fee_for()` the register
+group is consulted **only when the canonical type is absent** — it is a
+fallback, not an alternative. Live counterexamples: **3 chargeable legs**
+(one each Container / Tanker / Other) have `ship_type_group LIKE 'Bulk
+Carrier%'` and correctly bill $3,500, where the doc as written says $10,500.
+Only $21,000 at stake here, but a FileMaker developer implementing §9.2
+literally would build the wrong precedence into the tier calculation.
+
+**A5. `package/DATA_DICTIONARY.csv` cites a percentage its own reference doesn't
+support.** `port_call_event.agency_fee` is described as over-billing "by roughly
+17% (see docs/BUSINESS_RULES.md section 9.1)". 17.0% is the over-bill against
+the **superseded** $298,868,500 old-schedule leg basis. Against the
+$272,167,500 that §9.1 actually publishes it is **28.5% ($77,458,000)**. The
+cited section does not support the cited number.
+
+**A6. Two dangling cross-references in the data dictionary — the reviewer's
+main field-level document.**
+- `vessel_key`, on all three tables: "see docs/BUSINESS_RULES.md and MRTIS
+  OPEN_QUESTIONS.md #10". **`BUSINESS_RULES.md` contains no mention of
+  `vessel_key`, positional keys, or §10.** This one matters for an import
+  package: §10 says both `vessel_key` and `event_key` are `dataframe.index + 1`
+  and are *not stable across rebuilds*, so a FileMaker file keyed on them
+  breaks the next time MRTIS rebuilds.
+- `tpc`: "Zero is sometimes a real value, sometimes a data gap -- see
+  docs/BUSINESS_RULES.md". **`BUSINESS_RULES.md` says nothing about `tpc`.**
+  Re-derived: `tpc = 0` on **4,045 calls (10.07%)**, matching §11.3.
+
+**A7. §4's activity-resolution percentages don't re-derive.** The doc gives
+dictionary 35.7% / draft 46.8% / FGIS 0.8% / unresolved 13.4%, "83.3%
+resolved". Live: **35.99 / 46.14 / 0.79 / 13.69, 82.92% resolved** (plus 3.38%
+that never reached a berth, a bucket §4 omits although MRTIS's spec states it).
+These are `PORT_CALL_SPEC.md` §3's numbers copied across rather than
+re-derived; the spec is itself stale relative to the post-§8/§12 rebuild. Small
+movements (0.2–0.9pp), but the doc presents them as current.
+
+**A8. §9.1's "19.0% of port calls were being charged 2–10 times" doesn't
+re-derive, and drops a qualifier.** Live: **7,197 of 38,288 fee-bearing calls =
+18.8%** (17.92% of all 40,170 calls; max 10 charges, so the "2–10" range holds).
+MRTIS §7.1's 7,271/38,296 = 19.0% predates the §8 rebuild. MRTIS said "of
+fee-bearing port calls"; `BUSINESS_RULES.md` says "of port calls", which reads
+as all 40,170.
+
+**A9. Mis-citation of §12.4, three places.** `charts/build_charts.py`'s chart-4
+footer, and report 3's body text and docstring, all attribute the R5 /
+rule-by-rule figures to `OPEN_QUESTIONS.md` **§12.4**. §12.4 is "Suggested build
+order for the next session"; the figures live in §12.2 and the §12.3.3
+resolution. The numbers are right — only the pointer is wrong.
+
+**A10. A comment claims a check the script doesn't perform.**
+`charts/build_charts.py:113-114` says the hard-coded §12 figures are "verified
+against the live DB in the reconciliation query below". There is no
+reconciliation query below; the function ends at `savefig`. (The four figures
+themselves *do* verify — see the table above — so this is a false claim about
+method, not a wrong number.)
+
+**A11. Reports 1 and 2 mix denominators in adjacent columns.** In report 1 the
+"Port calls" / "Legs" / "Billable fee" columns cover all calls, but "Avg
+fee/call" is averaged over fee-bearing calls only. Gas: 941 calls,
+$2,541,000, avg shown $3,500 — but $2,541,000 ÷ 941 = $2,700 (the average is
+over 726 calls). "(unknown)": 199 calls, avg shown $5,263, ÷199 = $2,116 (over
+80 calls). Report 2 does the same: Norton Lilly, 7,528 legs, $41,177,000, avg
+shown $5,660, ÷7,528 = $5,470 (over 7,275 chargeable legs). No figure is wrong;
+the three columns simply cannot be reconciled against each other and the report
+doesn't say so.
+
+**A12. Report 2 silently omits $1,779,000.** It filters
+`agency is not null and agency != ''`, and **544 fee-bearing legs carry no
+agency**. The CSV sums to **$270,388,500**, not the $272,167,500 published
+everywhere else in the package. The report states no total, so nothing is
+asserted wrongly — but a reviewer reconciling it against report 1 comes up
+short by exactly that amount with no explanation.
+
+**A13. Scope disclosures missing from §10 ("What's deliberately NOT in this
+package").** It names §13 and §14 but not `OPEN_QUESTIONS.md` §11.1–§11.5 (the
+open audit-#2 items, one of which — §11.1 — is A3 above) or §7.2–§7.5. It also
+never records that the underlying data has **9 dredge/workboat vessels, 23,228
+raw rows, 7.4% of the feed, removed at ingest** (§2). A reviewer reconciling
+this export against a raw Zone Report extract will be told nothing about why the
+row counts don't meet.
+
+**A14. Minor: §3's "5.3% of raw berth events".** Re-derives to **5.23%** on all
+berth events (5,102 / 97,584); it only rounds to 5.3% on the placed-events
+denominator (5,102 / 96,845 = 5.27%). Same figure as MRTIS's spec — the
+denominator, not the count, is what's ambiguous.
+
+### Noted, no action implied
+
+- **The canonical fee fallback is currently inert.** §9.3 describes
+  `CANONICAL_FEE_FALLBACK` as covering vessels with no register row. Live: only
+  **12 chargeable legs** have no register `ship_type` (matching §12.3.1's "12
+  legs, $63,000"), and **none of them are Passenger / Container / Reefer**, so
+  no leg in this build is actually priced by that path. The rule is stated
+  correctly; it just never fires today.
+- **FMPXMLRESULT conformance is unproven, not disproven.** The emitted files
+  carry no `<PRODUCT>` element and use `RECORDID="1"` on every row. Both match
+  `Ships_Register/src/build_filemaker_package.py`, the precedent CLAUDE.md §3.4
+  names, so this package is no worse than the proven one — but **neither
+  session has actually imported either package into FileMaker.** A ten-minute
+  import smoke test would settle it; well-formed XML is not the same as
+  accepted-by-FileMaker XML.
+
+### Open, for a ruling or a follow-up build session
+
+Nothing here was fixed, by design.
+
+1. **A1 and A2 need William**, not a developer: does `Gen` belong in the dry-bulk
+   tier and inside R5 (~$18.5M exposed), and may a layberth first berth set R5's
+   amount ($400,000)? A1 is MRTIS's own §7.4 with the stakes now quantified.
+2. **A3** is MRTIS §11.1, still unruled; its dollar figure needs restating as
+   $281,750 post-§12 wherever $413,000 appears.
+3. **A4–A14 are documentation and presentation defects in this repo** — no
+   business ruling needed, they can be corrected in a build session. A4, A5 and
+   A6 are the ones that would actively mislead a reviewer; A7, A8 and A14 are
+   stale figures that should be re-derived from the database rather than copied
+   from MRTIS's prose; A9–A13 are citations, comments and disclosures.
+4. The recomputation queries used here were deliberately throwaway (run outside
+   the repo). If these checks should run on every export, they want to live in
+   the export script as guardrails, the way MRTIS does it — worth deciding
+   before the next re-export.
+
+### Ruled by William, same session (2026-08-19), on audit finding A1
+
+**`Gen` = `Bulk`.** General-cargo ships do belong in the dry-bulk tier and
+inside R5. This **confirms the build as it stands** — `dictionaries/vessel_type.csv`
+already maps `Gen` → `Bulk` — so **no figure in this package moves**: R5 stays
+3,112 legs / $15,560,000 (of which 1,509 legs / $7,545,000 are `Gen`), the
+1,045 `Gen` legs at the $10,500 tier stay, and the billable total stays
+$272,167,500. Nothing needs rebuilding or re-exporting.
+
+What it changes is disclosure, not arithmetic: `docs/BUSINESS_RULES.md` §9
+should state plainly that "dry bulk" (`vessel_type = 'Bulk'`) includes general
+cargo ships, so a reviewer reading R5 as "bulk carriers at general cargo
+terminals" isn't surprised when half the legs are general-cargo hulls.
+
+**Carry back to MRTIS**: this is the ruling `OPEN_QUESTIONS.md` §7.4 has been
+waiting for (*"Consistent with BUILD.md's General Cargo reasoning, but it is
+stated nowhere"*). It cannot be recorded there from this repo — MRTIS is
+read-only from here per `CLAUDE.md` §2.2 — so it needs writing into §7.4 in an
+MRTIS session, with the R5 split above as the supporting evidence.
+
+**A1 is closed. A2 (the layberth first berth) remains open** — see the
+explanation requested in the same message, below.
+
+### A2 explained, for William's ruling — R5 vs. the layberth berths
+
+**The mechanism.** R5 is the only fee rule priced by the berth rather than the
+vessel, and it keys off one field: `port_call_leg.facility_type`, which is the
+facility type of the **leg's first berth stop** (§12.3.3.1, as ruled). Of the
+29 zones the dictionary types `facility_type = General Cargo`, **14 are also
+`ops = Layberth`** — "no cargo ever takes place" (§8): Buck Kreihs (a ship
+repair yard), Poland St, Perry Street, Alabo St, Esplanade Ave and the rest.
+They are General Cargo by *facility type* and lay-up wharves by *operation*.
+So when a bulker lays up first and works cargo afterwards, R5 reads the lay-up
+wharf and prices the whole leg at $5,000.
+
+**What that produces.** 80 legs, **$400,000** — priced at $5,000 where the base
+Bulk tier would have charged $10,500, so **$440,000 less than the vessel-priced
+alternative**. Every one of the 80 has **2 or 3 berth stops** — never one — so
+in every case real cargo work happened at a *different* berth than the one
+setting the price. The split: Poland St 26, Perry Street 19, Buck Kreihs 18,
+Alabo St 16, Esplanade Ave 1.
+
+**Worked examples**, all three from the first week of the data:
+
+- **Gh Power** (Bulk, leg `9233301-201901081714-L1`) — enters at 24 ft, sits at
+  **Poland St** 9–9 Jan (24 ft → 24 ft, no draft change, no cargo), then loads
+  at **Zen-Noh elevator** 15–17 Jan (24 ft → **40 ft**, a full grain load), and
+  sails. Leg activity reads `Load` by dictionary — **from the elevator**. Fee
+  reads $5,000 — **from Poland St**.
+- **Belforest** (Bulk, leg `9698185-201901141342-L1`) — twelve days at **Buck
+  Kreihs** (22 ft → 21 ft, a repair-yard stay), then **Zen-Noh**, 21 ft → 40 ft.
+  Same shape: `Load` from the elevator, $5,000 from the repair yard.
+- **Olympia Gr** (Bulk, leg `9817523-201901081643-L1`) — **Buck Kreihs** flat at
+  39 ft, then discharges at **AST Meraux Buoys** (39 ft → 23 ft). `Discharge`
+  from the buoys, $5,000 from the repair yard.
+
+**Why it is a conflict and not just a quirk.** On these legs the two halves of
+the row are read from two different stops: **`activity` comes from the real
+working berth, `agency_fee` comes from the layberth.** That is exactly the
+structural problem `OPEN_QUESTIONS.md` §11.1 raised (a leg reporting one stop's
+attributes while billing for another's) — R5 is the first rule where it moves
+money. Only 7 of the 80 are also §11.1's `No Cargo`-but-billed legs, so this is
+a *separate* population, not a duplicate of A3.
+
+It is also not what R5 was aimed at. §12.3.3.1's reasoning is about a dry bulk
+vessel **working** a general cargo terminal instead of a bulk facility. A ship
+repair yard is neither — it is a berth where, by the dictionary's own rule, no
+cargo is ever worked.
+
+**The decision, three ways:**
+
+- **(a) Leave it.** R5 as ruled says "first berth", and this is first berth.
+  Simple, already built, nothing moves. Cost: a full grain load out of Zen-Noh
+  bills $5,000 because the ship was in the shipyard the week before.
+- **(b) R5 should look at the first *working* berth** — skip layberth stops when
+  deciding `facility_type`, the same way §8a already skips them when deciding
+  where a leg splits. Consistent with a rule MRTIS has already adopted for the
+  layberths; **+$440,000** (those 80 legs revert to $10,500 Bulk). Requires a
+  rebuild of the leg layer and a re-export.
+- **(c) R5 should exclude `ops = Layberth` zones from "General Cargo" entirely**,
+  by narrowing the dictionary rather than the rule. Same $440,000 effect here,
+  but it also changes what `facility_type` means everywhere else it is read.
+
+**Recommendation: (b).** It applies a principle William has already ruled once —
+a layberth is not a cargo job and should not drive cargo-job logic (§8a/§8b) —
+to the one place that ruling was never extended. It is the smallest change that
+removes the contradiction, and it leaves `facility_type` untouched for every
+other consumer. **William's call, not this repo's** — and note it interacts with
+§13.1, which will set `ops = Discharge` on the *other* 15 General Cargo zones,
+so it is worth ruling before §13 is built rather than after.
+
+### Ruled by William, same session (2026-08-19), on audit finding A2 — option (b), plus a general principle
+
+**Ruling, verbatim in substance**: *"(b), this works, layberths don't need to be
+considered in counts and fees, we just need to have it time-wise attached to
+the leg and allocated as layberth when doing time calcs / KPI. In truth this
+situation is an outlier, as no one wants their ship to break down, which is the
+only reason they called that facility."*
+
+So the rule is broader than R5. A layberth stop is **commercially invisible and
+operationally visible**: it must not shape money or counts, but it is real
+elapsed time and must stay attached to its leg, in its own bucket, so a time /
+KPI calculation can see it and separate it.
+
+**A2 is closed. This supersedes and generalises §8a/§8b**, which had already
+taken layberths out of split detection and out of the fee test, but had left
+them inside `facility_type` pricing, inside `berth_stop_count`, and inside
+`berth_hours`.
+
+#### Why the outlier reading is right, measured
+
+The whole layberth footprint is **918 berth events across 421 legs and 420 port
+calls** — 389 real (non-artifact) stops once geofence noise collapses. Median
+stay **69.7 hours**, longest **1,700 hours** (71 days). Total **45,742 hours =
+1,906 days** alongside a lay-up or repair wharf. That is **1.66% of all
+`berth_hours` in the data** — which is exactly why it has never shown up in an
+aggregate, and exactly why it is worth fixing rather than living with:
+
+**On the 379 legs that touch one, layberth time is 71.7% of the `berth_hours`
+those legs report** — 45,742 of 63,811 hours — and **389 of their 692 counted
+berth stops are layberth stops.** So a "days alongside per call" or
+"berth productivity" KPI on those legs today reads roughly three times the real
+cargo time. Invisible in the total, dominant in the row. William's point stands
+on the numbers.
+
+#### Confirmed while scoping: every layberth zone is inside R5
+
+Read from `dictionaries/zone_facility.csv`: **all 14** `ops = Layberth` zones
+carry `facility_type = General Cargo` — Violet Dock 1-5 (→ LIT Violet), Buck
+Kreihs, Andry St, Alabo St, Poland St, Mandeville St, Gov Nicholls St,
+Esplanade Ave, Perry Street, Marlex. There is no layberth zone *outside* R5's
+scope. That is the structural reason the conflict existed at all, not bad luck.
+
+#### Scope of the change — all of it lands in MRTIS, none of it here
+
+**This repo cannot implement any of it.** The fee and the leg columns are
+computed in MRTIS's `build_port_calls.py` / `build_db.py`; `mrtis-claris` only
+exports what MRTIS built, and MRTIS is read-only from here (`CLAUDE.md` §2.2).
+This needs an MRTIS session — scratch-copy rebuild and full reverification per
+their standing practice — and then a re-export here.
+
+1. **R5 prices off the first *working* berth.** Skip layberth stops when
+   resolving the leg's `facility_type`, the way §8a already skips them when
+   resolving splits. **80 legs, +$440,000** ($400,000 → $840,000 as those legs
+   revert to the $10,500 Bulk tier). Billable total $272,167,500 → **$272,607,500**.
+2. **`berth_stop_count` excludes layberth stops**, on both leg and call. Removes
+   **389 stops from 379 legs**.
+3. **`berth_hours` excludes layberth time, and a new `layberth_hours` column
+   carries it** on `port_call_leg` (and a call-level total). Moves **45,742
+   hours** out of `berth_hours` into its own bucket — this is the "allocated as
+   layberth when doing time calcs" half of the ruling, and it is a schema change
+   (`sql/schema_port_call.sql`).
+4. **No change needed to attachment.** Layberth events already stay on the spine
+   and already belong to their leg — that half of the ruling is already true.
+
+#### Three things the build session must decide, flagged not decided
+
+- **Pure lay-up legs lose their last count.** 142 legs (142 calls) are nothing
+  but layberth stops. They already bill $0 (§8b); under item 2 their
+  `berth_stop_count` also goes to **0**, making them indistinguishable in the
+  count columns from the 1,415 legs that never berthed at all. They need to stay
+  tellable apart — the new `layberth_hours` being non-zero would do it, or an
+  explicit flag. **Decide before building, not after.**
+- **Does §14 count a pure lay-up as a port call?** William's ruling says
+  layberths don't count. §14 (port-call counts per agent) is still open and
+  would inherit this. 142 calls at stake. Not asked, not assumed.
+- **Order this against §13.1.** §13.1 will set `ops = Discharge` on the **14
+  remaining non-layberth General Cargo zones (14,109 berth events)**. Those are
+  the berths R5's new "first *working* berth" lookup will land on more often
+  once item 1 ships. The two changes touch the same code path and the same
+  facility type — **rule the ordering, or build them together.**
+
+#### One mechanical warning for the build session
+
+`export/build_review_package.py` reads its column list live from
+`information_schema` and **hard-fails on any column it has no description for**.
+That is the script behaving as designed — but it means the new `layberth_hours`
+column will break the export until a `*_DESC` entry is added here. Expected, not
+a bug; noting it so it isn't diagnosed twice.
+
+#### Still not fixed, by design
+
+Nothing above was implemented. A1 and A2 are now both **ruled**; both need an
+MRTIS build session to land, then a re-export and a documentation pass here.
+A3–A14 remain as written.
+
+### Knock-on: the layberth ruling also answers MRTIS §11.1 (audit finding A3), for $0
+
+Checked while scoping the ruling. §11.1 asked which of two contradictory
+statements is wrong when a leg mixes a layberth stop with an unresolved working
+berth: the **label** (leg reports `activity = 'No Cargo'`) or the **fee** (it
+bills anyway). Its option (a) was "an unresolved stop should outrank `No Cargo`".
+
+William's principle — layberths don't count for money or counts, only for time —
+picks option (a) by construction. If a layberth stop is not considered when
+resolving the leg's activity, then a leg whose only other stop is unresolved has
+**no** activity to report and correctly goes NULL/unresolved, instead of
+borrowing "No Cargo" from a berth the ruling says to ignore.
+
+Verified against the database: **all 54 of those legs have at least one real,
+non-layberth working berth stop** — none is layberth-only. So they keep billing
+exactly as they do now:
+
+- Label: `No Cargo` → NULL / unresolved on **54 legs**.
+- Fee: **$281,750, unchanged.** No dollar moves.
+
+Cheapest item on the list — it removes a live contradiction from the exported
+data at zero cost, and it falls out of a ruling already made rather than needing
+a new one. **Flagged to William for confirmation** rather than assumed, since
+§11.1 is MRTIS's question and MRTIS is read-only from here. If confirmed, it
+carries back to `OPEN_QUESTIONS.md` §11.1 alongside the corrected figure
+($281,750, not the pre-§12 $413,000).
+
+### Ruled by William, same session (2026-08-19) — pure lay-ups: option (b), with a time carve-out
+
+**Ruling**: *"(b), we can ignore them except for accounting for the time usage
+on the seq order of SWP-to-SWP KPI calcs, which we have not discussed yet."*
+
+So a pure lay-up call is **not a port call** — it does not count and it does not
+bill — **but its time must survive** in the vessel's SWP-to-SWP sequence, so a
+river-residency / turnaround KPI still sees the days the vessel was actually in
+the river.
+
+#### The 142 calls, measured
+
+| | |
+|---|---|
+| Calls | **142** (all `call_status = 'complete'` — genuine SWP in and SWP out) |
+| Legs | 142 (one leg each) |
+| Events on the spine | 744 |
+| Vessels | 111 (1.28 lay-up calls per vessel) |
+| Agency fee | **$0** — already unbilled under §8b, so no revenue moves |
+| Splits / FGIS certificates / tonnage | **0 / 0 / 0** — genuinely commercially empty |
+| **SWP-to-SWP time** | **23,390 hours = 975 vessel-days** (median 4.7 days, longest 72) |
+
+Headline counts after the ruling: port calls **40,170 → 40,028**, legs
+**41,804 → 41,662**, split rate **4.06% → 4.08%**. No dollar figure in this
+package changes.
+
+#### Implementation constraint — flag, do not delete
+
+The two halves of the ruling are only consistent if the rows **stay**. Deleting
+a lay-up call would destroy the **975 vessel-days** the ruling explicitly says
+to keep, and would break `PORT_CALL_SPEC.md` §0's spine rule ("nothing is
+dropped"). So "ignore them" must be built as a **classification, not a
+removal** — e.g. a call-level `is_commercial_call` / `call_class = 'layup'` flag
+that every count and fee query filters on by default, while the row, its events,
+its timestamps and its place in the vessel's SWP-to-SWP sequence all remain
+intact.
+
+This also supersedes the discriminator discussed under option (a): the lay-up
+call no longer needs to be *distinguishable* from a never-berthed leg — it needs
+to be **explicitly classified**, because the flag now drives whether the call
+counts at all, not merely how it reads.
+
+Consequence for §14 (per-agent port-call counts, still open): the answer is now
+given — a pure lay-up does not count. 142 calls.
+
+### Parked, named so it isn't lost: the SWP-to-SWP KPI framework
+
+William, same message: *"the seq order of SWP-to-SWP KPI calcs, which we have
+not discussed yet."* **Not yet specified, not yet scoped, no rulings taken.**
+
+What is already in place for it: `port_call.call_start` / `call_end` /
+`call_hours` (SWP crossing to SWP crossing), and the leg-level split of dwell
+into `waiting_hours` / `inter_berth_idle_hours` / `outbound_idle_hours` /
+`berth_hours` (`PORT_CALL_SPEC.md` §6). What it will additionally need, from the
+rulings taken this session: the new `layberth_hours` bucket, and the lay-up
+classification above so residency time can be attributed without the call
+counting as commercial traffic.
+
+**This is a design conversation with William, not a build task** — it should get
+its own session and its own set of rulings before anything is written, in the
+same way §7.1's billing-unit question was settled before the fee was rebuilt.
+Flagged here so the next session picks it up rather than rediscovering it.
+
+### Clarified by William, same session — build it general, not layberth-specific
+
+Restated to confirm the reading, and it holds: **keep the layberth rows, exclude
+them from vessel counts and from fees, but never lose the time.** William's test
+for it: *"if the ship was at layberth 3 days, how do you explain the time gap?"*
+— delete the row and there is an unexplained hole in the vessel's timeline
+between two SWP crossings. (The data agrees with the instinct: median layberth
+stop is **69.7 hours — 2.9 days**.)
+
+**The addition worth capturing** — *"some of the outliers may be for other
+oddities, but as long as time [is] accounted for, otherwise they need no
+acknowledgement either by fee or count."*
+
+That is a **general principle, not a layberth rule**. Build it as a
+**non-commercial time** classification — time accounted for, excluded from counts
+and fees — with layberth as its first member and room for the next oddity to
+join it without reopening the logic. Building a layberth-specific carve-out
+instead would mean retrofitting the same shape a second time the next time an
+outlier surfaces.
+
+This supersedes nothing above; it sets *how* the lay-up flag and the
+`layberth_hours` bucket should be shaped when MRTIS builds them.
+
+---
+
+## Session 2 close — rulings taken, none implemented
+
+Five rulings from William this session, all recorded, **none built** (the audit
+changed nothing, and every one of them lands in MRTIS, which is read-only from
+here):
+
+| # | Ruling | Effect |
+|---|---|---|
+| A1 | `Gen` = `Bulk` — general cargo ships are in the dry-bulk tier and in R5 | Confirms the build; **$0 moves**; disclosure fix only |
+| A2 | Option (b) — R5 prices off the first *working* berth | **80 legs, +$440,000**; total → $272,607,500 |
+| A2b | Layberths out of `berth_stop_count` and `berth_hours`, into `layberth_hours` | 389 stops / 45,742 hrs reallocated on 379 legs |
+| A3 | §11.1 — unresolved outranks `No Cargo` (confirmed by William, below) | 54 labels change, **$0 moves** |
+| — | Pure lay-ups: option (b), flag not delete; §14 excludes them | 142 calls out of counts; **975 vessel-days preserved** |
+| — | Shape: a general non-commercial-time classification, not a layberth case | Design constraint on the above |
+
+**Next**: one MRTIS build session lands all of it (scratch-copy rebuild and full
+reverification per MRTIS practice), then re-export here, re-run charts and
+reports, and correct A4-A14. The SWP-to-SWP KPI framework is parked and needs
+its own design session first. The commercial-side chart/report work discussed
+this session can proceed on the current build without waiting — fee figures move
+0.16%; only time/berth KPIs must wait.
+
+### A3 confirmed by William (2026-08-19)
+
+§11.1 resolves as option (a): an unresolved stop outranks `No Cargo` for the
+leg's label. 54 legs move from `activity = 'No Cargo'` to NULL/unresolved;
+**fee unchanged at $281,750**. All five rulings from this session are now final.
+
+### Handoff brief — the MRTIS build session
+
+**This session cannot do it.** `CLAUDE.md` §2.2 makes this repo read-only
+against MRTIS, and the work requires editing `scripts/build_port_calls.py`,
+`scripts/build_db.py`, `sql/schema_port_call.sql`, and MRTIS's own
+`docs/OPEN_QUESTIONS.md` / `docs/SESSION_LOG.md`. It needs a session rooted in
+`/Users/billy/Documents/MRTIS`, working under MRTIS's own discipline — note
+MRTIS has **no `CLAUDE.md`**; its operating rules live in `docs/BUILD.md`,
+`docs/SESSION_LOG.md` and `docs/OPEN_QUESTIONS.md`, and standing practice is a
+**scratch-copy rebuild and full reverification before touching the real repo**.
+
+**What to build** (all five ruled 2026-08-19, evidence and dollar figures above):
+
+1. R5 prices off the leg's first **working** berth — skip layberth stops when
+   resolving `facility_type`. `build_port_calls.py`.
+2. Layberth stops leave `berth_stop_count` and `berth_hours`; new
+   `layberth_hours` on `port_call_leg` + a call-level total.
+   `build_port_calls.py` and `sql/schema_port_call.sql`.
+3. Pure lay-up calls stop counting — as a **flag, not a delete**
+   (`is_commercial_call` / `call_class`). Rows, events and timestamps stay.
+4. Unresolved outranks `No Cargo` for the leg label (§11.1a).
+5. Shape 1-4 as one **non-commercial time** classification, not layberth
+   special-casing — other oddities will join it.
+
+**Verification targets after the rebuild** (cross-check against known-good, the
+method that caught the §12 bug):
+
+| Figure | Before | Expected after |
+|---|---|---|
+| Billable total | $272,167,500 | **$272,607,500** (+$440,000, 80 legs) |
+| Per-departure basis | $349,625,500 | **$349,625,500** — frozen, must not move |
+| Port calls | 40,170 | **40,028** commercial (142 flagged, not deleted) |
+| Legs | 41,804 | **41,662** commercial |
+| `No Cargo` legs billing | 54 / $281,750 | **0 legs labelled so; $281,750 still billed** |
+| Lay-up time preserved | — | **23,390 hrs / 975 vessel-days** still on the spine |
+| Layberth reallocated | — | **45,742 hrs, 389 stops** off 379 legs into `layberth_hours` |
+
+**MRTIS docs to update**: §7.4 (`Gen` = `Bulk`, ruled — currently "stated
+nowhere"), §11.1 (resolved (a); correct $413,000 → **$281,750**), §12.3.3.1
+(R5 amended to first *working* berth), §8 (extend to counts and hours), §14
+(pure lay-ups excluded), §11.5 (the schema comment's "~12%" over-bill is
+**17.0%**), plus `PORT_CALL_SPEC.md` §4 and §6.
+
+**Also order against §13.1** — it sets `ops = Discharge` on the 14 remaining
+non-layberth General Cargo zones (14,109 berth events), the same berths R5's new
+lookup lands on. Build together or rule the order.
+
+**Then come back here**: re-export (`export/build_review_package.py` will
+hard-fail until `layberth_hours` and the new flag get `*_DESC` entries — expected,
+not a bug), re-run charts and reports, and clear A4-A14.
