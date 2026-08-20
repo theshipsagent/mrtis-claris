@@ -50,7 +50,22 @@ def report_1_agency_fee_by_vessel_type(con, c: str, f: dict):
     stated explicitly as being over fee-bearing calls.
     """
     df = con.execute("""
-        select coalesce(vessel_type, '(unknown)') as vessel_type,
+        select case
+                 -- The feed mistypes gas carriers as tankers. William,
+                 -- 2026-08-20: "the source data [got] the ship type wrong, gas
+                 -- are considered tankers, but we added the ships register, so
+                 -- can pick up the rest of the lng tankers." The register is
+                 -- the better authority for what a hull IS, so it corrects the
+                 -- feed here. 529 of 1,467 gas-carrier calls (36%) are typed
+                 -- 'Tanker' by the feed -- 425 LPG and 104 LNG.
+                 -- No fee moves: Gas and Tanker both price at $3,500. This is
+                 -- a reclassification between rows, and the billable total is
+                 -- unchanged. See report_concepts/ISSUES.md I-18.
+                 when v.ship_type like '%LNG%'
+                   or v.ship_type like '%LPG%'
+                   or v.ship_type like '%Gas%' then 'Gas'
+                 else coalesce(c.vessel_type, '(unknown)')
+               end as vessel_type,
                count(*) as port_calls,
                count(*) filter (where agency_fee_total is not null
                                   and agency_fee_total > 0) as fee_bearing_calls,
@@ -63,7 +78,8 @@ def report_1_agency_fee_by_vessel_type(con, c: str, f: dict):
                    as avg_fee_per_fee_bearing_call,
                round(sum(agency_fee_total) / nullif(count(*), 0), 0)
                    as avg_fee_per_call_all
-        from port_call
+        from port_call c
+        left join dim_vessel v on v.vessel_key = c.vessel_key
         group by 1
         order by agency_fee_billable desc nulls last
     """).fetchdf()
@@ -80,6 +96,16 @@ def report_1_agency_fee_by_vessel_type(con, c: str, f: dict):
         f"MRTIS commit `{c}` · billable basis = one fee per leg with a berth stop "
         "(docs/BUSINESS_RULES.md §9).", "",
         f"**Total billable agency fee: ${total:,.0f}**", "",
+        "> **Vessel type is taken from the ships register, not from the feed.** "
+        "William, 2026-08-20: *\"the source data [got] the ship type wrong, gas are "
+        "considered tankers, but we added the ships register, so can pick up the rest "
+        "of the lng tankers.\"* The feed types **529 of 1,467 gas-carrier calls (36%) "
+        "as `Tanker`** \u2014 425 LPG and 104 LNG \u2014 so a by-type report built on the "
+        "feed alone understates Gas by 56% in calls and 64% in fee. **No fee moves:** "
+        "Gas and Tanker both price at $3,500, so this is a reclassification between "
+        "rows and the billable total is unchanged. See `report_concepts/ISSUES.md` "
+        "I-18.",
+        "",
         "Two averages are given because two denominators are in play. Most vessel",
         "types include calls that never berthed and so never billed; averaging over",
         "all calls and averaging over fee-bearing calls give materially different",

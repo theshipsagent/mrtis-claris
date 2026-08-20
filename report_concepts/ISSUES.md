@@ -1280,6 +1280,68 @@ hours still ride on that.
 **Status** RULED for operations. Documentation outstanding; KPI start-of-clock
 still open.
 
+---
+
+### I-18 · The feed mistypes 36% of gas carriers as tankers; the register corrects it — `wrong-figure` (fixed here)
+
+**Severity** `wrong-figure` — a published report row was understated by 56%
+**Where** The Zone Report feed's `Type` field; corrected in this repo
+**Found** 2026-08-20 from William: *"the source data [got] the ship type wrong,
+gas are considered tankers, but we added the ships register, so can pick up the
+rest of the lng tankers."*
+
+**Measured.** Hulls the ships register identifies as gas carriers:
+
+| Register `ship_type` | Feed says `Gas` | Feed says `Tanker` | Mistyped |
+|---|---:|---:|---:|
+| LPG Tanker | 594 | **425** | **42%** |
+| LNG Tanker | 344 | **104** | 23% |
+| **Total** | **938** | **529** | **36%** |
+
+**1,468 calls are gas carriers by the register; the feed calls only 938 of them
+Gas.**
+
+**Effect on the published report.** `reports/agency_fee_by_vessel_type.md` was
+built on `port_call.vessel_type` — the feed's label:
+
+| Type | As published | Register-corrected | Delta |
+|---|---:|---:|---:|
+| **Gas** | 941 calls · $2,541,000 | **1,471 · $4,172,000** | **+530 · +$1,631,000** |
+| **Tanker** | 13,139 · $44,121,000 | **12,610 · $42,493,500** | −529 · −$1,627,500 |
+| Bulk, Container, Passenger, Reefer, Other | unchanged | unchanged | 0 |
+
+Gas was understated by **56% in calls and 64% in fee**.
+
+**No revenue moves.** Gas and Tanker both price at $3,500 under §9's base tiers,
+so this is a reclassification between rows. The billable total is unchanged at
+**$272,660,000**, and `figures.py` still reports **0 attribution mismatches**.
+
+**FIXED here, 2026-08-20.** `reports/build_reports.py` now derives vessel type
+from `dim_vessel.ship_type` where the register identifies a gas carrier, falling
+back to the feed otherwise, and the report carries a disclosure stating the
+correction, its size and William's ruling. **No MRTIS change was needed** — the
+register data was already joined and available; only this repo's report was
+reading the wrong column.
+
+**Why the register wins here, stated for the record.** The feed's `Type` is what
+the reporting service recorded; `ship_type` is what the vessel *is*, from a
+reference register matched on IMO. For "what kind of ship is this", the register
+is the better authority. §9.3's fee rules already work this way — R1-R4 key on
+`ship_type`, not on the feed's type — so this aligns reporting with how pricing
+already behaves.
+
+**Worth William's attention, not acted on:** the register disagrees with the feed
+well beyond gas. **4,194 calls the feed types `Bulk` carry a register
+`ship_type_group` of `General Cargo`** at various dwt bands (2,127 of them
+≥30,000 dwt). Those bill the **$10,500 bulk tier** on the feed's word. Whether a
+general-cargo hull working bulk cargo should price as bulk is a commercial
+question and may well be *yes* — but it is currently decided by a field William
+has just told us is unreliable, and it is worth **$44M** at the tier difference.
+**Not changed; flagged.** Unlike the gas case, this one moves money.
+
+**Status** CLOSED for gas. The `Bulk` / `General Cargo` question is OPEN and
+needs William.
+
 ## Closed
 
 - **I-1** — **fixed** in MRTIS `56ad9f5` (§15.1). 445 legs corrected; nothing else in the database moved.
