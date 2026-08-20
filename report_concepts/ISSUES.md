@@ -1806,7 +1806,50 @@ into a single event. The berth guard uses 2 hours; **30 minutes captures 74 of
 the 135 and 2 hours captures 103**, so the window is a ruling, not a derivation.
 Cheap to build and low-risk — it only merges events the feed duplicated.
 
-**Status** OPEN — needs William's window, then an MRTIS session.
+#### Second variant: a premature `Exit` closes the call before the voyage starts
+
+**`Stinnes Passat`, IMO 9473248, October 2025** — the mirror image of the `Betty`
+case:
+
+| Time | Event | Call |
+|---|---|---|
+| 10-25 **10:05** | Enter SWP Cross | opens `...202510251005` |
+| 10-25 **10:19** | **Exit SWP Cross — 14 minutes later** | **closes it** |
+| 10-25 19:04 | Anchor General Anch | **none** |
+| 10-25 19:22 | **Arrived AST Chalmette Slip** | **none** |
+| 10-28 17:09 | **Sailed**, draft 24 → 21, **$10,500** | **none** |
+| 10-28 23:57 | Exit | **none** |
+
+A vessel cannot enter and exit the river in **14 minutes**. The spurious `Exit`
+closed the call, and the entire real voyage — a berth at AST Chalmette Slip and
+$10,500 — was orphaned. The same vessel's other four 2025 calls all assemble
+correctly, so this is the feed, not the vessel.
+
+**Scale of implausibly short calls:**
+
+| Enter → Exit | Calls | No berth |
+|---|---:|---:|
+| **under 30 min** | **136** | **136 (100%)** |
+| 30-60 min | 2 | 2 |
+| 1-2 hrs | 2 | 2 |
+| 2-6 hrs | 21 | 20 |
+
+**Every one of the 136 sub-30-minute calls has no berth**, which is what a
+physically impossible transit should look like. These overlap heavily with the
+135 one-event phantom calls counted above.
+
+**So the crossing guard must handle two shapes, not one:**
+
+1. `Enter` → `Enter` within a window (the `Betty` case) — collapse to one entry.
+2. `Enter` → `Exit` within a window too short to be a real transit (the
+   `Stinnes Passat` case) — discard the false crossing pair rather than opening
+   and closing a call on it.
+
+Shape 2 also feeds **I-21**: the orphaned voyage that follows is recovered by
+that ruling, but preventing the false close is the cleaner fix.
+
+**Status** OPEN — needs William's window (30 min catches 74 of the `Betty` shape;
+under 30 min catches 136 of the `Stinnes` shape), then an MRTIS session.
 
 ---
 
@@ -1933,44 +1976,43 @@ lightering."*
 by draft. It catches calls the draft rule (I-15) misses, because a lightering
 call with missing or flat AIS draft has no draft evidence to trigger on.
 
-**The zones:**
+**CORRECTED by William, 2026-08-20:** *"sorry, kenner bend or ama anchorage or
+grandview."* So the zone set is **Kenner Bend, AMA, Grandview** — St Rose was a
+slip of the tongue and is dropped. That resolves the question raised below, which
+is left in place because it explains why St Rose could never have worked.
 
 | Zone | Mile | Events |
 |---|---:|---:|
 | `Lwr Kenner Bend Anch` | 114 | 7,304 |
 | `Upr Kenner Bend Anch` | 115 | 4,661 |
+| **`AMA Anch`** | **117** | **7,135** |
 | `Grandview Lwr Anch` | 147 | 1,052 |
 | `Grandview Mid Anch` | 147 | 2,007 |
 | `Grandview Upr Anch` | 148 | 2,842 |
 
-*(St Rose resolves to berths — `IMTT St Rose` 1–14 and `Vulcan St Rose Mooring`,
-miles 116–119 — not anchorages, so it is **not** included in the anchorage rule.
-Flagged for William below.)*
-
 **Tanker (register-clean), no berth anywhere in the call, touched one of those
-anchorages: 117 calls, 92 vessels.** Draft evidence on them:
+anchorages: 173 calls, 144 vessels.** Draft evidence on them:
 
 | | Calls | Median move |
 |---|---:|---:|
-| Took cargo (up) | 51 | 12 ft |
-| Gave cargo (down) | 47 | 7 ft |
-| **Flat (≤1 ft)** | **17** | 0 ft |
-| **No draft pair** | **2** | — |
+| Took cargo (up) | 71 | 11 ft |
+| Gave cargo (down) | 63 | 8 ft |
+| **Flat (≤1 ft)** | **33** | 0 ft |
+| **No draft pair** | **6** | — |
 
-**98 of 117 (84%) already show cargo-sized draft movement**, which is strong
-independent corroboration of the rule — the location test and the draft test
-agree on the overwhelming majority.
+**134 of 173 (77%) already show cargo-sized draft movement** — strong independent
+corroboration, since the location test and the draft test agree on the large
+majority without being derived from each other.
 
-**What the zone rule adds: 19 calls.** Those are the ones with **flat or missing
-draft** that the I-15 draft rule cannot see. That is the whole value of adding a
-location test alongside a draft test — it recovers the cases where AIS draft
-failed.
+**What the zone rule adds: 39 calls.** Those have **flat or missing draft** and
+are invisible to the I-15 draft rule. That is the whole value of a location test
+alongside a draft test — it recovers the cases where AIS draft failed.
 
 | | Calls |
 |---|---:|
 | Caught by the I-15 draft rule (all anchorages) | 245 |
-| **Added by this zone rule** | **+19** |
-| Combined | **264** |
+| **Added by this zone rule** | **+39** |
+| Combined | **284** |
 
 **One point needs William before implementing.** He named *"kenner bend/st rose"*
 together, but **St Rose is a berth complex, not an anchorage** — `IMTT St Rose`
@@ -1981,8 +2023,8 @@ either he means the Kenner Bend anchorages that sit off St Rose (already
 included), or he is pointing at a separate St Rose zone-overlap issue of the same
 kind as I-20/I-23. **Not assumed either way.**
 
-**Status** OPEN — rule stated and quantified; needs William's answer on St Rose
-before it is implemented in the exports.
+**Status** RULED — zone set confirmed as Kenner Bend / AMA / Grandview. Ready to
+implement in the exports alongside the I-15 draft rule.
 
 ## Closed
 
