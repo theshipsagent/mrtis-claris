@@ -1095,8 +1095,55 @@ not 298, and **bulk carriers dominate it**:
 The tanker half is lightering (I-15 above). **The bulk half is a different thing
 and became I-17.**
 
-**Status** OPEN — needs a business ruling from William. Scale is $5.42M, not
-$1.04M.
+**RULED — William, 2026-08-20, on the lightering half:** *"they lightered at
+Gramercy anchorage and correctly did not call a berth, which is an outlier not
+considered."*
+
+**So MRTIS is right, and this is not a defect.** A lightering operation reaches
+no berth, so §9 correctly accrues no fee. What the ruling establishes is that the
+fee schedule **never contemplated the case** — it was written around berth work,
+and cargo transferred ship-to-ship at anchor falls outside it by omission rather
+than by decision.
+
+| Lightered-down calls, all vessel types | |
+|---|---:|
+| Calls | **294** |
+| Fee-bearing today | **0** |
+| Fee billed | **$0** |
+| Mean draft drop | **8.5 ft** |
+
+**One claim in the ruling does not survive the data, and is corrected here.**
+William offered that these calls are *"unique Grandview anch and agent Capes."*
+His worked example (`Bow Sky`, IMO 9215268, July 2025 — enter at 39ft, AMA Anch,
+Grandview Mid Anch, depart at 31ft) is a true instance, and Grandview does serve
+the Gramercy lightering reach at mile 147. But the population is broader:
+
+| Tanker lightered-down calls (119) | | |
+|---|---:|---:|
+| At a **Grandview** anchorage | 46 | **39%** |
+| Agented by **Capes** | **3** | **3%** |
+| Both | 3 | 3% |
+
+Other anchorages carry it too — AMA 26, Magnolia 16, Dockside 16, Belle Chasse
+12, 12 Mile 10, Burnside 9. Across all vessel types the agents are **Norton Lilly
+53, HOST 34, Tricon 32, General Steamship 26, GAC 24** — Capes is not in the top
+six, and its 3 calls span five different anchorages. Grandview's three anchorages
+handle **2,853 calls across 33 distinct agents**, only 96 of them no-berth: a busy
+general anchorage, not one operator's berth.
+
+**Why this matters for the ruling.** If the case were one agent at one anchorage
+it could stay an accepted outlier. At **294 calls spread across the river and most
+of the agency list**, it is a standing gap in the schedule rather than an
+exception — which is the question below, still open.
+
+**Still open: should ship-to-ship cargo work at anchor attract a fee at all?**
+The bulk half (408 calls, $4.28M at the $10,500 tier) is a separate question again
+and partly resolves through I-20 (Burnside) and I-17 (layberth zones). The
+lightering half is 294 calls that everyone agrees reached no berth.
+
+**Status** RULED — MRTIS behaves correctly and the no-berth result is right. The
+**fee question remains open**, and the scale is wider than one agent or one
+anchorage.
 
 ---
 
