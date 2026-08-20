@@ -41,7 +41,7 @@ only: proof and evidence, not a native FileMaker build.
    > (*"lets fix the 6 findings"*), so this directive was lifted for that work
    > and that work only, under MRTIS's own standing practice: scratch-copy
    > rebuild and full reverification before the real repo was touched. The work
-   > is complete — MRTIS `2738601` → `68b3a6f`, seven findings closed — and the
+   > is complete — MRTIS `2738601` → `0c4ed0c`, seven findings closed — and the
    > directive is back in force. See `SESSION_LOG.md` session 9. Anything
    > further in MRTIS needs a fresh, explicit suspension recorded here first.
 

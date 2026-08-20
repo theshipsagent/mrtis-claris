@@ -142,7 +142,7 @@ byte-identical guarantee (**fixed**), a new `cargo_subgroup` splitting certified
 grain from grain by-products (**built**), two agency columns that give different
 revenue answers ($939,000, **disclosed**), a `tpc = 0` placeholder that turned out to be a
 vendor gap rather than a coverage trend (**fixed**), and a new LNG terminal that
-was invisible to the source feed for thirteen months, leaving **$707,000** of
+was invisible to the source feed for thirteen months, leaving **$931,000** of
 agency fee unbilled (**open — needs a decision, not a code change**).
 
 Same derivation discipline as the deliverable — every figure scripted, none

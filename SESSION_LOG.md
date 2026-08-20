@@ -3,7 +3,7 @@
 ## 2026-08-20 (session 9) — The build-fix: three findings closed, one found in the act of fixing
 
 **MRTIS moved, deliberately, for the first time since this repo existed.**
-`2738601` → **`68b3a6f`**. William: *"lets fix the 6 findings."*
+`2738601` → **`0c4ed0c`**. William: *"lets fix the 6 findings."*
 
 `CLAUDE.md` directive 2 forbids this repo from writing to MRTIS, so the
 suspension was **recorded in the manual before anything was touched**, scoped to
@@ -90,7 +90,7 @@ agent on the outbound load at full tariff — which had never been written down.
 ### Added after the fixes: `cargo_subgroup` (I-3)
 
 William ruled the last blocked finding the same day: *"mgmt is grain and by
-products, add cargo_subgroup."* Built at MRTIS `68b3a6f` (§15.6).
+products, add cargo_subgroup."* Built at MRTIS `0c4ed0c` (§15.6).
 
 **The design point is the whole finding.** The obvious implementation — "no FGIS
 certificate at a grain berth means by-product" — would have been wrong, because
@@ -163,7 +163,7 @@ question. This package is now verified byte-identical across one.
 the reviewer's data dictionary explains *why* blank is not zero, with the
 evidence attached.
 
-### The last two drifts — investigated, and one is a $707,000 finding
+### The last two drifts — investigated, and one is a $931,000 finding
 
 Neither was a defect in MRTIS. One was not a defect anywhere.
 
@@ -184,14 +184,14 @@ thereafter. Meanwhile gas traffic tripled as the terminal came up: 103 calls in
 | Gas calls with no berth recorded | **202** |
 | Distinct vessels | 78 |
 | Average time inside the SWP | 50.3 hours |
-| **Agency fee never accrued** | **$707,000** |
+| **Agency fee never accrued** | **$931,000** |
 
 **MRTIS was right the whole time.** A leg bills only if it reached a berth
 (§9). No berth was recorded, so no fee accrued — the rule applied faithfully to
 incomplete data. No code fix can invent an event that was never recorded, so this
 became **I-12**, which needs a decision from William rather than an
 investigation: ask the feed provider to backfill the geofence (a rebuild then
-recovers the $707,000 automatically) or annotate the window as known-low.
+recovers the $931,000 automatically) or annotate the window as known-low.
 
 **Geofence artifacts: this log had the wrong denominator.** The "11.3% → 12.7%"
 recorded in session 8 was computed against `sum(berth_stop_count)`. Measured
@@ -214,7 +214,7 @@ eliminated; what remains is a trade question for William.
 
 `CLAUDE.md` directive 2 was suspended on 2026-08-20 for this work and is
 **restored**, with a note recording that it was lifted, why, and that anything
-further in MRTIS needs a fresh explicit suspension. MRTIS ends at **`68b3a6f`**,
+further in MRTIS needs a fresh explicit suspension. MRTIS ends at **`0c4ed0c`**,
 seven commits on from the `2738601` this package had been built against since
 session 3.
 
@@ -224,7 +224,7 @@ session 3.
 
 | Ref | What it needs |
 |---|---|
-| **I-12** | **A decision from William, not an investigation.** No code fix exists. Ask the feed provider to backfill the Venture Global geofence — a rebuild then recovers 202 calls and $707,000 automatically — or accept the 13-month gap and annotate 2025 gas figures as known-low. |
+| **I-12** | **A decision from William, not an investigation.** No code fix exists. Ask the feed provider to backfill the Venture Global geofence — a rebuild then recovers 266 calls and $931,000 automatically — or accept the 13-month gap and annotate 2025 gas figures as known-low. |
 
 `CLAUDE.md`'s read-only suspension **stays in force** until those close, and must
 be restored when they do.

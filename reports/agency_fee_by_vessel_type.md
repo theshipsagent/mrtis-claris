@@ -1,6 +1,6 @@
 # Sample report: Agency fee by vessel type
 
-MRTIS commit `68b3a6f` · billable basis = one fee per leg with a berth stop (docs/BUSINESS_RULES.md §9).
+MRTIS commit `0c4ed0c` · billable basis = one fee per leg with a berth stop (docs/BUSINESS_RULES.md §9).
 
 **Total billable agency fee: $272,660,000**
 

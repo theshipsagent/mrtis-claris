@@ -1,6 +1,6 @@
 # Concept report G2 — Ship count and revenue by agent, grain berths
 
-MRTIS commit `68b3a6f` · window **2023-08-01 → 2026-07-31** · scope **9 grain elevators + MGMT** · leg-level agency (`port_call_leg.agency`) — the agency that brought the vessel in owns the leg (`docs/BUSINESS_RULES.md` §6)
+MRTIS commit `0c4ed0c` · window **2023-08-01 → 2026-07-31** · scope **9 grain elevators + MGMT** · leg-level agency (`port_call_leg.agency`) — the agency that brought the vessel in owns the leg (`docs/BUSINESS_RULES.md` §6)
 
 **Total agency fee on grain berths, 36 months: $44,646,000** across 4,254 chargeable legs of 4,254 loadings.
 

@@ -1,6 +1,6 @@
 # Issues log — what building the concept reports exposed
 
-Opened 2026-08-20 (session 8). MRTIS commit `2738601c9a87ff7be264f9c10cb1e1a618ef3436` at the time of finding; fixes built at `68b3a6f`.
+Opened 2026-08-20 (session 8). MRTIS commit `2738601c9a87ff7be264f9c10cb1e1a618ef3436` at the time of finding; fixes built at `0c4ed0c`.
 
 Every entry is something the reporting exercise **found**, not something it
 fixed. Nothing in this log has been acted on — that is deliberate, and is the
@@ -228,7 +228,7 @@ over-claiming, or (b) introduce a `cargo_subgroup` distinguishing certified grai
 from by-product where evidence allows. Needs William's ruling; both are cheap.
 
 **RULED AND BUILT — William, 2026-08-20:** *"mgmt is grain and by products, add
-cargo_subgroup."* Built at MRTIS `68b3a6f` (`OPEN_QUESTIONS.md` §15.6).
+cargo_subgroup."* Built at MRTIS `0c4ed0c` (`OPEN_QUESTIONS.md` §15.6).
 
 **The design point worth keeping.** The obvious implementation — "no FGIS
 certificate at a grain berth means by-product" — would have been wrong, because
@@ -539,7 +539,7 @@ monotonic one. (c) is the one worth doing first.
 ---
 
 **(c) `tpc = 0` — INVESTIGATED AND RESOLVED, 2026-08-20.** MRTIS commit
-`68b3a6f` (`OPEN_QUESTIONS.md` §15.7, which also closes the long-deferred §11.3).
+`0c4ed0c` (`OPEN_QUESTIONS.md` §15.7, which also closes the long-deferred §11.3).
 
 **Ruled by William:** *"if is there we can populate as available, if becomes a
 larger effort to fix, am ok dropping it."*
@@ -742,7 +742,7 @@ was false, through no fault of the code here, and nobody had tested it across an
 actual MRTIS rebuild — only across re-runs of the export against an unchanged
 database, which could never have caught it.
 
-**FIXED — MRTIS commit `68b3a6f`, 2026-08-20** (`OPEN_QUESTIONS.md` §15.5).
+**FIXED — MRTIS commit `0c4ed0c`, 2026-08-20** (`OPEN_QUESTIONS.md` §15.5).
 `ORDER BY` added to all three aggregates, with a comment recording that it is
 load-bearing rather than cosmetic — exactly the kind of clause a later tidy-up
 deletes as noise.
@@ -758,7 +758,7 @@ including the gzipped sample data**.
 
 ---
 
-### I-12 · A new LNG terminal was invisible to the feed for 13 months — $707,000 of agency fee never billed — `gap` (source feed)
+### I-12 · A new LNG terminal was invisible to the feed for 13 months — $931,000 of agency fee never billed — `gap` (source feed)
 
 **Severity** `gap` — not a defect in any code; a hole in the source data
 **Where** The Zone Report feed. **Not** MRTIS, and not this package.
@@ -782,14 +782,23 @@ kind recorded**. Their only events are `SWP Cross` Enter and Exit.
 
 | The blind window, 2025-01 → 2026-01 | |
 |---|---:|
-| Gas calls with no berth recorded | **202** |
-| Distinct vessels | 78 |
-| Average time inside the SWP | 50.3 hours |
-| Gas tier | $3,500 / leg |
-| **Agency fee never billed** | **$707,000** |
+| Calls with no berth recorded | **266** |
+| Distinct vessels | 108 |
+| Average time inside the SWP | 49.9 hours |
+| Tier | $3,500 / leg |
+| **Agency fee never billed** | **$931,000** |
 
-That is **0.26%** of the $272,660,000 billable total, concentrated in thirteen
+That is **0.34%** of the $272,660,000 billable total, concentrated in thirteen
 months and one trade.
+
+> **This figure was corrected upward the same day, from $707,000.** The first
+> count was scoped on `vessel_type = 'Gas'`. The sweep below showed that too
+> narrow: **64 further calls are LNG hulls the Zone Report types as `Tanker`**,
+> whose register `ship_type` is `LNG Tanker`. Identical signature — two-event
+> calls, no berth, stopping dead at 2026-01. Counting on LNG evidence rather than
+> on the feed's own type label adds **$224,000**. A reminder that
+> `vessel_type` is the feed's label and `ship_type` is the register's, and the
+> two disagree about LNG.
 
 **MRTIS behaved correctly throughout.** William's rule is that a leg bills only
 if it reached a berth (`docs/BUSINESS_RULES.md` §9). No berth was recorded, so no
@@ -805,23 +814,75 @@ that was never recorded. Two real options, both William's:
 
 1. **Ask the feed provider to backfill the Venture Global geofence** to the
    terminal's actual start of operations. If they can, a rebuild recovers all 202
-   calls and the $707,000 automatically, with no change to MRTIS.
+   calls and the $931,000 automatically, with no change to MRTIS.
 2. **Accept and annotate.** Treat 2025-01 → 2026-01 gas figures as known-low and
    say so wherever they are published.
 
-**Worth checking beyond this terminal:** the same blindness would affect *any*
-facility that opened during the covered period. `DRAX` also appears new in the
-feed (2025). A systematic check of first-appearance dates against known terminal
-start-ups would show whether Venture Global is the only case.
+### The systematic sweep — is Venture Global the only one?
 
-**Status** OPEN — no code fix exists; needs a decision from William.
+Done 2026-08-20 at William's direction. Every facility first appearing after
+2019-07 — **15 of them** — profiled on the signature that separates a **newly
+built** terminal (traffic ramps up from near zero, which is *expected and fine*)
+from a **newly geofenced** one (traffic starts at full volume, because the
+vessels were always there and only the visibility is new).
+
+| Facility | First seen | Events/mo | First six months | Verdict |
+|---|---|---:|---|---|
+| **Venture Global** | 2026-02-04 | **58.7** | 51, 65, 60, 62, 58, 56 | **Newly geofenced — the gap** |
+| Mile 110 Buoys | 2024-05-15 | 25.1 | 2, 29, 28, 26, 39, 39 | Added capacity — see below |
+| MPLX Mt Airy | 2022-06-14 | 6.5 | 2, 4, 6, 4, 4, 2 | Genuine ramp |
+| Willow Glen | 2022-08-02 | 3.3 | 2, 2, 4, 2, 3, 1 | Genuine ramp |
+| Mile 112 Buoys | 2024-07-27 | 3.0 | 1, 1, 2, 2, 2, 4 | Genuine ramp |
+| 10 others | 2020–2023 | ≤1.8 | — | Low traffic, no signature |
+
+**Only Venture Global carries the signature**, and it is not a close call: it
+opens at 51 events in its first partial month and holds 56–65 thereafter.
+
+**William, 2026-08-20:** *"some terminals are new since begining of the data
+set."* Confirmed and expected — that is precisely why the test is the *shape of
+the ramp* rather than the mere fact of a late first appearance. A genuinely new
+terminal ramping from zero produces no missing calls and needs no fix; four of
+the five above are exactly that.
+
+`Mile 110 Buoys` reaches volume fast but total buoy traffic **rose** when it
+appeared (97 → 114 events/month) instead of shifting from another facility, and
+no never-berthed population drops when it arrives — added capacity, not recovered
+visibility.
+
+**Three further hypotheses tested and rejected**, recorded so nobody re-opens
+them:
+
+1. **Facilities going dark are closures, not lost geofences.** `LIT Violet`,
+   `Aramco Convent`, `Occidental Convent`, `Axiall Plaquemine` and `Apex Mt Airy`
+   all stop appearing. But their vessels' never-berthed calls occur *before* the
+   facility goes dark, not after — LIT Violet **109 before / 2 after**. The
+   vessels stopped calling; the geofence did not vanish underneath them.
+2. **The 2021–22 tanker episode is real behaviour.** Never-berthed tanker calls
+   hit 8.7% in 2022-Q1 against 2.4% a year later, but **84% carry anchorage
+   events** (91 of 108 in 2021) — vessels anchoring and departing without
+   berthing. The gap signature is a *two-event* call with **no** anchorage; this
+   is the opposite shape.
+3. **The 2026-07 spike is the window edge.** 13 of its 14 two-event tanker calls
+   are `open_end`, and 25% of that month's calls are incomplete because the data
+   ends 2026-07-31.
+
+**One question only William can close.** The evidence says LNG carriers were
+working *something* through 2025 — 266 calls, 108 vessels, ~50 hours each inside
+the SWP — and that the feed had no berth for them until Venture Global appeared.
+If Plaquemines was genuinely not receiving ships until February 2026, then those
+266 calls went somewhere else and the gap is at a different facility. **Was
+Venture Global working vessels during 2025?** His answer either confirms the
+attribution or redirects the search.
+
+**Status** OPEN — no code fix exists; needs a decision from William, plus the
+attribution question above.
 
 ## Closed
 
 - **I-1** — **fixed** in MRTIS `56ad9f5` (§15.1). 445 legs corrected; nothing else in the database moved.
 - **I-7** — ruled A by William 2026-08-20; the build was already correct, $3,492,500 does not move (§15.3).
 - **I-10** — **built** in MRTIS `56ad9f5` (§15.2), behaviour-preserving: 0 legs changed fee.
-- **I-11** — **fixed** in MRTIS `68b3a6f` (§15.5). Found while verifying I-1; the build was non-deterministic and the package's byte-identical guarantee was false. Now verified end-to-end across a real rebuild.
+- **I-11** — **fixed** in MRTIS `0c4ed0c` (§15.5). Found while verifying I-1; the build was non-deterministic and the package's byte-identical guarantee was false. Now verified end-to-end across a real rebuild.
 
 ### Still open — three investigations and one ruling
 
