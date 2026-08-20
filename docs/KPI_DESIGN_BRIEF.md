@@ -23,7 +23,7 @@ implemented once made — per directive 4.
 read-only, by [`kpi/kpi_baseline.py`](../kpi/kpi_baseline.py) and published in
 [`KPI_BASELINE.md`](KPI_BASELINE.md). Re-run `kpi/kpi_baseline.py --check-brief`
 to assert this document has not gone stale against a rebuilt MRTIS. Built
-against MRTIS commit `61c899b241fb037b5e45b62fb6a865907c1cf4f2`.
+against MRTIS commit `27d8a19241fb037b5e45b62fb6a865907c1cf4f2`.
 
 **Where it would be built.** Not here. The time buckets are MRTIS's columns, and
 this repo is read-only against MRTIS (CLAUDE.md directive 2) — and MRTIS is
@@ -381,7 +381,7 @@ Claris reviewer: the review package's figures come from `figures.py` and
 `FIGURES.md`, deliberately kept separate, so a KPI question still in flight can
 never destabilise a figure the reviewer is already holding.
 
-The numbers here describe what MRTIS stores today at commit `61c899bc`. If
+The numbers here describe what MRTIS stores today at commit `27d8a19c`. If
 MRTIS rebuilds, re-run `kpi/kpi_baseline.py` — and
 `kpi/kpi_baseline.py --check-brief` will say whether this document went stale
 with it.

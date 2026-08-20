@@ -1,6 +1,6 @@
 # Row-count reconciliation -- SAMPLE
 
-Built read-only from `/Users/billy/Documents/MRTIS/data/db/mrtis.duckdb` at MRTIS commit `61c899b241fb037b5e45b62fb6a865907c1cf4f2`.
+Built read-only from `/Users/billy/Documents/MRTIS/data/db/mrtis.duckdb` at MRTIS commit `27d8a1913c6972dcc89289d3bab794e7a1a43854`.
 
 **Scope: calendar year 2025 (the most recent complete year in the data).** Whole port calls only -- every leg and every event of each selected call is present, and nothing else is. See `SAMPLE_README.md` for what that includes and excludes.
 

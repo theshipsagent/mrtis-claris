@@ -1,6 +1,6 @@
 # Sample report: R5 impact by facility -- dry bulk calling General Cargo berths
 
-MRTIS commit `61c899b` · Rule R5 (docs/BUSINESS_RULES.md §9.3): any dry-bulk vessel (`vessel_type = 'Bulk'`) whose leg's first **working** berth is a General Cargo facility type bills at a flat $5,000 (MRTIS OPEN_QUESTIONS.md §12.2 and the §12.3.3 resolution; the first-working-berth amendment is §12.3.3.1).
+MRTIS commit `27d8a19` · Rule R5 (docs/BUSINESS_RULES.md §9.3): any dry-bulk vessel (`vessel_type = 'Bulk'`) whose leg's first **working** berth is a General Cargo facility type bills at a flat $5,000 (MRTIS OPEN_QUESTIONS.md §12.2 and the §12.3.3 resolution; the first-working-berth amendment is §12.3.3.1).
 
 **Total: $15,095,000 across 3,019 legs**, reconciled against `figures.py`'s independent derivation of R5.
 

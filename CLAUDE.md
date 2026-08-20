@@ -38,7 +38,7 @@ only: proof and evidence, not a native FileMaker build.
      A behaviour-preserving change must still report **0 mismatches**.
 
    **Status, 2026-08-20 (session 9):** I-1, I-10 and I-11 built at MRTIS
-   `61c899b`; I-7 ruled with no change needed. **Three remain** — I-2 and I-9
+   `27d8a19`; I-7 ruled with no change needed. **Three remain** — I-2 and I-9
    (investigations) and I-3 (needs a ruling from William). The suspension stays in
    force until those close.
 

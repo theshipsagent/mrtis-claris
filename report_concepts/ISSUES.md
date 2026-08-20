@@ -1,6 +1,6 @@
 # Issues log — what building the concept reports exposed
 
-Opened 2026-08-20 (session 8). MRTIS commit `2738601c9a87ff7be264f9c10cb1e1a618ef3436` at the time of finding; fixes built at `61c899b`.
+Opened 2026-08-20 (session 8). MRTIS commit `2738601c9a87ff7be264f9c10cb1e1a618ef3436` at the time of finding; fixes built at `27d8a19`.
 
 Every entry is something the reporting exercise **found**, not something it
 fixed. Nothing in this log has been acted on — that is deliberate, and is the
@@ -606,7 +606,7 @@ was false, through no fault of the code here, and nobody had tested it across an
 actual MRTIS rebuild — only across re-runs of the export against an unchanged
 database, which could never have caught it.
 
-**FIXED — MRTIS commit `61c899b`, 2026-08-20** (`OPEN_QUESTIONS.md` §15.5).
+**FIXED — MRTIS commit `27d8a19`, 2026-08-20** (`OPEN_QUESTIONS.md` §15.5).
 `ORDER BY` added to all three aggregates, with a comment recording that it is
 load-bearing rather than cosmetic — exactly the kind of clause a later tidy-up
 deletes as noise.
@@ -625,7 +625,7 @@ including the gzipped sample data**.
 - **I-1** — **fixed** in MRTIS `56ad9f5` (§15.1). 445 legs corrected; nothing else in the database moved.
 - **I-7** — ruled A by William 2026-08-20; the build was already correct, $3,492,500 does not move (§15.3).
 - **I-10** — **built** in MRTIS `56ad9f5` (§15.2), behaviour-preserving: 0 legs changed fee.
-- **I-11** — **fixed** in MRTIS `61c899b` (§15.5). Found while verifying I-1; the build was non-deterministic and the package's byte-identical guarantee was false. Now verified end-to-end across a real rebuild.
+- **I-11** — **fixed** in MRTIS `27d8a19` (§15.5). Found while verifying I-1; the build was non-deterministic and the package's byte-identical guarantee was false. Now verified end-to-end across a real rebuild.
 
 ### Still open — three investigations and one ruling
 

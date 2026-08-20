@@ -3,7 +3,7 @@
 ## 2026-08-20 (session 9) — The build-fix: three findings closed, one found in the act of fixing
 
 **MRTIS moved, deliberately, for the first time since this repo existed.**
-`2738601` → **`61c899b`**. William: *"lets fix the 6 findings."*
+`2738601` → **`27d8a19`**. William: *"lets fix the 6 findings."*
 
 `CLAUDE.md` directive 2 forbids this repo from writing to MRTIS, so the
 suspension was **recorded in the manual before anything was touched**, scoped to
