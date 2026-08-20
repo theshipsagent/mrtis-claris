@@ -1,5 +1,135 @@
 # mrtis-claris session log
 
+## 2026-08-19 (session 4) — Clearing the stale figures: one derivation, and the audit backlog
+
+**MRTIS commit unchanged at `2738601c9a87ff7be264f9c10cb1e1a618ef3436`** —
+same commit session 3 exported against, so session 3's verified row counts and
+fee totals still hold and `package/` did not need rebuilding. Read-only
+against MRTIS throughout; the database was opened `read_only=True` and nothing
+under `/Users/billy/Documents/MRTIS` was written.
+
+Objective: finish the work session 3 deliberately stopped short of — the
+stale charts and reports, the untouched `docs/BUSINESS_RULES.md`, and audit
+#2's remaining A4–A14.
+
+### The root cause, fixed properly
+
+Sessions 1–3 hard-coded figures into three places at once: the rules doc, the
+charts script, the reports script. When MRTIS rebuilt they all went stale
+together, and three of them (A7, A8, A14) had never re-derived in the first
+place. Editing the numbers again would have rebuilt the same trap.
+
+**New: [`figures.py`](figures.py)** — one derivation, read live from MRTIS,
+that every other deliverable now reads from. It writes `docs/FIGURES.md` and
+`docs/figures.json`; `charts/build_charts.py` and `reports/build_reports.py`
+import it, and the reports **assert** their totals against it rather than
+printing whatever they computed.
+
+Its most useful property: it re-implements William's §12 fee precedence
+independently in SQL, then checks leg by leg that its answer equals the
+`agency_fee` MRTIS actually stored. **0 mismatches across all 40,245
+chargeable legs.** If MRTIS's `agency_fee_for()` ever moves without this
+package catching up, the script raises instead of publishing a plausible
+wrong number. That assertion is the thing A10 claimed a comment was doing and
+wasn't.
+
+### Re-derived — what actually moved
+
+| Figure | Was published | Now derives |
+|---|---:|---:|
+| Billable (leg) basis | $272,167,500 | **$272,660,000** |
+| Per-departure basis | $349,625,500 | **$349,527,500** |
+| Over-bill of one against the other | "roughly 17%" | **$76,867,500 (28.2%)** |
+| R5 | 3,112 legs / $15,560,000 | **3,019 legs / $15,095,000** |
+| R2 | "0 legs, no matching traffic" | **2 legs, $21,000 → $2,000** |
+| Six-rule net effect | −$26,701,000 (−8.9%) | **−$26,208,500 (−8.77%)** |
+| Split-call rate | 4.1% | **4.06%** (1,632 calls) |
+| Activity resolved | 83.3% | **82.79%** |
+| Geofence artifacts | 5.3% | **5.23%** of all berth events (5.27% of placed) |
+
+R5's 93-leg drop reconciles exactly against session 3's +$511,500
+first-working-berth figure — the two were derived independently and agree.
+
+### Audit backlog — A4 through A14 now closed
+
+- **A4** — `§9.2` said the $10,500 tier was "canonical Bulk **or** register
+  `ship_type_group` starting Bulk Carrier". In `agency_fee_for()` the register
+  is consulted **only when the canonical type is absent**: a fallback, not an
+  alternative. Rewritten as an explicit 5-step first-match-wins table with the
+  3 live counterexamples (one Container, one Tanker, one Other, all correctly
+  billing $3,500 where the old wording said $10,500). This was the finding
+  most likely to be built wrong in FileMaker.
+- **A7** — activity percentages re-derived, and the "never reached a berth"
+  bucket (3.38%) now shown as its own row rather than omitted.
+- **A8** — 18.8%, and stated as *of fee-bearing calls*, with 17.9% of all
+  calls given alongside so the denominator can't be misread.
+- **A9** — the three §12.4 mis-citations now point at §12.2 / §12.3.3.
+- **A10** — the false comment is gone; the check it described now exists.
+- **A11** — reports 1 and 2 no longer mix denominators. Both now carry the
+  fee-bearing and all-rows counts as separate columns, and the averages say
+  which they are over. (Gas: 941 calls, 726 fee-bearing — the two averages
+  $2,700 and $3,500 now both divide out.)
+- **A12** — report 2's shortfall is disclosed and reconciled: **409
+  chargeable legs carry no agency at all**, $1,784,500, which is exactly the
+  gap between the report's $270,875,500 and the package's $272,660,000.
+- **A13** — `§10` now discloses the dredge/workboat removal (9 vessels,
+  23,228 rows, 7.4% of the raw feed), the *Egret* exclusion (131 rows,
+  $98,000 of fabricated fee), and a table of the still-open §11.x items.
+- **A14** — both denominators quoted, so the 5.23%/5.27% ambiguity is stated
+  rather than resolved silently in one direction.
+
+### Rules doc brought current
+
+`docs/BUSINESS_RULES.md` described the pre-rebuild rules throughout. Now
+covers: lay-up calls flagged not deleted (`is_commercial_call` / `call_class`,
+142 calls); layberth as non-commercial time (`berth_hours` no longer includes
+it, 45,741.57 hrs moved to `layberth_hours` — flagged as *the* change most
+likely to surprise anyone comparing an older extract); R5 off the first
+**working** berth, with the 93-leg / +$511,500 correction explained; R2
+extended to `General Cargo Ship (with Ro-Ro facility)`; and §11.1a's
+unresolved-outranks-`No Cargo` fix, with the live check that **0 legs** now
+report `No Cargo` while billing.
+
+### Disclosed rather than discovered — the two per-departure roll-ups
+
+`port_call_event.agency_fee` ($349,527,500) and
+`SUM(port_call.agency_fee_departures_total)` ($346,692,500) differ by
+$2,835,000 — 360 departure events that never landed in a call. This is
+MRTIS §11.2, already ruled *leave as is*, not a new finding. Worth recording
+that the gap re-derives $98,000 smaller than §11.2's $2,933,000, exactly the
+fabricated *Egret* fee removed at ingest by §7.5 — an independent confirmation
+that the Egret guard did what it claimed. Now disclosed in `§9.1` and in
+report 1, because the two numbers give different over-billing ratios and a
+reviewer picking either one silently gets a different answer.
+
+### Verified
+
+- `figures.py`: 0 fee-attribution mismatches / 40,245 chargeable legs.
+- Reports 1, 2 and 3 assert their totals against `figures.py` and pass;
+  report 2's $270,875,500 + $1,784,500 unattributed = $272,660,000 exactly.
+- Every dollar figure and count in `BUSINESS_RULES.md` re-checked
+  programmatically against `docs/figures.json` — all match.
+- `package/` untouched and still consistent: its `ROW_COUNT_RECONCILIATION.md`
+  totals equal `figures.py`'s, and its `DATA_DICTIONARY.csv` cross-references
+  (sections 4, 5, 6, 9) all still resolve after the doc rewrite.
+- The repo's `.venv` was missing on entry (gitignored) and was rebuilt per the
+  documented setup.
+
+### Open
+
+- **`docs/PORT_CALL_SPEC.md` in MRTIS is itself stale** relative to the
+  post-§8/§12 rebuild (A7 noted its percentages are what session 1 copied).
+  Not this repo's to fix — read-only — but worth a note if MRTIS is ever
+  unparked.
+- **MRTIS §13** (General Cargo berths discharge-only, buoy sequencing) is
+  ruled but not built. It would move the split/leg baseline these fee figures
+  sit on. Disclosed in `§10`.
+- **§11.3 `tpc = 0`** is deferred upstream; the fix belongs in
+  `Ships_Register`, not here.
+- The SWP-to-SWP KPI framework is still parked and needs its own design
+  session.
+
+
 ## 2026-08-19 (session 3) — Re-export against the rebuilt MRTIS
 
 **Re-exported against MRTIS commit `2738601c9a87ff7be264f9c10cb1e1a618ef3436`**

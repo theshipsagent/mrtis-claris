@@ -1,0 +1,178 @@
+{
+  "mrtis_commit": "2738601c9a87ff7be264f9c10cb1e1a618ef3436",
+  "mrtis_commit_short": "2738601",
+  "calls": {
+    "total": 40170,
+    "commercial": 40028,
+    "layup": 142,
+    "complete": 39691,
+    "pct_complete": 98.81,
+    "split": 1632,
+    "pct_split": 4.06
+  },
+  "legs": {
+    "total": 41804,
+    "chargeable": 40245,
+    "not_chargeable": 1559
+  },
+  "events": {
+    "total": 290305
+  },
+  "fee_basis": {
+    "leg_basis": 272660000.0,
+    "per_departure_event": 349527500.0,
+    "per_departure_call_rollup": 346692500.0,
+    "per_departure_gap": 2835000.0,
+    "unassigned_fee_events": 360,
+    "unassigned_fee": 2835000.0,
+    "over_bill_abs": 76867500.0,
+    "over_bill_pct": 28.2,
+    "unassigned_reasons": {
+      "before_first_entry": {
+        "events": 240,
+        "fee": 1925000.0
+      },
+      "no_open_call": {
+        "events": 120,
+        "fee": 910000.0
+      }
+    }
+  },
+  "multi_charge": {
+    "fee_bearing_calls": 38288,
+    "multi_charged": 7197,
+    "max_charges": 10,
+    "pct_of_fee_bearing": 18.8,
+    "pct_of_all_calls": 17.9
+  },
+  "activity_method": {
+    "draft_delta": {
+      "legs": 19290,
+      "pct": 46.14
+    },
+    "dictionary": {
+      "legs": 14990,
+      "pct": 35.86
+    },
+    "unresolved": {
+      "legs": 5778,
+      "pct": 13.82
+    },
+    "no_berth_stop": {
+      "legs": 1415,
+      "pct": 3.38
+    },
+    "fgis": {
+      "legs": 331,
+      "pct": 0.79
+    }
+  },
+  "activity_method_resolved_pct": 82.79,
+  "activity": {
+    "Load": {
+      "legs": 25557,
+      "fee": 193660750.0
+    },
+    "Discharge": {
+      "legs": 8912,
+      "fee": 57508250.0
+    },
+    "(unresolved)": {
+      "legs": 7193,
+      "fee": 21491000.0
+    },
+    "No Cargo": {
+      "legs": 142,
+      "fee": null
+    }
+  },
+  "geofence": {
+    "artifacts": 5102,
+    "all_berth_events": 97528,
+    "placed_berth_events": 96845,
+    "pct_of_all": 5.23,
+    "pct_of_placed": 5.27
+  },
+  "layberth": {
+    "hours": 45741.57,
+    "legs_with_layberth": 377
+  },
+  "base_tier_counterexamples": {
+    "legs": 3,
+    "fee": 10500.0,
+    "by_vessel_type": {
+      "Other": 1,
+      "Tanker": 1,
+      "Container": 1
+    }
+  },
+  "canonical_fallback": {
+    "legs_without_register_row": 12,
+    "fee": 63000.0,
+    "by_vessel_type": {
+      "(none)": 7,
+      "Bulk": 3,
+      "Other": 2
+    },
+    "reached_by_a_rule": 0
+  },
+  "tpc_zero": {
+    "calls": 4045,
+    "pct": 10.07
+  },
+  "legs_without_agency": {
+    "legs": 409,
+    "fee": 1784500.0,
+    "reported_total": 270875500.0
+  },
+  "fee_rules": {
+    "by_rule": {
+      "BASE": {
+        "label": "Base tiers ($10,500 / $3,500)",
+        "legs": 33013,
+        "old_two_tier": 252409500.0,
+        "bills_now": 252409500.0,
+        "change": 0.0
+      },
+      "R1": {
+        "label": "R1 Passenger/Cruise",
+        "legs": 1043,
+        "old_two_tier": 3650500.0,
+        "bills_now": 2607500.0,
+        "change": -1043000.0
+      },
+      "R2": {
+        "label": "R2 Ro-Ro / Vehicles Carrier / Gen-Cargo w. Ro-Ro",
+        "legs": 2,
+        "old_two_tier": 21000.0,
+        "bills_now": 2000.0,
+        "change": -19000.0
+      },
+      "R3": {
+        "label": "R3 Container (Fully Cellular)",
+        "legs": 3128,
+        "old_two_tier": 10948000.0,
+        "bills_now": 2346000.0,
+        "change": -8602000.0
+      },
+      "R4": {
+        "label": "R4 Refrigerated Cargo Ship",
+        "legs": 40,
+        "old_two_tier": 140000.0,
+        "bills_now": 200000.0,
+        "change": 60000.0
+      },
+      "R5": {
+        "label": "R5 Bulk @ General Cargo berth",
+        "legs": 3019,
+        "old_two_tier": 31699500.0,
+        "bills_now": 15095000.0,
+        "change": -16604500.0
+      }
+    },
+    "old_two_tier_total": 298868500.0,
+    "bills_now_total": 272660000.0,
+    "change_total": -26208500.0,
+    "attribution_mismatches": 0
+  }
+}

@@ -15,9 +15,13 @@ Usage:
 from __future__ import annotations
 
 import subprocess
+import sys
 from pathlib import Path
 
 import duckdb
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+import figures  # noqa: E402  -- repo-root module, the single source of figures
 
 MRTIS_DB = "/Users/billy/Documents/MRTIS/data/db/mrtis.duckdb"
 OUT = Path(__file__).resolve().parent
@@ -30,18 +34,35 @@ def commit() -> str:
     ).stdout.strip()
 
 
-def report_1_agency_fee_by_vessel_type(con, c: str):
+def report_1_agency_fee_by_vessel_type(con, c: str, f: dict):
     """Report 1: Agency fee by vessel type. The headline P&L-style report --
     what MRTIS bills, broken down by the vessel-type tiers of section 9 of
-    docs/BUSINESS_RULES.md. Billable total should reconcile to $272,167,500
-    (package/ROW_COUNT_RECONCILIATION.md)."""
+    docs/BUSINESS_RULES.md.
+
+    The billable total is asserted against figures.py's derivation rather than
+    a hard-coded constant (which is how it went stale after MRTIS's rebuild).
+
+    Audit finding A11: the old version put "Port calls" (all calls) next to
+    "Avg fee/call" (averaged over fee-bearing calls only), so the columns
+    could not be reconciled against each other -- Gas showed $2,541,000 over
+    941 calls with an average of $3,500, which divides out to $2,700. Both
+    denominators are now columns in their own right, and the average is
+    stated explicitly as being over fee-bearing calls.
+    """
     df = con.execute("""
         select coalesce(vessel_type, '(unknown)') as vessel_type,
                count(*) as port_calls,
+               count(*) filter (where agency_fee_total is not null
+                                  and agency_fee_total > 0) as fee_bearing_calls,
                sum(leg_count) as legs,
                sum(agency_fee_total) as agency_fee_billable,
                sum(agency_fee_departures_total) as agency_fee_departures_comparison,
-               round(avg(agency_fee_total), 0) as avg_fee_per_call
+               round(sum(agency_fee_total)
+                     / nullif(count(*) filter (where agency_fee_total is not null
+                                                 and agency_fee_total > 0), 0), 0)
+                   as avg_fee_per_fee_bearing_call,
+               round(sum(agency_fee_total) / nullif(count(*), 0), 0)
+                   as avg_fee_per_call_all
         from port_call
         group by 1
         order by agency_fee_billable desc nulls last
@@ -49,34 +70,69 @@ def report_1_agency_fee_by_vessel_type(con, c: str):
     df.to_csv(OUT / "agency_fee_by_vessel_type.csv", index=False)
 
     total = df["agency_fee_billable"].sum()
+    expected = f["fee_basis"]["leg_basis"]
+    if round(total, 2) != round(expected, 2):
+        raise SystemExit(f"Report 1: billable total ${total:,.0f} does not match "
+                         f"figures.py's ${expected:,.0f}")
+
     lines = [
         "# Sample report: Agency fee by vessel type", "",
         f"MRTIS commit `{c}` · billable basis = one fee per leg with a berth stop "
         "(docs/BUSINESS_RULES.md §9).", "",
         f"**Total billable agency fee: ${total:,.0f}**", "",
-        "| Vessel type | Port calls | Legs | Billable fee | Per-departure (comparison) | Avg fee/call |",
-        "|---|---:|---:|---:|---:|---:|",
+        "Two averages are given because two denominators are in play. Most vessel",
+        "types include calls that never berthed and so never billed; averaging over",
+        "all calls and averaging over fee-bearing calls give materially different",
+        "answers, and only the second is the average fee of an actual job.", "",
+        "| Vessel type | Port calls | Fee-bearing calls | Legs | Billable fee | "
+        "Per-departure (comparison) | Avg fee / fee-bearing call | Avg fee / call |",
+        "|---|---:|---:|---:|---:|---:|---:|---:|",
     ]
+    money = lambda v: "—" if v != v else f"${v:,.0f}"
     for _, r in df.iterrows():
         lines.append(
-            f"| {r.vessel_type} | {r.port_calls:,.0f} | {r.legs:,.0f} | "
-            f"${r.agency_fee_billable:,.0f} | ${r.agency_fee_departures_comparison:,.0f} | "
-            f"${r.avg_fee_per_call:,.0f} |"
+            f"| {r.vessel_type} | {r.port_calls:,.0f} | {r.fee_bearing_calls:,.0f} | "
+            f"{r.legs:,.0f} | {money(r.agency_fee_billable)} | "
+            f"{money(r.agency_fee_departures_comparison)} | "
+            f"{money(r.avg_fee_per_fee_bearing_call)} | {money(r.avg_fee_per_call_all)} |"
         )
+    lines += [
+        "",
+        "The per-departure column sums `port_call.agency_fee_departures_total` — the",
+        f"**call-level** roll-up, ${f['fee_basis']['per_departure_call_rollup']:,.0f}. "
+        f"The event-level frozen basis is ${f['fee_basis']['per_departure_event']:,.0f}, "
+        f"${f['fee_basis']['per_departure_gap']:,.0f} higher: the difference is the fee on",
+        f"{f['fee_basis']['unassigned_fee_events']} departure events that never landed in a "
+        "call, which a call-level column structurally cannot hold",
+        "(MRTIS OPEN_QUESTIONS.md §11.2, ruled: leave as is).",
+    ]
     (OUT / "agency_fee_by_vessel_type.md").write_text("\n".join(lines) + "\n")
     print(f"Report 1 -> agency_fee_by_vessel_type.csv / .md  (total ${total:,.0f})")
 
 
-def report_2_port_calls_by_agent(con, c: str):
+def report_2_port_calls_by_agent(con, c: str, f: dict):
     """Report 2: Port calls and fee revenue by agent, at the leg grain
     (port_call_leg.agency -- the leg-owning agency, per docs/BUSINESS_RULES.md
-    §6, not the raw per-event agent). Demonstrates agent-performance reporting."""
+    §6, not the raw per-event agent). Demonstrates agent-performance reporting.
+
+    Audit findings A11 and A12, both fixed here:
+      A11 -- "Legs" counted all legs while "Avg fee/leg" averaged over
+             chargeable legs only, so the columns did not divide out. Both
+             counts are now columns.
+      A12 -- the agency filter silently dropped fee-bearing legs that carry no
+             agency, so the CSV summed short of the total published everywhere
+             else in the package with nothing to explain the difference. The
+             shortfall is now stated, and reconciled against figures.py.
+    """
     df = con.execute("""
         select agency,
                count(distinct port_call_id) as port_calls,
                count(*) as legs,
+               count(*) filter (where agency_fee is not null) as chargeable_legs,
                sum(agency_fee) as billable_fee,
-               round(avg(agency_fee), 0) as avg_fee_per_leg
+               round(sum(agency_fee)
+                     / nullif(count(*) filter (where agency_fee is not null), 0), 0)
+                   as avg_fee_per_chargeable_leg
         from port_call_leg
         where agency is not null and agency != ''
         group by 1
@@ -84,29 +140,50 @@ def report_2_port_calls_by_agent(con, c: str):
     """).fetchdf()
     df.to_csv(OUT / "port_calls_by_agent.csv", index=False)
 
+    reported = df["billable_fee"].sum()
+    na = f["legs_without_agency"]
+    if round(reported, 2) != round(na["reported_total"], 2):
+        raise SystemExit(f"Report 2: ${reported:,.0f} does not match figures.py's "
+                         f"expected ${na['reported_total']:,.0f}")
+
     top = df.head(20)
     lines = [
         "# Sample report: Port calls and fee revenue by agent", "",
         f"MRTIS commit `{c}` · leg-level agency (`port_call_leg.agency`) -- the agency "
         "that brought the vessel in owns the leg (docs/BUSINESS_RULES.md §6). "
         f"{len(df)} distinct agencies with billable legs; top 20 shown here, full list in the CSV.", "",
-        "| Agency | Port calls | Legs | Billable fee | Avg fee/leg |",
-        "|---|---:|---:|---:|---:|",
+        f"**Total shown: ${reported:,.0f}**", "",
+        f"> This is ${na['fee']:,.0f} short of the ${f['fee_basis']['leg_basis']:,.0f} "
+        f"billable total published elsewhere in this package. The difference is "
+        f"**{na['legs']:,} chargeable legs that carry no agency at all** and so cannot "
+        "appear in an agency breakdown. Nothing is lost — the fee is in the totals, just",
+        "> not attributable to an agent.", "",
+        "| Agency | Port calls | Legs | Chargeable legs | Billable fee | Avg fee / chargeable leg |",
+        "|---|---:|---:|---:|---:|---:|",
     ]
+    money = lambda v: "—" if v != v else f"${v:,.0f}"
     for _, r in top.iterrows():
         lines.append(
             f"| {r.agency} | {r.port_calls:,.0f} | {r.legs:,.0f} | "
-            f"${r.billable_fee:,.0f} | ${r.avg_fee_per_leg:,.0f} |"
+            f"{r.chargeable_legs:,.0f} | {money(r.billable_fee)} | "
+            f"{money(r.avg_fee_per_chargeable_leg)} |"
         )
     (OUT / "port_calls_by_agent.md").write_text("\n".join(lines) + "\n")
-    print(f"Report 2 -> port_calls_by_agent.csv / .md  ({len(df)} agencies, top 20 in .md)")
+    print(f"Report 2 -> port_calls_by_agent.csv / .md  ({len(df)} agencies, "
+          f"${reported:,.0f}, {na['legs']} unattributed legs)")
 
 
-def report_3_r5_general_cargo_bulk_impact(con, c: str):
+def report_3_r5_general_cargo_bulk_impact(con, c: str, f: dict):
     """Report 3: R5 impact by facility -- which General Cargo berths drive
     the $5,000 dry-bulk-at-general-cargo rule (docs/BUSINESS_RULES.md §9.3).
-    Total should reconcile to exactly $15,560,000 / 3,112 legs, the built and
-    verified R5 figure in MRTIS OPEN_QUESTIONS.md §12.4."""
+
+    The R5 total is reconciled against figures.py rather than the hard-coded
+    "$15,560,000 / 3,112 legs" this used to assert -- a figure that went stale
+    the moment MRTIS re-priced R5 off the first *working* berth. The rule and
+    its figures are MRTIS OPEN_QUESTIONS.md §12.2 and the §12.3.3 resolution;
+    §12.4 (cited here previously -- audit finding A9) is the build-order note
+    and carries none of these numbers.
+    """
     df = con.execute("""
         select l.first_berth_facility as facility,
                count(*) as legs,
@@ -122,15 +199,27 @@ def report_3_r5_general_cargo_bulk_impact(con, c: str):
     df.to_csv(OUT / "r5_general_cargo_bulk_impact.csv", index=False)
 
     total_fee, total_legs = df["billable_fee"].sum(), df["legs"].sum()
+    r5 = f["fee_rules"]["by_rule"]["R5"]
+    if int(total_legs) != r5["legs"] or round(total_fee, 2) != round(r5["bills_now"], 2):
+        raise SystemExit(
+            f"Report 3: R5 here is ${total_fee:,.0f} / {total_legs:,} legs but "
+            f"figures.py derives ${r5['bills_now']:,.0f} / {r5['legs']:,} legs")
+
     lines = [
         "# Sample report: R5 impact by facility -- dry bulk calling General Cargo berths", "",
         f"MRTIS commit `{c}` · Rule R5 (docs/BUSINESS_RULES.md §9.3): any dry-bulk vessel "
-        "(`vessel_type = 'Bulk'`) whose leg's first berth is a General Cargo facility "
-        "type bills at a flat $5,000, decided by the leg's first berth "
-        "(MRTIS OPEN_QUESTIONS.md §12.3.3, ruled).", "",
-        f"**Total: ${total_fee:,.0f} across {total_legs:,} legs** "
-        "(reconciles exactly to the built-and-verified $15,560,000 / 3,112 legs in "
-        "MRTIS OPEN_QUESTIONS.md §12.4).", "",
+        "(`vessel_type = 'Bulk'`) whose leg's first **working** berth is a General Cargo "
+        "facility type bills at a flat $5,000 "
+        "(MRTIS OPEN_QUESTIONS.md §12.2 and the §12.3.3 resolution; the first-working-berth "
+        "amendment is §12.3.3.1).", "",
+        f"**Total: ${total_fee:,.0f} across {total_legs:,} legs**, reconciled against "
+        "`figures.py`'s independent derivation of R5.", "",
+        "> Layberth stops are skipped when resolving which berth prices the leg. Every "
+        "layberth zone carries `facility_type = General Cargo`, so pricing off the first "
+        "berth of *any* kind handed the $5,000 tier to Bulk vessels that had merely lain "
+        "at a layberth before working. Correcting that moved **93 legs** back to the "
+        "$10,500 base tier (+$511,500) and is why this report's totals are lower than an",
+        "> extract taken before that amendment.", "",
         "| Facility | Legs | Billable fee |",
         "|---|---:|---:|",
     ]
@@ -143,9 +232,10 @@ def report_3_r5_general_cargo_bulk_impact(con, c: str):
 def main():
     c = commit()
     con = duckdb.connect(MRTIS_DB, read_only=True)
-    report_1_agency_fee_by_vessel_type(con, c)
-    report_2_port_calls_by_agent(con, c)
-    report_3_r5_general_cargo_bulk_impact(con, c)
+    f = figures.derive(con)
+    report_1_agency_fee_by_vessel_type(con, c, f)
+    report_2_port_calls_by_agent(con, c, f)
+    report_3_r5_general_cargo_bulk_impact(con, c, f)
     con.close()
 
 

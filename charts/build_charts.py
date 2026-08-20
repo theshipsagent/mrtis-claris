@@ -9,9 +9,13 @@ Usage:
 from __future__ import annotations
 
 import subprocess
+import sys
 from pathlib import Path
 
 import duckdb
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+import figures  # noqa: E402  -- repo-root module, the single source of figures
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -109,15 +113,25 @@ def chart_calls_by_vessel_type(con):
     plt.close(fig)
 
 
-def chart_fee_tier_impact(con):
-    # Static from docs/BUSINESS_RULES.md §9.4 -- the §12 rule-by-rule movement,
-    # verified against the live DB in the reconciliation query below.
-    rows = [
-        ("R1 Passenger/Cruise", 3_650_500, 2_607_500),
-        ("R3 Container", 10_948_000, 2_346_000),
-        ("R4 Reefer", 140_000, 200_000),
-        ("R5 Bulk @ Gen. Cargo", 32_676_000, 15_560_000),
-    ]
+SHORT_RULE_LABEL = {
+    "R1": "R1 Passenger/Cruise",
+    "R2": "R2 Ro-Ro / Vehicles",
+    "R3": "R3 Container",
+    "R4": "R4 Reefer",
+    "R5": "R5 Bulk @ Gen. Cargo",
+}
+
+
+def chart_fee_tier_impact(con, f):
+    # Derived live by figures.py, whose rule attribution is asserted leg-by-leg
+    # against the fee MRTIS actually stored (0 mismatches across all chargeable
+    # legs, or it raises). Previously these four pairs were hard-coded from
+    # docs/BUSINESS_RULES.md §9.4 above a comment claiming a reconciliation
+    # query that did not exist -- audit finding A10.
+    by_rule = f["fee_rules"]["by_rule"]
+    rows = [(SHORT_RULE_LABEL[k], by_rule[k]["old_two_tier"],
+             by_rule[k]["bills_now"], by_rule[k]["legs"])
+            for k in ("R1", "R2", "R3", "R4", "R5") if k in by_rule]
     labels = [r[0] for r in rows]
     old = [r[1] / 1e6 for r in rows]
     new = [r[2] / 1e6 for r in rows]
@@ -126,24 +140,35 @@ def chart_fee_tier_impact(con):
     w = 0.35
     ax.bar([i - w / 2 for i in x], old, width=w, label="Old 2-tier schedule", color=SLATE)
     ax.bar([i + w / 2 for i in x], new, width=w, label="§12 six-rule schedule (built)", color=AMBER)
+    # R2 is $21,000 -> $2,000: a real rule with real traffic, but invisible at
+    # a $-millions scale. Label every bar pair with its leg count so a bar too
+    # small to see is still readable as a number.
+    top = max(max(old), max(new))
+    for i, (_, o, n, legs) in enumerate(rows):
+        ax.text(i, top * 0.035 + max(o, n) / 1e6, f"{legs:,} legs",
+                ha="center", fontsize=8.5, color="#5b6b79")
+
     ax.set_xticks(list(x))
-    ax.set_xticklabels(labels)
+    ax.set_xticklabels(labels, fontsize=9)
+    ax.set_ylim(0, top * 1.15)
     ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda v, _: f"${v:,.1f}M"))
     ax.set_title("Fee-tier rule impact (2026-08-19 ruling)", fontsize=14, weight="bold", pad=14, loc="left")
+    ax.set_ylabel("Agency fee, $ millions (chargeable legs)")
     ax.legend(frameon=False)
     style_axes(ax)
     fig.tight_layout()
-    footer(fig, "figures per MRTIS OPEN_QUESTIONS.md §12.4 (R2 excluded: no matching traffic)")
+    footer(fig, "derived live by figures.py; rules per MRTIS OPEN_QUESTIONS.md §12.2 / §12.3")
     fig.savefig(OUT / "fee_tier_rule_impact.png", dpi=150)
     plt.close(fig)
 
 
 def main():
     con = duckdb.connect(MRTIS_DB, read_only=True)
+    f = figures.derive(con)
     chart_fee_by_vessel_type(con)
     chart_split_call_rate(con)
     chart_calls_by_vessel_type(con)
-    chart_fee_tier_impact(con)
+    chart_fee_tier_impact(con, f)
     con.close()
     for f in sorted(OUT.glob("*.png")):
         print(f"-> {f}")

@@ -10,8 +10,17 @@ Every rule below is cited back to its source in MRTIS
 ruling in `docs/OPEN_QUESTIONS.md`, or the implementation in
 `scripts/build_db.py` / `scripts/build_port_calls.py`. This document doesn't
 invent anything; it translates. Built against MRTIS commit
-`09e1cb633ee9dc86a0393956eb118c9c8d5bafb8` — see `SESSION_LOG.md` for how to
+`2738601c9a87ff7be264f9c10cb1e1a618ef3436` — see `SESSION_LOG.md` for how to
 tell if that's moved since.
+
+**Where the numbers come from.** Every count, percentage and dollar figure in
+this document is re-derived live from MRTIS's database by
+[`figures.py`](../figures.py) and published in
+[`docs/FIGURES.md`](FIGURES.md); the charts and reports read from the same
+derivation. Nothing here is hand-keyed. If MRTIS rebuilds, re-run `figures.py`
+and every figure in the package moves together — that is deliberate, because
+in earlier sessions hard-coded figures went stale in one place while staying
+current in another.
 
 ---
 
@@ -56,8 +65,28 @@ explicitly rather than silently dropped:
 | A call that never sees an `Exit` | Kept, `call_status = 'open_end'` |
 
 `call_status` is `'complete'` only when both ends are present — currently
-**98.8%** of calls. The rest are real gaps in the source feed, kept and
-flagged so duration analytics can exclude them deliberately.
+**98.81%** of calls (39,691 of 40,170). The rest are real gaps in the source
+feed, kept and flagged so duration analytics can exclude them deliberately.
+
+### Not every call is commercial
+
+Some calls are a vessel going nowhere: a lay-up, a repair-yard stay, a spell
+at a layberth with no cargo work at either end. William ruled (2026-08-19,
+`OPEN_QUESTIONS.md` §8/§14) that these are **flagged, not deleted** — the
+rows, their events and their timestamps all stay on the record, so the
+vessel-days they represent are still countable, but they drop out of
+commercial counts and revenue.
+
+| Column | Meaning |
+|---|---|
+| `is_commercial_call` | True for a normal working call; false for a pure lay-up |
+| `call_class` | `commercial` or `layup` — the reason, in words |
+
+Currently **142 of 40,170** calls are `layup`, leaving **40,028** commercial.
+
+**For FileMaker:** report on `is_commercial_call = 1` by default. Deleting
+these rows instead of flagging them would silently destroy the lay-up
+time — which is exactly the figure a berth-utilisation question needs.
 
 ---
 
@@ -82,7 +111,10 @@ window, default 2 hours) of the previous one. The **first arrival** is the
 real docking; the **last departure** is the real sailing; everything in
 between is kept on the record (nothing is dropped from the spine) but flagged
 `is_geofence_artifact` and excluded from being read as an operation.
-Currently **5.3%** of raw berth events collapse this way.
+Currently **5,102 berth events** collapse this way — **5.23%** of all 97,528
+berth events, or **5.27%** of the 96,845 that were placed into a call. (Both
+denominators are quoted because the two round differently: the second is
+where a "5.3%" figure comes from.)
 
 An anchorage or pilot-station event between two berth events always ends the
 visit — going to anchor and coming back is a genuine second call at that
@@ -116,10 +148,36 @@ is never consulted once a higher one has answered:
 4. **Nothing.** `activity` stays NULL if none of the above can speak — never
    guessed.
 
-Currently 83.3% of legs resolve (35.7% by dictionary, 46.8% by draft, 0.8% by
-FGIS); 13.4% stay unresolved. When the dictionary and the draft disagree, it's
-flagged (`activity_conflict`) rather than silently overridden — usually AIS
-noise, occasionally a dictionary row that needs correcting.
+**An unresolved stop outranks `No Cargo`.** Ruled by William 2026-08-19
+(`OPEN_QUESTIONS.md` §11.1, option (a)) and built. Previously a leg that mixed
+a layberth stop with a working berth whose activity couldn't be resolved
+reported `No Cargo` — while billing a full agency fee, because the fee test
+and the label test used different predicates. 54 legs said "no cargo" and
+charged for cargo work. Now the resolution order is: a real (non-`No Cargo`)
+activity first; failing that, if any stop is unresolved the leg reports
+**NULL**; only a leg with nothing *but* layberth stops reports `No Cargo`
+itself. The same fix made `cargo_group` and `first_berth_zone` read from the
+first **working** stop rather than whichever stop was literally first.
+
+Live check: **0 legs** now report `activity = 'No Cargo'` while carrying a fee.
+
+| Method | Legs | Share |
+|---|---:|---:|
+| Draft delta | 19,290 | 46.14% |
+| Zone dictionary | 14,990 | 35.86% |
+| FGIS | 331 | 0.79% |
+| **Resolved** | **34,611** | **82.79%** |
+| Unresolved (reached a berth, no evidence spoke) | 5,778 | 13.82% |
+| Never reached a berth at all | 1,415 | 3.38% |
+| **All legs** | **41,804** | **100%** |
+
+That last row is a separate bucket from "unresolved" and is reported
+separately: a leg that never berthed has nothing to resolve, rather than
+evidence that failed.
+
+When the dictionary and the draft disagree, it's flagged
+(`activity_conflict`) rather than silently overridden — usually AIS noise,
+occasionally a dictionary row that needs correcting.
 
 ---
 
@@ -144,8 +202,8 @@ Only vessel types that genuinely work this way can split: dry-bulk carriers,
 plus vessels with no recorded type (an unknown type must not be assumed
 ineligible). Tankers, gas carriers, cruise ships, container ships and reefers
 are excluded by design — William: *"reduced as the tankers, gas, other,
-cruise, container and reefer can be ignored."* **4.1% of calls are split
-calls.**
+cruise, container and reefer can be ignored."* **1,632 calls (4.06%) are
+split calls.**
 
 ### `No Cargo` (layberth) is special — two separate rulings
 
@@ -194,7 +252,9 @@ Two non-destructive transformations sit on top of the raw `Agent` field:
 - **`outbound_idle_hours`** — dwell after the last sailing. The vessel is
   leaving, not waiting on a dock — reported separately so it's never
   miscounted as waiting.
-- **`berth_hours`** — hours alongside.
+- **`berth_hours`** — hours alongside a **working** berth. Layberth time is
+  **not** in this figure (see below).
+- **`layberth_hours`** — hours alongside a layberth, held separately.
 
 Dwell is attributed by **overlap** with these time windows, not by which side
 of the berth arrival an anchorage event happened to start on — pilot sheets
@@ -202,6 +262,24 @@ routinely leave an anchorage record open for hours or days after a vessel is
 already alongside working, and counting that as "waiting" would double-count
 cargo time. (`PORT_CALL_SPEC.md` §6 — William: *"waiting can only be waiting
 for the berth, as the anchorage stop happens after it departs."*)
+
+### Layberth time is non-commercial time, and is held apart
+
+Ruled by William 2026-08-19 (`OPEN_QUESTIONS.md` §8) and built: a layberth is
+not a working berth, so its hours and its stops no longer inflate the figures
+that describe cargo work. **`berth_stop_count` and `berth_hours` now count
+working berths only**; layberth time moved into its own `layberth_hours`
+column on both `port_call_leg` and `port_call`.
+
+Currently **45,741.57 hours across 377 legs** sit in `layberth_hours`. Before
+this ruling that time was inside `berth_hours`, where it read as cargo
+operations.
+
+**This is the change most likely to surprise anyone comparing against an
+older extract**: `berth_hours` is a smaller number than it used to be, and
+that is correct, not data loss — the hours are in the column next to it.
+The design intent is a general **non-commercial time** classification, not a
+layberth special case; other non-working states are expected to join it.
 
 ---
 
@@ -239,20 +317,41 @@ the other:
 
 | Basis | What it charges | Column | Current total |
 |---|---|---|---|
-| **Per-departure** (frozen, historical) | Every single sailing from a berth | `port_call_event.agency_fee` | $349,625,500 |
-| **Per-leg** (the ruled, billable figure) | One charge per leg that reached a berth | `port_call_leg.agency_fee`, summed to `port_call.agency_fee_total` | $272,167,500 |
+| **Per-departure** (frozen, historical) | Every single sailing from a berth | `port_call_event.agency_fee` | $349,527,500 |
+| **Per-leg** (the ruled, billable figure) | One charge per leg that reached a berth | `port_call_leg.agency_fee`, summed to `port_call.agency_fee_total` | $272,660,000 |
 
 **Why two exist:** William's ruling (`OPEN_QUESTIONS.md` §7.1, 2026-08-19,
 verbatim: *"agency fee is per port call, not per berth except when split
 discharge then load"*) established that the real billing unit is the
-**leg**, not the berth departure. Under the old per-departure counting, 19.0%
-of port calls were being charged 2–10 times because a single call can touch
-several berths (a tanker might call 4–6 berths in one visit and still only
-bill once). The per-departure basis is kept **frozen** as a historical
-comparison point, unaffected by the newer fee-tier rules below
-(`OPEN_QUESTIONS.md` §12.3.4) — so the two numbers stay comparable across
-time, but they are answering "what if every departure billed" vs. "what
-actually bills."
+**leg**, not the berth departure. Under the old per-departure counting,
+**7,197 of 38,288 fee-bearing calls — 18.8%** — were charged 2 to 10 times
+because a single call can touch several berths (a tanker might call 4–6
+berths in one visit and still only bill once). *That percentage is of
+fee-bearing calls; against all 40,170 calls it is 17.9%.* The per-departure
+basis is kept **frozen** as a historical comparison point, unaffected by the
+newer fee-tier rules below (`OPEN_QUESTIONS.md` §12.3.4) — so the two numbers
+stay comparable across time, but they are answering "what if every departure
+billed" vs. "what actually bills."
+
+Per-departure over-bills the billable basis by **$76,867,500 (28.2%)**.
+
+**A caution before you reconcile the per-departure figure.** There are two
+roll-ups of it and they do not agree:
+
+| Source | Total |
+|---|---:|
+| `port_call_event.agency_fee` (event level) | $349,527,500 |
+| `SUM(port_call.agency_fee_departures_total)` (call level) | $346,692,500 |
+| **Gap** | **$2,835,000** |
+
+The gap is exactly the fee carried by **360 departure events that never landed
+in a port call** — 240 `before_first_entry` ($1,925,000) and 120
+`no_open_call` ($910,000). A call-level column can only hold call-level fees,
+so the shortfall is structural rather than an error. William ruled it **leave
+as is** (`OPEN_QUESTIONS.md` §11.2): the gap is heavily front-loaded into
+2019, an edge effect of where the source feed starts, not an ongoing leak. It
+is disclosed here rather than left for a reviewer to trip over, because the
+two numbers give different over-billing ratios depending which one you pick.
 
 **For a FileMaker rebuild: `port_call_leg.agency_fee`, rolled up to
 `port_call.agency_fee_total`, is the number to report as revenue. The
@@ -260,11 +359,33 @@ per-departure figure is a QA/comparison artifact, not a billing figure.**
 
 ### 9.2 Base tiers (pre-2026-08-19, still the fallback)
 
-| Vessel type | Fee |
-|---|---|
-| Bulk (canonical vessel type, or register `ship_type_group` starting `Bulk Carrier`) | $10,500 |
-| Everything else with a known type | $3,500 |
-| No usable IMO *and* no type from any source (a tug, workboat, or government craft — not an agented ocean vessel) | No fee (NULL) |
+These are tested **in order, first match wins.** The order matters more than
+the amounts — see the warning below.
+
+| # | Test | Fee |
+|---|---|---|
+| 1 | Canonical `vessel_type` = `Bulk` | $10,500 |
+| 2 | Canonical `vessel_type` is anything else non-empty | $3,500 |
+| 3 | *Only if canonical `vessel_type` is absent* — register `ship_type_group` starts `Bulk Carrier` | $10,500 |
+| 4 | *Only if canonical `vessel_type` is absent* — any other non-empty `ship_type_group` | $3,500 |
+| 5 | No usable IMO *and* no type from any source (a tug, workboat, or government craft — not an agented ocean vessel) | No fee (NULL) |
+
+> **The register is a fallback, not an alternative.** `ship_type_group` is
+> consulted **only when the canonical vessel type is missing entirely**. A
+> vessel that has a canonical type never has its register group looked at,
+> even if that group says `Bulk Carrier`.
+>
+> This is not hypothetical: **3 chargeable legs today** — one Container, one
+> Tanker, one Other — carry `ship_type_group LIKE 'Bulk Carrier%'` and
+> correctly bill **$3,500**, because their canonical type already answered at
+> test 2. Implementing this as "canonical Bulk *or* register Bulk Carrier"
+> bills them $10,500 and is wrong. Only $21,000 is at stake in today's data,
+> but the precedence is what gets built into the calculation and it would be
+> wrong for every future vessel too.
+
+Step 3 exists to recover real Capesize and Kamsarmax bulkers whose Zone
+Report `Type` was never recorded — the register knows them even when the feed
+doesn't.
 
 A vessel whose IMO merely fails its check digit still bills at the lower tier
 — a corrupted ID number is a typo on a real ship, not the absence of one.
@@ -283,10 +404,17 @@ William's instruction, verbatim (`OPEN_QUESTIONS.md` §12):
 | # | Condition | Fee |
 |---|---|---|
 | R1 | Vessel type = `Passenger/Cruise` | $2,500 |
-| R2 | Vessel type = `Ro-Ro Cargo Ship` or `Vehicles Carrier` | $1,000 |
+| R2 | Vessel type = `Ro-Ro Cargo Ship`, `Vehicles Carrier`, or `General Cargo Ship (with Ro-Ro facility)` | $1,000 |
 | R3 | Vessel type = `Container Ship (Fully Cellular)` or `Container Ship (Fully Cellular/Ro-Ro Facility)` | $750 |
 | R4 | Vessel type = `Refrigerated Cargo Ship` | $5,000 |
-| R5 | Any **dry bulk** vessel calling a **General Cargo** facility type (at the leg's *first* berth) | $5,000 |
+| R5 | Any **dry bulk** vessel calling a **General Cargo** facility type (at the leg's first *working* berth) | $5,000 |
+
+**R2 covers a third type not in William's original wording.** Neither
+`Ro-Ro Cargo Ship` nor `Vehicles Carrier` appears anywhere in MRTIS's traffic.
+`General Cargo Ship (with Ro-Ro facility)` does, and is the nearest thing to
+what R2 describes. Ruled by William 2026-08-19 (`OPEN_QUESTIONS.md` §12.3.2):
+*"a roro is a port call"* — so it is covered by R2 rather than left at the
+base tier. **2 chargeable legs**, $21,000 → $2,000.
 
 **Where "vessel type" comes from (R1–R4):** these are values from the *ships
 register's* raw `ship_type` field, not MRTIS's own 7-value canonical
@@ -305,11 +433,26 @@ the same field the $10,500 base tier already uses, not a register-only
 definition. (`OPEN_QUESTIONS.md` §12.3.3, resolved.)
 
 **Which berth decides R5, on a leg touching more than one facility:** the
-leg's **first** berth stop. The leg (not the berth, not the call) stays the
+leg's first **working** berth stop — layberth stops are skipped when
+resolving `facility_type`. The leg (not the berth, not the call) stays the
 billing unit regardless of how many berths it touches — a tanker calling 4–6
 berths in one visit still bills once. R5 only changes the *amount*, using the
-leg's first berth; it does not introduce any new per-berth billing.
-(`OPEN_QUESTIONS.md` §12.3.3.1, resolved.)
+leg's first working berth; it does not introduce any new per-berth billing.
+(`OPEN_QUESTIONS.md` §12.3.3.1, ruled and built 2026-08-19.)
+
+> **This was amended after the first build of the schedule.** R5 originally
+> priced off the leg's first berth of *any* kind. Because every layberth zone
+> carries `facility_type = General Cargo`, a Bulk vessel that happened to lie
+> at a layberth before working was being handed the $5,000 General Cargo tier
+> on the strength of a berth where no cargo moved. Pricing off the first
+> working berth instead moved **93 legs** back to the $10,500 base tier,
+> **+$511,500**. 14 Bulk legs still start at a genuine General Cargo working
+> berth and correctly stay at $5,000.
+>
+> `first_berth_zone`, `first_berth_facility` and `facility_type` on
+> `port_call_leg` all now describe the first **working** berth. If you are
+> comparing against an older extract, these columns can name a different
+> berth than they used to.
 
 **Precedence:** R5 outranks R1–R4 if a vessel could ever satisfy both — though
 today that's structurally impossible, since a Bulk vessel is never also
@@ -323,16 +466,26 @@ benchmark. Only the leg-level fee (§9.1 above) uses the six new rules.
 
 ### 9.4 Net effect of the six rules
 
-Measured against the full rebuilt dataset (40,245 chargeable legs):
+Measured against the full rebuilt dataset (40,245 chargeable legs), re-derived
+by `figures.py` — see [`docs/FIGURES.md`](FIGURES.md):
 
 | Rule | Chargeable legs | Would have billed (old 2-tier) | Bills now | Change |
-|---|---|---|---|---|
+|---|---:|---:|---:|---:|
 | R1 Passenger/Cruise | 1,043 | $3,650,500 | $2,607,500 | −$1,043,000 |
-| R2 Ro-Ro / Vehicles Carrier | 0 | $0 | $0 | $0 (no matching traffic in this data) |
+| R2 Ro-Ro / Vehicles Carrier / Gen-Cargo w. Ro-Ro | 2 | $21,000 | $2,000 | −$19,000 |
 | R3 Container (Fully Cellular) | 3,128 | $10,948,000 | $2,346,000 | −$8,602,000 |
 | R4 Refrigerated Cargo Ship | 40 | $140,000 | $200,000 | **+$60,000** (the only rule that raises a fee) |
-| R5 Bulk @ General Cargo berth | 3,112 | $32,676,000 | $15,560,000 | −$17,116,000 |
-| **Total** | | **$298,868,500** | **$272,167,500** | **−$26,701,000 (−8.9%)** |
+| R5 Bulk @ General Cargo berth | 3,019 | $31,699,500 | $15,095,000 | −$16,604,500 |
+| Base tiers, untouched by §12 | 33,013 | $252,409,500 | $252,409,500 | $0 |
+| **Total** | **40,245** | **$298,868,500** | **$272,660,000** | **−$26,208,500 (−8.77%)** |
+
+**How this table is proved.** `figures.py` re-implements the §12 precedence
+independently and then asserts, leg by leg, that its answer equals the fee
+MRTIS actually stored. It currently reports **0 mismatches across all 40,245
+chargeable legs** — so the rule attribution above is not an estimate, it
+reproduces the built figure exactly. If MRTIS's `agency_fee_for()` ever
+changes without this package catching up, the script fails rather than
+publishing a plausible wrong number.
 
 This is a *fee re-tiering*, not a rules change to what counts as a leg or a
 split — the leg-count and split-call logic in §5 above is unaffected by §9.
@@ -351,6 +504,36 @@ split — the leg-count and split-call logic in §5 above is unaffected by §9.
 - `Shipper`, `Consignee`, `Receiver`, `Last Port`, `Next Port`, `Origin` — no
   source is wired into MRTIS yet. Deliberately absent rather than populated
   with guesses.
+
+### Rows removed upstream — why this won't reconcile to a raw extract
+
+If you compare this export against a raw Zone Report extract, the counts will
+not meet, by design:
+
+- **9 dredge/workboat vessels are filtered out at ingest** — 23,228 rows,
+  **7.4% of the raw feed**. William's ruling (`OPEN_QUESTIONS.md` §2): remove
+  them at the front end rather than flagging them, *"removes those records and
+  focuses the table"*. Matching is by IMO wherever the dictionary supplies
+  one, never by name alone — "Texas Star" is both a dredge and, separately, a
+  real tanker, and a name-based filter deleted the tanker too.
+- **131 rows for a vessel named *Egret* are excluded** (`OPEN_QUESTIONS.md`
+  §7.5). An IMO-repair rule had merged two genuinely different ships that
+  shared a name; the merge is now refused. This also removes $98,000 of
+  fabricated fee from the per-departure basis.
+
+### Still-open MRTIS questions that touch this data
+
+These are logged upstream and unresolved as of this commit. None invalidates
+a figure here, but a reviewer should know they exist:
+
+| Section | Status |
+|---|---|
+| §11.2 — the two per-departure roll-ups don't reconcile ($2,835,000) | **Ruled: leave as is.** Disclosed in §9.1 above |
+| §11.3 — `tpc = 0` is a placeholder on 4,045 calls (10.07%), not a measured value | **Deferred.** Filter `tpc > 0` before any draft-survey maths |
+| §11.4 — 2 legs berthed and did non-layberth work but carry no fee | **Ruled: no**, they do not bill |
+| §11.5 | Documentation corrections, no ruling needed |
+| §7.2–§7.4 | Dredge/vessel-identity edge cases, all ruled and built |
+| §13 | Ruled, **not built** — see the first bullet above |
 
 If the MRTIS commit this package was built against changes before those
 land, re-export rather than assuming these figures still hold — see

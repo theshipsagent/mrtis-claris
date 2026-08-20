@@ -38,8 +38,18 @@ stops at "here is proof this works, packaged for review."
 
 ## Deliverables
 
-Built in session 1 (2026-08-19) — see `SESSION_LOG.md` for the full write-up
-and the MRTIS commit this was built against.
+Built in session 1, re-exported in session 3, and re-derived end-to-end in
+session 4 (all 2026-08-19) — see `SESSION_LOG.md` for the full write-up and
+the MRTIS commit this was built against.
+
+> **Every published figure is derived, not hand-keyed.**
+> [`figures.py`](figures.py) re-derives every count, percentage and dollar
+> figure live from MRTIS and writes [`docs/FIGURES.md`](docs/FIGURES.md); the
+> rules doc, charts and reports all read from that one derivation. It also
+> re-implements the §12 fee schedule independently and asserts, leg by leg,
+> that it reproduces the fee MRTIS actually stored — currently **0 mismatches
+> across 40,245 chargeable legs**. Re-run it after any MRTIS rebuild and the
+> whole package moves together.
 
 1. ✅ A FileMaker-importable export of the validated port-call/fee data —
    [`export/build_review_package.py`](export/build_review_package.py)
@@ -50,12 +60,17 @@ and the MRTIS commit this was built against.
    `SESSION_LOG.md`'s "Open" section).
 2. ✅ [`docs/BUSINESS_RULES.md`](docs/BUSINESS_RULES.md) — the port-call
    assembly and fee-tier rules, written for a FileMaker developer, not a
-   Python one, every rule cited to its MRTIS source.
+   Python one, every rule cited to its MRTIS source. Current as of the
+   post-rebuild rules (first-working-berth R5, layberth as non-commercial
+   time, lay-up flagging, unresolved-outranks-`No Cargo`).
 3. ✅ Sample charts demonstrating the data — [`charts/`](charts/) (fee by
    vessel type, split-call rate, calls by vessel type, §12 fee-tier impact).
 4. ✅ Sample canned reports demonstrating reporting capability —
    [`reports/`](reports/) (agency fee by vessel type, port calls by agent,
    R5 general-cargo-bulk drill-down).
+5. ✅ [`figures.py`](figures.py) → [`docs/FIGURES.md`](docs/FIGURES.md) — the
+   single derivation every other deliverable reads from, with the fee-rule
+   attribution self-check described above.
 
 ## How to work in this project
 
